@@ -37,6 +37,7 @@ public class DrawBlock : MonoBehaviour {
 
     //output to texture
     Texture2D tex;
+    Texture2D _matchOut2D;
 
     public Mat GetBlockMat()
     {
@@ -62,6 +63,7 @@ public class DrawBlock : MonoBehaviour {
         //創造mat儲存比對用mat(原始比對圖形為未改變比例)
         _matchImage = new Mat(_inputHeight, _inputWidth, CvType.CV_8UC3);
         tex = new Texture2D(_currentWidth, _currentHeight);
+        _matchOut2D = new Texture2D(100, 100);
     }
 	
 	// Update is called once per frame
@@ -145,7 +147,7 @@ public class DrawBlock : MonoBehaviour {
         Mat _OutMatchMat = new Mat(100, 100, CvType.CV_8UC3);
         Imgproc.resize(_matchImage, _OutMatchMat, _OutMatchMat.size());
 
-         Texture2D _matchOut2D = new Texture2D(100, 100);
+         
          Utils.matToTexture2D(_OutMatchMat, _matchOut2D);
          _mImg.texture = _matchOut2D;
 
