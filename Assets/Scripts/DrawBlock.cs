@@ -141,7 +141,9 @@ public class DrawBlock : MonoBehaviour {
 
         _matchImage = _mat.submat(minY, MaxY, minX, MaxX);
         //_matchImage = _mat.submat(0, 100, 0, 100);
-
+        Point src_center = new Point(_matchImage.cols() / 2.0, _matchImage.rows() / 2.0);
+        Mat rot_mat = Imgproc.getRotationMatrix2D(src_center, 180, 1.0);
+        Imgproc.warpAffine(_matchImage, _matchImage, rot_mat, _matchImage.size());
 
         //比對圖形輸出
         Mat _OutMatchMat = new Mat(100, 100, CvType.CV_8UC3);
