@@ -35,6 +35,9 @@ public class DrawBlock : MonoBehaviour {
     //get kinect color texture
     public ColorSourceManager ColorSourceManager;
 
+    //output to texture
+    Texture2D tex;
+
     public Mat GetBlockMat()
     {
         return _matchImage;
@@ -58,7 +61,8 @@ public class DrawBlock : MonoBehaviour {
 
         //創造mat儲存比對用mat(原始比對圖形為未改變比例)
         _matchImage = new Mat(_inputHeight, _inputWidth, CvType.CV_8UC3);
-	}
+        tex = new Texture2D(_currentWidth, _currentHeight);
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -78,7 +82,7 @@ public class DrawBlock : MonoBehaviour {
         Imgproc.rectangle(_mat, _pointOne, _pointTwo, _color, 4);
 
         //創造2D影像(空的)
-        Texture2D tex = new Texture2D(_currentWidth, _currentHeight);
+        
         //將mat轉換回2D影像
         Utils.matToTexture2D(_mat, tex);
         //放入輸出rawImage
