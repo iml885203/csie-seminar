@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class DrawBlock : MonoBehaviour {
 
-    public RawImage _output;
-    public RawImage _mImg;
+    public RawImage _inoutImg;
+    public RawImage _blockImg;
     private Mat _screenMat;
     public Mat _sourceMat;
 
@@ -90,18 +90,14 @@ public class DrawBlock : MonoBehaviour {
             
         }
         //畫框框
-<<<<<<< HEAD
-        Imgproc.rectangle(_mat, _pointOne, _pointTwo, _color, 2);
-=======
         Imgproc.rectangle(_sourceMat, _pointOne, _pointTwo, _color, 4);
->>>>>>> master
 
         //創造2D影像(空的)
-        
+
         //將mat轉換回2D影像
         Utils.matToTexture2D(_sourceMat, _souceOut);
         //放入輸出rawImage
-        _output.texture = _souceOut;
+        _inoutImg.texture = _souceOut;
         
 	}
 
@@ -110,22 +106,20 @@ public class DrawBlock : MonoBehaviour {
         //取得滑鼠在螢幕上點擊的位置
         float x = Input.mousePosition.x;
         float y = Screen.height - Input.mousePosition.y;
-<<<<<<< HEAD
+
         if (Input.GetMouseButton(1))
         {
-            double[] getPix = _mat.get((int)y, (int)x);
+            double[] getPix = _screenMat.get((int)y, (int)x);
             Debug.Log(getPix[0] + ","  + getPix[1] + "," + getPix[2]);
         }
         else
         {
+        
+
             //存入list
-            _pointOne = new Point(x, y);
-            _pointTwo = new Point(x, y);
-=======
-        //存入list
-        _pointOne = new Point(x*_widthRate, y*_heightRate);
-        _pointTwo = new Point(x * _widthRate, y * _heightRate);
->>>>>>> master
+            _pointOne = new Point(x*_widthRate, y*_heightRate);
+            _pointTwo = new Point(x * _widthRate, y * _heightRate);
+
 
             Debug.Log(Input.mousePosition.x.ToString() + " " + Input.mousePosition.y.ToString());
             mouseclick = true;
@@ -166,34 +160,24 @@ public class DrawBlock : MonoBehaviour {
 
         _matchImage = new Mat(MatchWidth, MatchHeight,CvType.CV_8UC3);
 
-<<<<<<< HEAD
         //做一個新的Mat存放切割後的Mat
         Mat subMat = new Mat();
-        subMat = _mat.submat(minY, MaxY, minX, MaxX);
+        subMat = _sourceMat.submat(minY, MaxY, minX, MaxX);
         subMat.copyTo(_matchImage);        
-=======
 
         _matchImage = _sourceMat.submat(minY, MaxY, minX, MaxX);
         //_matchImage = _mat.submat(0, 100, 0, 100);
         Point src_center = new Point(_matchImage.cols() / 2.0, _matchImage.rows() / 2.0);
         Mat rot_mat = Imgproc.getRotationMatrix2D(src_center, 180, 1.0);
         Imgproc.warpAffine(_matchImage, _matchImage, rot_mat, _matchImage.size());
->>>>>>> master
 
         //比對圖形輸出
         Mat _OutMatchMat = new Mat(100, 100, CvType.CV_8UC3);
         Imgproc.resize(_matchImage, _OutMatchMat, _OutMatchMat.size());
 
-<<<<<<< HEAD
-         //擷取輸出
-         Utils.matToTexture2D(_OutMatchMat, _matchOut2D);
-         _mImg.texture = _matchOut2D;
-=======
-         
-         Utils.matToTexture2D(_OutMatchMat, _matchOut100);
-         _mImg.texture = _matchOut100;
->>>>>>> master
-
+        //擷取輸出
+        Utils.matToTexture2D(_OutMatchMat, _matchOut100);
+        _blockImg.texture = _matchOut100;
     }
     public void TestPointmove()//滑鼠放開
     {
