@@ -6,6 +6,9 @@ Obj/
 UnityGenerated/
 Library/
 Assets/AssetStoreTools*
+Assets/OpenCVForUnity/
+Assets/Pugins/
+Assets/Standard Assets/
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
