@@ -81,7 +81,7 @@ public class DrawBlock : MonoBehaviour {
             
         }
         //畫框框
-        Imgproc.rectangle(_mat, _pointOne, _pointTwo, _color, 4);
+        Imgproc.rectangle(_mat, _pointOne, _pointTwo, _color, 2);
 
         //創造2D影像(空的)
         
@@ -97,12 +97,21 @@ public class DrawBlock : MonoBehaviour {
         //取得滑鼠在螢幕上點擊的位置
         float x = Input.mousePosition.x;
         float y = Screen.height - Input.mousePosition.y;
-        //存入list
-        _pointOne = new Point(x, y);
-        _pointTwo = new Point(x, y);
+        if (Input.GetMouseButton(1))
+        {
+            double[] getPix = _mat.get((int)y, (int)x);
+            Debug.Log(getPix[0] + ","  + getPix[1] + "," + getPix[2]);
+        }
+        else
+        {
+            //存入list
+            _pointOne = new Point(x, y);
+            _pointTwo = new Point(x, y);
 
-        Debug.Log(Input.mousePosition.x.ToString() + " " + Input.mousePosition.y.ToString());
-        mouseclick = true;
+            Debug.Log(Input.mousePosition.x.ToString() + " " + Input.mousePosition.y.ToString());
+            mouseclick = true;
+        }
+        
     }
 
     public void TestPointUp()//滑鼠放開
@@ -138,16 +147,16 @@ public class DrawBlock : MonoBehaviour {
 
         _matchImage = new Mat(MatchWidth, MatchHeight,CvType.CV_8UC3);
 
-
-        _matchImage = _mat.submat(minY, MaxY, minX, MaxX);
-        //_matchImage = _mat.submat(0, 100, 0, 100);
-
+        //做一個新的Mat存放切割後的Mat
+        Mat subMat = new Mat();
+        subMat = _mat.submat(minY, MaxY, minX, MaxX);
+        subMat.copyTo(_matchImage);        
 
         //比對圖形輸出
         Mat _OutMatchMat = new Mat(100, 100, CvType.CV_8UC3);
         Imgproc.resize(_matchImage, _OutMatchMat, _OutMatchMat.size());
 
-         
+         //擷取輸出
          Utils.matToTexture2D(_OutMatchMat, _matchOut2D);
          _mImg.texture = _matchOut2D;
 

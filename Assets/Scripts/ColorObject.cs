@@ -41,8 +41,8 @@ public class ColorObject
 						//TODO: use "calibration mode" to find HSV min
 						//and HSV max values
 			
-						setHSVmin (new Scalar (34, 50, 50));
-						setHSVmax (new Scalar (80, 220, 200));
+						setHSVmin (new Scalar (0, 30, 6));
+						setHSVmax (new Scalar (70, 110, 86));
 			
 						//BGR value for Yellow:
 						setColor (new Scalar (0, 255, 0));
@@ -53,8 +53,8 @@ public class ColorObject
 						//TODO: use "calibration mode" to find HSV min
 						//and HSV max values
 			
-						setHSVmin (new Scalar (20, 124, 123));
-						setHSVmax (new Scalar (30, 256, 256));
+						setHSVmin (new Scalar (150, 160, 30));
+						setHSVmax (new Scalar (240, 255, 110));
 			
 						//BGR value for Red:
 						setColor (new Scalar (255, 255, 0));
@@ -65,8 +65,8 @@ public class ColorObject
 						//TODO: use "calibration mode" to find HSV min
 						//and HSV max values
 			
-						setHSVmin (new Scalar (0, 200, 0));
-						setHSVmax (new Scalar (19, 255, 255));
+						setHSVmin (new Scalar (70, 0, 0));
+						setHSVmax (new Scalar (150, 60, 50));
 			
 						//BGR value for Red:
 						setColor (new Scalar (255, 0, 0));
