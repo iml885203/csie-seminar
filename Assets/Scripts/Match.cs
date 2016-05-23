@@ -256,8 +256,8 @@ public class Match : MonoBehaviour {
                     ConsistP.Add(new Point(R0.x + R0.width, R0.y + R0.height));
                     //double[] _getrgb =new double[3];
                     double[] _getrgb = RGB.get((int)R0.x + R0.width / 2,(int)R0.y + R0.height / 2);
-                    Debug.Log("size:" + _getrgb.Length);
-                    Debug.Log("RGB = " + _getrgb[0] + "," + _getrgb[1] + "," + _getrgb[2]);
+                    //Debug.Log("size:" + _getrgb.Length);
+                    //Debug.Log("RGB = " + _getrgb[0] + "," + _getrgb[1] + "," + _getrgb[2]);
                 }
             }
 
