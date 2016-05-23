@@ -7,8 +7,8 @@ public class DrawBlock : MonoBehaviour {
 
     public RawImage _output;
     public RawImage _mImg;
-    Mat _mat;
-    public Mat _nMat;
+    private Mat _screenMat;
+    public Mat _sourceMat;
 
     //結果圖片
     private Mat _matchImage;
@@ -36,8 +36,12 @@ public class DrawBlock : MonoBehaviour {
     public ColorSourceManager ColorSourceManager;
 
     //output to texture
-    Texture2D tex;
-    Texture2D _matchOut2D;
+    Texture2D _souceOut;
+    Texture2D _matchOut100;
+
+    //screen size to source size
+    private double _widthRate;
+    private double _heightRate;
 
     public Mat GetBlockMat()
     {
@@ -55,15 +59,20 @@ public class DrawBlock : MonoBehaviour {
         _inputHeight = ColorSourceManager.ColorHeight;
         _currentWidth = Screen.width;
         _currentHeight = Screen.height;
-
+        //螢幕大小與來源比例初始化
+        _widthRate = (double)_inputWidth / _currentWidth;
+        _heightRate = (double)_inputHeight / _currentHeight;
+        Debug.Log(_widthRate + "x" + _heightRate);
+        //text size
+        _currentWidth = _inputWidth;
+        _currentHeight = _inputHeight;
         //創造mat儲存影像
-        _nMat = new Mat(_inputHeight, _inputWidth, CvType.CV_8UC3);
-        _mat = new Mat(Screen.height, Screen.width, CvType.CV_8UC3);
+        _sourceMat = new Mat(_inputHeight, _inputWidth, CvType.CV_8UC3);
 
         //創造mat儲存比對用mat(原始比對圖形為未改變比例)
         _matchImage = new Mat(_inputHeight, _inputWidth, CvType.CV_8UC3);
-        tex = new Texture2D(_currentWidth, _currentHeight);
-        _matchOut2D = new Texture2D(100, 100);
+        _souceOut = new Texture2D(_inputWidth, _inputHeight);
+        _matchOut100 = new Texture2D(100, 100);
     }
 	
 	// Update is called once per frame
@@ -71,9 +80,9 @@ public class DrawBlock : MonoBehaviour {
 
         //將輸入轉成mat方便openCV使用
         //Utils.webCamTextureToMat(_webcam, _nMat);
-        _nMat = ColorSourceManager.GetColorMat();
+        _sourceMat = ColorSourceManager.GetColorMat();
         //將輸入的影像轉換成螢幕大小
-        Imgproc.resize(_nMat, _mat, _mat.size());
+        //Imgproc.resize(_sourceMat, _screenMat, _screenMat.size());
         if(mouseclick)TestPointmove();
 
         if (!mouseclick && MatchHeight != 0 && MatchWidth != 0) {
@@ -81,14 +90,18 @@ public class DrawBlock : MonoBehaviour {
             
         }
         //畫框框
+<<<<<<< HEAD
         Imgproc.rectangle(_mat, _pointOne, _pointTwo, _color, 2);
+=======
+        Imgproc.rectangle(_sourceMat, _pointOne, _pointTwo, _color, 4);
+>>>>>>> master
 
         //創造2D影像(空的)
         
         //將mat轉換回2D影像
-        Utils.matToTexture2D(_mat, tex);
+        Utils.matToTexture2D(_sourceMat, _souceOut);
         //放入輸出rawImage
-        _output.texture = tex;
+        _output.texture = _souceOut;
         
 	}
 
@@ -97,6 +110,7 @@ public class DrawBlock : MonoBehaviour {
         //取得滑鼠在螢幕上點擊的位置
         float x = Input.mousePosition.x;
         float y = Screen.height - Input.mousePosition.y;
+<<<<<<< HEAD
         if (Input.GetMouseButton(1))
         {
             double[] getPix = _mat.get((int)y, (int)x);
@@ -107,6 +121,11 @@ public class DrawBlock : MonoBehaviour {
             //存入list
             _pointOne = new Point(x, y);
             _pointTwo = new Point(x, y);
+=======
+        //存入list
+        _pointOne = new Point(x*_widthRate, y*_heightRate);
+        _pointTwo = new Point(x * _widthRate, y * _heightRate);
+>>>>>>> master
 
             Debug.Log(Input.mousePosition.x.ToString() + " " + Input.mousePosition.y.ToString());
             mouseclick = true;
@@ -147,18 +166,33 @@ public class DrawBlock : MonoBehaviour {
 
         _matchImage = new Mat(MatchWidth, MatchHeight,CvType.CV_8UC3);
 
+<<<<<<< HEAD
         //做一個新的Mat存放切割後的Mat
         Mat subMat = new Mat();
         subMat = _mat.submat(minY, MaxY, minX, MaxX);
         subMat.copyTo(_matchImage);        
+=======
+
+        _matchImage = _sourceMat.submat(minY, MaxY, minX, MaxX);
+        //_matchImage = _mat.submat(0, 100, 0, 100);
+        Point src_center = new Point(_matchImage.cols() / 2.0, _matchImage.rows() / 2.0);
+        Mat rot_mat = Imgproc.getRotationMatrix2D(src_center, 180, 1.0);
+        Imgproc.warpAffine(_matchImage, _matchImage, rot_mat, _matchImage.size());
+>>>>>>> master
 
         //比對圖形輸出
         Mat _OutMatchMat = new Mat(100, 100, CvType.CV_8UC3);
         Imgproc.resize(_matchImage, _OutMatchMat, _OutMatchMat.size());
 
+<<<<<<< HEAD
          //擷取輸出
          Utils.matToTexture2D(_OutMatchMat, _matchOut2D);
          _mImg.texture = _matchOut2D;
+=======
+         
+         Utils.matToTexture2D(_OutMatchMat, _matchOut100);
+         _mImg.texture = _matchOut100;
+>>>>>>> master
 
     }
     public void TestPointmove()//滑鼠放開
@@ -167,8 +201,8 @@ public class DrawBlock : MonoBehaviour {
         float x = Input.mousePosition.x;
         float y = Screen.height - Input.mousePosition.y;
         //存入list
-        _pointTwo.x = x;
-        _pointTwo.y = y;
+        _pointTwo.x = x * _widthRate;
+        _pointTwo.y = y * _heightRate;
 
         //Debug.Log(Input.mousePosition.x.ToString() + " " + Input.mousePosition.y.ToString());
     }
