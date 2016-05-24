@@ -27,6 +27,10 @@ public class Match : MonoBehaviour {
     public DrawBlock _drawBlock;
     private Mat blockMat;
 
+    //物體資訊
+    int _clolrRange = 10;
+    List<Scalar> _saveColor = new List<Scalar>(); 
+
     public Texture2D GetMatchTexture()
     {
         return _matchTexture;
@@ -255,15 +259,17 @@ public class Match : MonoBehaviour {
                 {
                     ConsistP.Add(new Point(R0.x, R0.y));
                     ConsistP.Add(new Point(R0.x + R0.width, R0.y + R0.height));
-                    //double[] _getrgb =new double[3];
                     clickRGB.Add(clickcolor(RGB, R0));
+                    
                 }
             }
 
             for (int i = 0; i < ConsistP.Count; i += 2)
             {
                 Imgproc.rectangle(temp, ConsistP[i], ConsistP[i + 1], new Scalar(255, 0, 255), 1);
-                Imgproc.putText(temp, clickRGB[i].val.ToString(), ConsistP[i + 1], 1, 1, new Scalar(255, 0, 255), 1);
+                int ID = inRange(clickRGB[i / 2]);
+                Imgproc.putText(temp, ID.ToString(), ConsistP[i], 1, 1, new Scalar(255, 0, 255), 1);
+                
             }
             ConsistP.Clear();
         }
@@ -279,11 +285,33 @@ public class Match : MonoBehaviour {
         double[] _getrgb_Top = src.get((int)R.y + R.height / 4, (int)R.x + R.width / 2);
         double[] _getrgb_Bot = src.get((int)R.y + R.height / 4 * 3, (int)R.x + R.width / 2);
 
-        average_R = _getrgb_Mid[0] + _getrgb_Lift[0] + _getrgb_Right[0] + _getrgb_Top[0] + _getrgb_Bot[0];
-        average_G = _getrgb_Mid[1] + _getrgb_Lift[1] + _getrgb_Right[1] + _getrgb_Top[1] + _getrgb_Bot[1];
-        average_B = _getrgb_Mid[2] + _getrgb_Lift[2] + _getrgb_Right[2] + _getrgb_Top[2] + _getrgb_Bot[2];
+        average_R = (_getrgb_Mid[0] + _getrgb_Lift[0] + _getrgb_Right[0] + _getrgb_Top[0] + _getrgb_Bot[0])/5;
+        average_G = (_getrgb_Mid[1] + _getrgb_Lift[1] + _getrgb_Right[1] + _getrgb_Top[1] + _getrgb_Bot[1])/5;
+        average_B = (_getrgb_Mid[2] + _getrgb_Lift[2] + _getrgb_Right[2] + _getrgb_Top[2] + _getrgb_Bot[2])/5;
 
-        Debug.Log("RGB = " + average_R + "," + average_G + "," + average_B);
-        return new Scalar(average_R, average_G, average_B);
+        
+        return new Scalar((int)average_R, (int)average_G, (int)average_B);
+    }
+    int inRange(Scalar src)
+    {
+        double[] _srcColor =src.val;
+        int ID = -1;
+        for(int i =0;i < _saveColor.Count;i++){
+           double[] _getrgb =_saveColor[i].val;
+           Debug.Log("FOR IN");
+           Debug.Log(_getrgb[0] + "," + _getrgb[1] + ","+_getrgb[2]);
+           if (_srcColor[0] < _getrgb[0] + _clolrRange &&
+               _srcColor[0] > _getrgb[0] - _clolrRange &&
+               _srcColor[1] < _getrgb[1] + _clolrRange &&
+               _srcColor[1] > _getrgb[1] - _clolrRange &&
+               _srcColor[2] < _getrgb[2] + _clolrRange &&
+               _srcColor[2] > _getrgb[2] - _clolrRange)
+           {
+               return i;
+           }
+        }
+        Debug.Log("FOR OUT");
+        _saveColor.Add(src);
+        return _saveColor.Count;
     }
 }
