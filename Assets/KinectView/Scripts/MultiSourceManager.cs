@@ -39,7 +39,7 @@ public class MultiSourceManager : MonoBehaviour {
             
             var depthFrameDesc = _Sensor.DepthFrameSource.FrameDescription;
             _DepthData = new ushort[depthFrameDesc.LengthInPixels];
-            
+            Debug.Log("DepthSize:" + depthFrameDesc.Width + "x" + depthFrameDesc.Height);
             if (!_Sensor.IsOpen)
             {
                 _Sensor.Open();

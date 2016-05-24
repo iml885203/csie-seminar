@@ -196,7 +196,7 @@ public class DepthSourceView : MonoBehaviour
                 
                 double avg = GetAvg(depthData, x, y, frameDesc.Width, frameDesc.Height);
                 
-                avg = avg * _DepthScale;
+                avg = avg * 1.0;
                 
                 _Vertices[smallIndex].z = (float)avg;
                 
@@ -205,7 +205,7 @@ public class DepthSourceView : MonoBehaviour
                 _UV[smallIndex] = new Vector2(colorSpacePoint.X / colorWidth, colorSpacePoint.Y / colorHeight);
             }
         }
-
+        
         //_Mesh.vertices = _Vertices;
         _Mesh.uv = _UV;
         _Mesh.triangles = _Triangles;
@@ -229,7 +229,7 @@ public class DepthSourceView : MonoBehaviour
                 
             }
         }
-
+        
         return sum / 16;
     }
 
