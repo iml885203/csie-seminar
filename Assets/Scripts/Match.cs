@@ -26,7 +26,7 @@ public class Match : MonoBehaviour {
     /*drawBlock*/
     public DrawBlock _drawBlock;
     private Mat blockMat;
-
+     
     //物體資訊
     int _clolrRange = 10;
     List<Scalar> _saveColor = new List<Scalar>(); 
@@ -60,6 +60,8 @@ public class Match : MonoBehaviour {
         
         _NewTowMat = _drawBlock.GetBlockMat();
         Mat BlackMat = new Mat(_drawBlock.MatchHeight, _drawBlock.MatchWidth, CvType.CV_8UC3);
+
+       // _NewDepthMat = DepthManager.GetData();
        // BlackMat.setTo(new Scalar(10, 10, 10));
         //_NewTowMat = getFeature(resizeMat, 196, 136, 214, 154, 94, 34);
         //morphOps(_NewTowMat);
@@ -288,7 +290,6 @@ public class Match : MonoBehaviour {
         average_R = (_getrgb_Mid[0] + _getrgb_Lift[0] + _getrgb_Right[0] + _getrgb_Top[0] + _getrgb_Bot[0])/5;
         average_G = (_getrgb_Mid[1] + _getrgb_Lift[1] + _getrgb_Right[1] + _getrgb_Top[1] + _getrgb_Bot[1])/5;
         average_B = (_getrgb_Mid[2] + _getrgb_Lift[2] + _getrgb_Right[2] + _getrgb_Top[2] + _getrgb_Bot[2])/5;
-
         
         return new Scalar((int)average_R, (int)average_G, (int)average_B);
     }
@@ -298,7 +299,6 @@ public class Match : MonoBehaviour {
         int ID = -1;
         for(int i =0;i < _saveColor.Count;i++){
            double[] _getrgb =_saveColor[i].val;
-           Debug.Log("FOR IN");
            Debug.Log(_getrgb[0] + "," + _getrgb[1] + ","+_getrgb[2]);
            if (_srcColor[0] < _getrgb[0] + _clolrRange &&
                _srcColor[0] > _getrgb[0] - _clolrRange &&
@@ -310,7 +310,7 @@ public class Match : MonoBehaviour {
                return i;
            }
         }
-        Debug.Log("FOR OUT");
+        Debug.Log("Create" + _saveColor.Count);
         _saveColor.Add(src);
         return _saveColor.Count;
     }
