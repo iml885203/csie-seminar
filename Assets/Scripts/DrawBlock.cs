@@ -40,8 +40,7 @@ public class DrawBlock : MonoBehaviour {
     Texture2D _matchOut100;
 
     //screen size to source size
-    private double _widthRate;
-    private double _heightRate;
+    private clickPositionTrans _positionTrans;
 
     public Mat GetBlockMat()
     {
@@ -60,8 +59,7 @@ public class DrawBlock : MonoBehaviour {
         _currentWidth = Screen.width;
         _currentHeight = Screen.height;
         //螢幕大小與來源比例初始化
-        _widthRate = (double)_inputWidth / _currentWidth;
-        _heightRate = (double)_inputHeight / _currentHeight;
+        _positionTrans = new clickPositionTrans(_currentWidth, _currentHeight, _inputWidth, _inputHeight);
         
         //text size
         _currentWidth = _inputWidth;
@@ -109,7 +107,8 @@ public class DrawBlock : MonoBehaviour {
 
         if (Input.GetMouseButton(1))
         {
-            double[] getPix = _screenMat.get((int)y, (int)x);
+            Point newPos = _positionTrans.TransToScreen2Pos(new Point(x, y));
+            double[] getPix = _sourceMat.get((int)newPos.y, (int)newPos.x);
             Debug.Log(getPix[0] + ","  + getPix[1] + "," + getPix[2]);
         }
         else
@@ -117,8 +116,8 @@ public class DrawBlock : MonoBehaviour {
         
 
             //存入list
-            _pointOne = new Point(x*_widthRate, y*_heightRate);
-            _pointTwo = new Point(x * _widthRate, y * _heightRate);
+            _pointOne = _positionTrans.TransToScreen2Pos(new Point(x, y));
+            _pointTwo = _positionTrans.TransToScreen2Pos(new Point(x, y));
 
 
             Debug.Log(Input.mousePosition.x.ToString() + " " + Input.mousePosition.y.ToString());
@@ -185,8 +184,7 @@ public class DrawBlock : MonoBehaviour {
         float x = Input.mousePosition.x;
         float y = Screen.height - Input.mousePosition.y;
         //存入list
-        _pointTwo.x = x * _widthRate;
-        _pointTwo.y = y * _heightRate;
+        _pointTwo = _positionTrans.TransToScreen2Pos(new Point(x, y));
 
         //Debug.Log(Input.mousePosition.x.ToString() + " " + Input.mousePosition.y.ToString());
     }
