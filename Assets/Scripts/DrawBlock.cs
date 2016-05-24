@@ -62,7 +62,7 @@ public class DrawBlock : MonoBehaviour {
         //螢幕大小與來源比例初始化
         _widthRate = (double)_inputWidth / _currentWidth;
         _heightRate = (double)_inputHeight / _currentHeight;
-        Debug.Log(_widthRate + "x" + _heightRate);
+        
         //text size
         _currentWidth = _inputWidth;
         _currentHeight = _inputHeight;
