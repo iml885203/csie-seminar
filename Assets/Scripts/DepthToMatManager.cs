@@ -25,7 +25,7 @@ public class DepthToMatManager : MonoBehaviour
 
 
     //放深度mat
-    Mat _Depth = new Mat();
+    Mat _Depth;
 
     public Mat getDepthMat()
     {
@@ -46,12 +46,16 @@ public class DepthToMatManager : MonoBehaviour
         {
             _Mapper = _Sensor.CoordinateMapper;
             var frameDesc = _Sensor.DepthFrameSource.FrameDescription;
-
+            int newWidth = frameDesc.Width / _DownsampleSize;
+            int newHeight = frameDesc.Height / _DownsampleSize;
+            _Depth = new Mat(newHeight, newWidth, CvType.CV_8UC1);
+            _Vertices = new Vector3[newWidth * newHeight];
             // Downsample to lower resolution
             if (!_Sensor.IsOpen)
             {
                 _Sensor.Open();
             }
+
         }
 	}
 	
@@ -66,7 +70,10 @@ public class DepthToMatManager : MonoBehaviour
         {
             return;
         }
-
+        if (_DepthManager == null)
+        {
+            return;
+        }
         RefreshData(_MultiManager.GetDepthData(),
                     _MultiManager.ColorWidth,
                     _MultiManager.ColorHeight);
@@ -74,13 +81,14 @@ public class DepthToMatManager : MonoBehaviour
 	}
     private void RefreshData(ushort[] depthData, int colorWidth, int colorHeight)
     {
+
         var frameDesc = _Sensor.DepthFrameSource.FrameDescription;
 
         ColorSpacePoint[] colorSpace = new ColorSpacePoint[depthData.Length];
         _Mapper.MapDepthFrameToColorSpace(depthData, colorSpace);
 
         //設定存放depth的Mat大小
-        _Depth = new Mat(frameDesc.Height, frameDesc.Width,CvType.CV_8UC1);
+        _Depth = new Mat(frameDesc.Height / _DownsampleSize, frameDesc.Width/_DownsampleSize, CvType.CV_8UC1);
 
         for (int y = 0; y < frameDesc.Height; y += _DownsampleSize)
         {
@@ -95,12 +103,13 @@ public class DepthToMatManager : MonoBehaviour
                 avg = avg * _DepthScale;
 
                 _Vertices[smallIndex].z = (float)avg;
-                _Depth.put(x, y, avg);
+                _Depth.put(y / _DownsampleSize, frameDesc.Width / _DownsampleSize - x / _DownsampleSize, avg);
                 // Update UV mapping with CDRP
                 //var colorSpacePoint = colorSpace[(y * frameDesc.Width) + x];
                // _UV[smallIndex] = new Vector2(colorSpacePoint.X / colorWidth, colorSpacePoint.Y / colorHeight);
             }
         }
+        Debug.Log(_Vertices[0].z);
     }
     private double GetAvg(ushort[] depthData, int x, int y, int width, int height)
     {
@@ -111,9 +120,15 @@ public class DepthToMatManager : MonoBehaviour
             for (int x1 = x; x1 < x + _DownsampleSize; x1++)
             {
                 int fullIndex = (y1 * width) + x1;
-                sum += depthData[fullIndex];
+
+                if (depthData[fullIndex] == 0)
+                    sum += 0;
+                else
+                    sum += depthData[fullIndex];
             }
         }
-        return sum / _DownsampleSize * _DownsampleSize;
+        sum = sum / (_DownsampleSize * _DownsampleSize);
+        //if(sum <= 30.0)return 0;
+        return sum / 30 * 255*3;
     }
 }
