@@ -238,6 +238,7 @@ public class Match : MonoBehaviour {
 
 
         int numObjects = contours.Count;
+        List<Scalar> clickRGB = new List<Scalar>();
         for (int i = 0; i < numObjects; i++)
         {
             Imgproc.drawContours(temp, contours, i, new Scalar(255, 0, 0),2);
@@ -255,20 +256,34 @@ public class Match : MonoBehaviour {
                     ConsistP.Add(new Point(R0.x, R0.y));
                     ConsistP.Add(new Point(R0.x + R0.width, R0.y + R0.height));
                     //double[] _getrgb =new double[3];
-                    double[] _getrgb = RGB.get((int)R0.x + R0.width / 2,(int)R0.y + R0.height / 2);
-                    //Debug.Log("size:" + _getrgb.Length);
-                    //Debug.Log("RGB = " + _getrgb[0] + "," + _getrgb[1] + "," + _getrgb[2]);
+                    clickRGB.Add(clickcolor(RGB, R0));
                 }
             }
 
             for (int i = 0; i < ConsistP.Count; i += 2)
             {
                 Imgproc.rectangle(temp, ConsistP[i], ConsistP[i + 1], new Scalar(255, 0, 255), 1);
-                //Imgproc.putText(temp, "ID = " + i, ConsistP[i + 1], 1, 1, new Scalar(255, 0, 255), 1);
+                Imgproc.putText(temp, clickRGB[i].val.ToString(), ConsistP[i + 1], 1, 1, new Scalar(255, 0, 255), 1);
             }
             ConsistP.Clear();
         }
         temp.copyTo(cameraFeed);
         Imgproc.warpAffine(cameraFeed, cameraFeed, cof_mat, cameraFeed.size());
+    }
+    Scalar clickcolor(Mat src, OpenCVForUnity.Rect R)
+    {
+        double average_R = 0, average_G = 0, average_B = 0;
+        double[] _getrgb_Mid = src.get((int)R.y + R.height / 2, (int)R.x + R.width / 2);
+        double[] _getrgb_Lift = src.get((int)R.y + R.height / 2, (int)R.x + R.width / 4);
+        double[] _getrgb_Right = src.get((int)R.y + R.height / 2, (int)R.x + R.width / 4 * 3);
+        double[] _getrgb_Top = src.get((int)R.y + R.height / 4, (int)R.x + R.width / 2);
+        double[] _getrgb_Bot = src.get((int)R.y + R.height / 4 * 3, (int)R.x + R.width / 2);
+
+        average_R = _getrgb_Mid[0] + _getrgb_Lift[0] + _getrgb_Right[0] + _getrgb_Top[0] + _getrgb_Bot[0];
+        average_G = _getrgb_Mid[1] + _getrgb_Lift[1] + _getrgb_Right[1] + _getrgb_Top[1] + _getrgb_Bot[1];
+        average_B = _getrgb_Mid[2] + _getrgb_Lift[2] + _getrgb_Right[2] + _getrgb_Top[2] + _getrgb_Bot[2];
+
+        Debug.Log("RGB = " + average_R + "," + average_G + "," + average_B);
+        return new Scalar(average_R, average_G, average_B);
     }
 }
