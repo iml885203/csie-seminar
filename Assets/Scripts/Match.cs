@@ -268,7 +268,7 @@ public class Match : MonoBehaviour {
             {
                 Imgproc.rectangle(temp, ConsistP[i], ConsistP[i + 1], new Scalar(255, 0, 255), 1);
                 int ID = inRange(clickRGB[i / 2]);
-                Imgproc.putText(temp, ID.ToString(), ConsistP[i], 1, 1, new Scalar(255, 0, 255), 1);
+                Imgproc.putText(temp, "ID=" + ID.ToString(), ConsistP[i], 1, 1, new Scalar(255, 0, 255), 1);
                 
             }
             ConsistP.Clear();
