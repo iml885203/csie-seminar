@@ -299,7 +299,7 @@ public class Match : MonoBehaviour {
         int ID = -1;
         for(int i =0;i < _saveColor.Count;i++){
            double[] _getrgb =_saveColor[i].val;
-           Debug.Log(_getrgb[0] + "," + _getrgb[1] + ","+_getrgb[2]);
+          // Debug.Log(_getrgb[0] + "," + _getrgb[1] + ","+_getrgb[2]);
            if (_srcColor[0] < _getrgb[0] + _clolrRange &&
                _srcColor[0] > _getrgb[0] - _clolrRange &&
                _srcColor[1] < _getrgb[1] + _clolrRange &&

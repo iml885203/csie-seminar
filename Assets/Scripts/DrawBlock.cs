@@ -109,7 +109,7 @@ public class DrawBlock : MonoBehaviour {
 
         if (Input.GetMouseButton(1))
         {
-            double[] getPix = _screenMat.get((int)y, (int)x);
+            double[] getPix = _sourceMat.get((int)(y * _heightRate), (int)(x * _widthRate));
             Debug.Log(getPix[0] + ","  + getPix[1] + "," + getPix[2]);
         }
         else
