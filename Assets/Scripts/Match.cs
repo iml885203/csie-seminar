@@ -226,6 +226,8 @@ public class Match : MonoBehaviour {
         Mat cof_mat = Imgproc.getRotationMatrix2D(cof_center, 180, 1.0);
         Imgproc.warpAffine(cameraFeed, cameraFeed, cof_mat, cameraFeed.size());
 
+        Mat src = new Mat();
+        RGB.copyTo(src);
 
         List<ColorObject> colorObjects = new List<ColorObject>();
         Mat temp = new Mat();
@@ -239,7 +241,7 @@ public class Match : MonoBehaviour {
         morphOps(temp);
        // cameraFeed = RGB;
        // RGB.copyTo(cameraFeed);
-      //  Debug.Log("Test");
+       // Debug.Log("Test");
         Imgproc.findContours(temp, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);
 
 
@@ -256,13 +258,13 @@ public class Match : MonoBehaviour {
             {
 
                 OpenCVForUnity.Rect R0 = Imgproc.boundingRect(contours[index]);
-
-                if (R0.height > 10 && R0.width > 10)
+                
+                if (R0.height > 20 && R0.width > 20)
                 {
                     ConsistP.Add(new Point(R0.x, R0.y));
                     ConsistP.Add(new Point(R0.x + R0.width, R0.y + R0.height));
                     clickRGB.Add(clickcolor(RGB, R0));
-                    
+                    Debug.Log(matchDice(src, ConsistP[ConsistP.Count - 1], ConsistP[ConsistP.Count - 2], R0,temp));
                 }
             }
 
@@ -313,5 +315,49 @@ public class Match : MonoBehaviour {
         Debug.Log("Create" + _saveColor.Count);
         _saveColor.Add(src);
         return _saveColor.Count;
+    }
+    int matchDice(Mat src, Point Point_1, Point Point_2,OpenCVForUnity.Rect rect,Mat temp)
+    {
+        int DiceNum = 0;
+        Point pt;
+        Mat subRGB = new Mat(src, rect);
+        //--FindCircleProcess--//
+        Mat grayMat = new Mat();
+        Imgproc.cvtColor(subRGB, grayMat, Imgproc.COLOR_RGB2GRAY);
+
+        Imgproc.Canny(grayMat, grayMat, 10, 150);
+
+        Mat circles = new Mat();
+        int minRadius = 10;
+        int maxRadius = 50;
+
+        // Apply the Hough Transform to find the circles
+
+        Imgproc.HoughCircles(grayMat, circles, Imgproc.CV_HOUGH_GRADIENT, 2, grayMat.rows() / 10, 200, 60, 10, 40);
+        
+
+        Debug.Log("circles toString " + circles.ToString());
+        Debug.Log("circles dump" + circles.dump());
+
+        if (circles.cols() > 0)
+            for (int x = 0; x < Math.Min(circles.cols(), 6); x++)
+            {
+                double[] vCircle = circles.get(0, x);
+
+                if (vCircle == null)
+                    break;
+
+                pt = new Point(Math.Round(vCircle[0]), Math.Round(vCircle[1]));
+                int radius = (int)Math.Round(vCircle[2]);
+                // draw the find circle center
+                Debug.Log("find circle x =" + pt.x + ", y =" + pt.y);
+                Imgproc.circle(temp, pt, 3, new Scalar(255, 255, 255), -1, 8, 0);
+                // draw the found circle  
+                Imgproc.circle(temp, pt, radius, new Scalar(255, 255, 255), 3, 8, 0);
+                DiceNum++;
+            }
+        //int[] face = { Core.FONT_HERSHEY_SIMPLEX };
+        //Imgproc.putText(temp, DiceNum.ToString(), new Point(0, 50), face[0], 1.2, new Scalar(255, 255, 255), 2, Imgproc.LINE_AA, false);
+        return DiceNum;
     }
 }
