@@ -26,7 +26,7 @@ public class DepthToMatView : MonoBehaviour {
         //Debug.Log("W = " + _depthToMat.getWidth() + " H = " + _depthToMat.getheight());
         Mat NewMat = new Mat(_depthToMat.getheight(), _depthToMat.getWidth(), CvType.CV_8UC1);
         NewMat = _depthToMat.getDepthMat();
-        Imgproc.Canny(NewMat, NewMat,50,150);
+        Imgproc.Canny(NewMat, NewMat,0,150);
         //float x = Input.mousePosition.x;
         //float y = Screen.height - Input.mousePosition.y;
        // Point newPos = _positionTrans.TransToScreen2Pos(new Point(x, y));
