@@ -109,7 +109,6 @@ public class DepthToMatManager : MonoBehaviour
                // _UV[smallIndex] = new Vector2(colorSpacePoint.X / colorWidth, colorSpacePoint.Y / colorHeight);
             }
         }
-        Debug.Log(_Vertices[0].z);
     }
     private double GetAvg(ushort[] depthData, int x, int y, int width, int height)
     {
@@ -129,6 +128,6 @@ public class DepthToMatManager : MonoBehaviour
         }
         sum = sum / (_DownsampleSize * _DownsampleSize);
         //if(sum <= 30.0)return 0;
-        return sum / 30 * 255*3;
+        return sum / 30 * 255;
     }
 }
