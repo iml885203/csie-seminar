@@ -2,8 +2,7 @@
 using System.Collections;
 using Windows.Kinect;
 using OpenCVForUnity;
-
-
+using UnityEngine.UI;
 
 public class DepthToMatManager : MonoBehaviour
 {
@@ -22,6 +21,10 @@ public class DepthToMatManager : MonoBehaviour
     public MultiSourceManager _MultiManager;
     public ColorSourceManager _ColorManager;
     public  DepthSourceManager _DepthManager;
+
+    //二質化index
+    public Slider _binaryIndex;
+    public Text _kinectDistance;
 
 
     //放深度mat
@@ -86,7 +89,35 @@ public class DepthToMatManager : MonoBehaviour
 
         ColorSpacePoint[] colorSpace = new ColorSpacePoint[depthData.Length];
         _Mapper.MapDepthFrameToColorSpace(depthData, colorSpace);
-
+        Hashtable depthCount = new Hashtable();
+        int maxCount = 0;
+        int maxCountKey = -1;
+        for (int i = 0; i < depthData.Length; i++)
+        {
+            if (depthCount.ContainsKey(depthData[i]))
+            {
+                depthCount[depthData[i]] = (int)depthCount[depthData[i]] + 1;
+                if ((int)depthCount[depthData[i]] > maxCount)
+                {
+                    maxCount = (int)depthCount[depthData[i]];
+                    maxCountKey = depthData[i];
+                }
+            }
+            else
+            {
+                depthCount.Add(depthData[i], 1);
+            }
+        }
+        
+        //foreach (ushort key in depthCount.Keys)
+        //{
+        //    if((int)depthCount[key] > maxCount)
+        //    {
+        //        maxCount = (int)depthCount[key];
+        //        maxCountKey = key;
+        //    }
+        //}
+        //Debug.Log(maxCountKey);
         //設定存放depth的Mat大小
         _Depth = new Mat(frameDesc.Height / _DownsampleSize, frameDesc.Width/_DownsampleSize, CvType.CV_8UC1);
 
@@ -100,7 +131,15 @@ public class DepthToMatManager : MonoBehaviour
 
                 double avg = GetAvg(depthData, x, y, frameDesc.Width, frameDesc.Height);
 
-                avg = avg * _DepthScale;
+                //avg = avg * _DepthScale;
+                
+                if(indexX == 64 && indexY == 53 && _kinectDistance !=null)
+                {
+                    _kinectDistance.text = "distance: " + avg;
+                }
+                //距離1000mm正負200mm
+                avg = (avg > (maxCountKey + _binaryIndex.value)) ? 0 : 255;
+                //avg = (avg - 800) / 3200 * 255;
 
                 _Vertices[smallIndex].z = (float)avg;
                 _Depth.put(y / _DownsampleSize, frameDesc.Width / _DownsampleSize - x / _DownsampleSize, avg);
@@ -109,6 +148,8 @@ public class DepthToMatManager : MonoBehaviour
                // _UV[smallIndex] = new Vector2(colorSpacePoint.X / colorWidth, colorSpacePoint.Y / colorHeight);
             }
         }
+        
+        
     }
     private double GetAvg(ushort[] depthData, int x, int y, int width, int height)
     {
@@ -128,6 +169,6 @@ public class DepthToMatManager : MonoBehaviour
         }
         sum = sum / (_DownsampleSize * _DownsampleSize);
         //if(sum <= 30.0)return 0;
-        return sum / 30 * 255;
+        return sum;
     }
 }

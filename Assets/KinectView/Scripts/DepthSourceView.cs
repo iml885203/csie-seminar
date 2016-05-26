@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Windows.Kinect;
+using System.Collections.Generic;
 
 public enum DepthViewMode
 {
@@ -185,7 +186,7 @@ public class DepthSourceView : MonoBehaviour
         
         ColorSpacePoint[] colorSpace = new ColorSpacePoint[depthData.Length];
         _Mapper.MapDepthFrameToColorSpace(depthData, colorSpace);
-        
+
         for (int y = 0; y < frameDesc.Height; y += _DownsampleSize)
         {
             for (int x = 0; x < frameDesc.Width; x += _DownsampleSize)
@@ -196,7 +197,7 @@ public class DepthSourceView : MonoBehaviour
                 
                 double avg = GetAvg(depthData, x, y, frameDesc.Width, frameDesc.Height);
                 
-                avg = avg * 1.0;
+                avg = avg * _DepthScale;
                 
                 _Vertices[smallIndex].z = (float)avg;
                 

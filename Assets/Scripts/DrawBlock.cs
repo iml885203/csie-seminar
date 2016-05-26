@@ -158,7 +158,7 @@ public class DrawBlock : MonoBehaviour {
         MatchHeight = MaxY - minY;
 
         _matchImage = new Mat(MatchWidth, MatchHeight,CvType.CV_8UC3);
-
+        
         //做一個新的Mat存放切割後的Mat
         Mat subMat = new Mat();
         subMat = _sourceMat.submat(minY, MaxY, minX, MaxX);
