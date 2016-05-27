@@ -14,7 +14,7 @@ public class DepthToMatManager : MonoBehaviour
     private int[] _Triangles;
 
     // Only works at 4 right now
-    private const int _DownsampleSize = 4;
+    private const int _DownsampleSize = 2;
     private const double _DepthScale = 0.02f;
     private const int _Speed = 50;
 
@@ -30,7 +30,7 @@ public class DepthToMatManager : MonoBehaviour
     bool _flagDeskDepth = false;
 
     //放深度mat
-    Mat _Depth;
+    private Mat _Depth;
 
     public Mat getDepthMat()
     {
@@ -43,7 +43,11 @@ public class DepthToMatManager : MonoBehaviour
     public int getheight()
     {
         return _Depth.height();
-    } 
+    }
+    public int getDownsampleSize()
+    {
+        return _DownsampleSize;
+    }
 	// Use this for initialization
 	void Start () {
         _Sensor = KinectSensor.GetDefault();
@@ -112,7 +116,7 @@ public class DepthToMatManager : MonoBehaviour
                 }
             }
             _flagDeskDepth = false;
-            Debug.Log("Max" + maxCountKey);
+            //Debug.Log("Max" + maxCountKey);
         }
         //foreach (ushort key in depthCount.Keys)
         //{

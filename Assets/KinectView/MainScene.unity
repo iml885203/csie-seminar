@@ -2984,7 +2984,10 @@ MonoBehaviour:
   _blockImg: {fileID: 756525789}
   _inputWidth: 0
   _inputHeight: 0
+  _inputDepthWidth: 0
+  _inputDepthHeight: 0
   ColorSourceManager: {fileID: 679549943}
+  DepthToMatManager: {fileID: 439845584}
 --- !u!4 &1977478263
 Transform:
   m_ObjectHideFlags: 0

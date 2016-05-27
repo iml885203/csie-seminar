@@ -266,7 +266,7 @@ public class Match : MonoBehaviour {
                     ConsistP.Add(new Point(R0.x, R0.y));
                     ConsistP.Add(new Point(R0.x + R0.width, R0.y + R0.height));
                     clickRGB.Add(clickcolor(RGB, R0));
-                    Debug.Log(matchDice(src, ConsistP[ConsistP.Count - 1], ConsistP[ConsistP.Count - 2], R0, temp));
+                    //Debug.Log(matchDice(src, ConsistP[ConsistP.Count - 1], ConsistP[ConsistP.Count - 2], R0, temp));
                 }
             }
 
@@ -339,8 +339,8 @@ public class Match : MonoBehaviour {
         //Imgproc.HoughCircles(grayMat, circles, Imgproc.CV_HOUGH_GRADIENT, 2, grayMat.rows() / 10, 200, 60, 10, 40); //16:00
         Imgproc.HoughCircles(grayMat, circles, Imgproc.CV_HOUGH_GRADIENT, 2, grayMat.rows() / 10, 100, 60, 10, 40);
 
-        Debug.Log("circles toString " + circles.ToString());
-        Debug.Log("circles dump" + circles.dump());
+       // Debug.Log("circles toString " + circles.ToString());
+       // Debug.Log("circles dump" + circles.dump());
 
         if (circles.cols() > 0)//找到圓的個數
             for (int x = 0; x < Math.Min(circles.cols(), 6); x++)
@@ -353,7 +353,7 @@ public class Match : MonoBehaviour {
                 pt = new Point(Math.Round(vCircle[0]), Math.Round(vCircle[1]));
                 int radius = (int)Math.Round(vCircle[2]);
                 // draw the find circle center
-                Debug.Log("find circle x =" + pt.x + ", y =" + pt.y);
+                //Debug.Log("find circle x =" + pt.x + ", y =" + pt.y);
                 Imgproc.circle(temp, pt, 3, new Scalar(255, 255, 255), -1, 8, 0);
                 // draw the found circle  
                 Imgproc.circle(temp, pt, radius, new Scalar(255, 255, 255), 3, 8, 0);
