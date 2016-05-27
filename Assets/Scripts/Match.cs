@@ -119,6 +119,8 @@ public class Match : MonoBehaviour {
 
         Imgproc.dilate(thresh, thresh, dilateElement);
         Imgproc.dilate(thresh, thresh, dilateElement);
+        //Imgproc.erode(thresh, thresh, erodeElement);
+        //Imgproc.erode(thresh, thresh, erodeElement);
     }
     List<Point> getMaxMin(Mat _inImage)
     {
@@ -237,12 +239,12 @@ public class Match : MonoBehaviour {
         List<MatOfPoint> contours = new List<MatOfPoint>();
 
         Imgproc.blur(RGB, RGB, new Size(3, 3));
-        Imgproc.Canny(RGB, temp, 50, 150);
+        Imgproc.Canny(RGB, temp, 50,150);
         morphOps(temp);
-       // cameraFeed = RGB;
-       // RGB.copyTo(cameraFeed);
-       // Debug.Log("Test");
-        Imgproc.findContours(temp, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);
+        //cameraFeed = RGB;
+        //RGB.copyTo(cameraFeed);
+        //Debug.Log("Test");
+        Imgproc.findContours(temp, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);//Imgproc.RETR_EXTERNAL那邊0-3都可以
 
 
         int numObjects = contours.Count;
@@ -264,7 +266,7 @@ public class Match : MonoBehaviour {
                     ConsistP.Add(new Point(R0.x, R0.y));
                     ConsistP.Add(new Point(R0.x + R0.width, R0.y + R0.height));
                     clickRGB.Add(clickcolor(RGB, R0));
-                    Debug.Log(matchDice(src, ConsistP[ConsistP.Count - 1], ConsistP[ConsistP.Count - 2], R0,temp));
+                    Debug.Log(matchDice(src, ConsistP[ConsistP.Count - 1], ConsistP[ConsistP.Count - 2], R0, temp));
                 }
             }
 
@@ -325,7 +327,8 @@ public class Match : MonoBehaviour {
         Mat grayMat = new Mat();
         Imgproc.cvtColor(subRGB, grayMat, Imgproc.COLOR_RGB2GRAY);
 
-        Imgproc.Canny(grayMat, grayMat, 10, 150);
+        //morphOps(grayMat);
+        //Imgproc.Canny(grayMat, grayMat, 20, 40);
 
         Mat circles = new Mat();
         int minRadius = 10;
@@ -333,13 +336,13 @@ public class Match : MonoBehaviour {
 
         // Apply the Hough Transform to find the circles
 
-        Imgproc.HoughCircles(grayMat, circles, Imgproc.CV_HOUGH_GRADIENT, 2, grayMat.rows() / 10, 200, 60, 10, 40);
-        
+        //Imgproc.HoughCircles(grayMat, circles, Imgproc.CV_HOUGH_GRADIENT, 2, grayMat.rows() / 10, 200, 60, 10, 40); //16:00
+        Imgproc.HoughCircles(grayMat, circles, Imgproc.CV_HOUGH_GRADIENT, 2, grayMat.rows() / 10, 100, 60, 10, 40);
 
         Debug.Log("circles toString " + circles.ToString());
         Debug.Log("circles dump" + circles.dump());
 
-        if (circles.cols() > 0)
+        if (circles.cols() > 0)//找到圓的個數
             for (int x = 0; x < Math.Min(circles.cols(), 6); x++)
             {
                 double[] vCircle = circles.get(0, x);
