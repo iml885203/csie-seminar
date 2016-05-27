@@ -7,6 +7,7 @@ public class DrawBlock : MonoBehaviour {
 
     public RawImage _inoutImg;
     public RawImage _blockImg;
+    public RawImage _blockDepthImg;
     private Mat _screenMat;
     public Mat _sourceMat;
     public Mat _sourceMatDepth;
@@ -42,6 +43,7 @@ public class DrawBlock : MonoBehaviour {
 
     //output to texture
     Texture2D _souceOut;
+    Texture2D _matchDepthOut100;
     Texture2D _matchOut100;
 
     //screen size to source size
@@ -97,6 +99,7 @@ public class DrawBlock : MonoBehaviour {
         _matchDepthImage = new Mat(_inputDepthHeight, _inputDepthWidth, CvType.CV_8UC1);
         _souceOut = new Texture2D(_inputWidth, _inputHeight);
         _matchOut100 = new Texture2D(100, 100);
+        _matchDepthOut100 = new Texture2D(100, 100);
     }
 	
 	// Update is called once per frame
@@ -197,7 +200,7 @@ public class DrawBlock : MonoBehaviour {
             (int)((double)MaxY / _rateHeightRGBDepth),
             (int)((double)minX / _rateWidthRGBDepth),
             (int)((double)MaxX / _rateWidthRGBDepth));
-
+        //反轉化面
         Point src_center = new Point(_matchImage.cols() / 2.0, _matchImage.rows() / 2.0);
         Mat rot_mat = Imgproc.getRotationMatrix2D(src_center, 180, 1.0);
         Imgproc.warpAffine(_matchImage, _matchImage, rot_mat, _matchImage.size());
@@ -210,9 +213,12 @@ public class DrawBlock : MonoBehaviour {
         Mat _OutMatchDepthMat = new Mat(100, 100, CvType.CV_8UC1);
         Imgproc.resize(_matchDepthImage, _OutMatchDepthMat, _OutMatchDepthMat.size());
 
-        //擷取輸出(目前先改成顯示深度的切割結果)
-        Utils.matToTexture2D(_OutMatchDepthMat, _matchOut100);
+        //擷取輸出
+        Utils.matToTexture2D(_OutMatchMat, _matchOut100);
         _blockImg.texture = _matchOut100;
+        //擷取輸出(顯示深度的切割結果)
+        Utils.matToTexture2D(_OutMatchDepthMat, _matchDepthOut100);
+        _blockDepthImg.texture = _matchDepthOut100;
     }
     public void TestPointmove()//滑鼠放開
     {
