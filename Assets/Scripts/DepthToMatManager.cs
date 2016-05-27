@@ -26,6 +26,8 @@ public class DepthToMatManager : MonoBehaviour
     public Slider _binaryIndex;
     public Text _kinectDistance;
 
+    //設定桌面深度旗標
+    bool _flagDeskDepth = false;
 
     //放深度mat
     Mat _Depth;
@@ -92,23 +94,26 @@ public class DepthToMatManager : MonoBehaviour
         Hashtable depthCount = new Hashtable();
         int maxCount = 0;
         int maxCountKey = -1;
-        for (int i = 0; i < depthData.Length; i++)
-        {
-            if (depthCount.ContainsKey(depthData[i]))
+        if(_flagDeskDepth){
+            for (int i = 0; i < depthData.Length; i++)
             {
-                depthCount[depthData[i]] = (int)depthCount[depthData[i]] + 1;
-                if ((int)depthCount[depthData[i]] > maxCount)
+                if (depthCount.ContainsKey(depthData[i]))
                 {
-                    maxCount = (int)depthCount[depthData[i]];
-                    maxCountKey = depthData[i];
+                    if ((int)depthData[i] !=0) depthCount[depthData[i]] = (int)depthCount[depthData[i]] + 1;
+                    if ((int)depthCount[depthData[i]] > maxCount)
+                    {
+                        maxCount = (int)depthCount[depthData[i]];
+                        maxCountKey = depthData[i];
+                    }
+                }
+                else
+                {
+                    depthCount.Add(depthData[i], 1);
                 }
             }
-            else
-            {
-                depthCount.Add(depthData[i], 1);
-            }
+            _flagDeskDepth = false;
+            Debug.Log("Max" + maxCountKey);
         }
-        
         //foreach (ushort key in depthCount.Keys)
         //{
         //    if((int)depthCount[key] > maxCount)
@@ -170,5 +175,10 @@ public class DepthToMatManager : MonoBehaviour
         sum = sum / (_DownsampleSize * _DownsampleSize);
         //if(sum <= 30.0)return 0;
         return sum;
+    }
+    public void InitDeskDepth()
+    {
+        _flagDeskDepth = true;
+        return;
     }
 }
