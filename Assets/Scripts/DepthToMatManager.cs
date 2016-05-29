@@ -20,7 +20,7 @@ public class DepthToMatManager : MonoBehaviour
 
     public MultiSourceManager _MultiManager;
     public ColorSourceManager _ColorManager;
-    public  DepthSourceManager _DepthManager;
+    public DepthSourceManager _DepthManager;
 
     //二質化index
     public Slider _binaryIndex;
