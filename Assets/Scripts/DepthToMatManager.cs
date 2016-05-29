@@ -32,6 +32,8 @@ public class DepthToMatManager : MonoBehaviour
     //放深度mat
     private Mat _Depth;
 
+    int _maxCountKey = -1;
+
     public Mat getDepthMat()
     {
         return _Depth;
@@ -96,9 +98,8 @@ public class DepthToMatManager : MonoBehaviour
         ColorSpacePoint[] colorSpace = new ColorSpacePoint[depthData.Length];
         _Mapper.MapDepthFrameToColorSpace(depthData, colorSpace);
         Hashtable depthCount = new Hashtable();
-        int maxCount = 0;
-        int maxCountKey = -1;
         if(_flagDeskDepth){
+            int maxCount = 0;
             for (int i = 0; i < depthData.Length; i++)
             {
                 if (depthCount.ContainsKey(depthData[i]))
@@ -107,7 +108,7 @@ public class DepthToMatManager : MonoBehaviour
                     if ((int)depthCount[depthData[i]] > maxCount)
                     {
                         maxCount = (int)depthCount[depthData[i]];
-                        maxCountKey = depthData[i];
+                        _maxCountKey = depthData[i];
                     }
                 }
                 else
@@ -116,6 +117,7 @@ public class DepthToMatManager : MonoBehaviour
                 }
             }
             _flagDeskDepth = false;
+            Debug.Log(_maxCountKey);
             //Debug.Log("Max" + maxCountKey);
         }
         //foreach (ushort key in depthCount.Keys)
@@ -147,7 +149,8 @@ public class DepthToMatManager : MonoBehaviour
                     _kinectDistance.text = "distance: " + avg;
                 }
                 //距離1000mm正負200mm
-                avg = (avg > (maxCountKey + _binaryIndex.value)) ? 0 : 255;
+                //avg = (avg > (845)) ? 0 : 255;
+                avg = (avg > (double)(_maxCountKey + _binaryIndex.value)) ? 0 : 255;
                 //avg = (avg - 800) / 3200 * 255;
 
                 _Vertices[smallIndex].z = (float)avg;
