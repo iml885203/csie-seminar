@@ -193,7 +193,7 @@ public class Match : MonoBehaviour {
         List<Point> ConsistP = new List<Point>();
         List<MatOfPoint> contours = new List<MatOfPoint>();
         //find contours of filtered image using openCV findContours function
-        Imgproc.findContours(temp, contours, hierarchy, Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_NONE);
+        Imgproc.findContours(temp, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);
         int numObjects = hierarchy.rows();
         if (numObjects > 0)
         {
@@ -245,28 +245,32 @@ public class Match : MonoBehaviour {
         //RGB.copyTo(cameraFeed);
         //Debug.Log("Test");
         Imgproc.findContours(temp, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);//Imgproc.RETR_EXTERNAL那邊0-3都可以
-
-
+        
         int numObjects = contours.Count;
         List<Scalar> clickRGB = new List<Scalar>();
         for (int i = 0; i < numObjects; i++)
         {
-            Imgproc.drawContours(temp, contours, i, new Scalar(255, 0, 0),2);
+            Imgproc.drawContours(temp, contours, i, new Scalar(255, 255, 255),1);
         }
-        double[] GetRGB  = new double[10];
+        double[] GetRGB = new double[10];
         if (numObjects > 0)
         {
             for (int index = 0; index < numObjects; index++)
             {
 
                 OpenCVForUnity.Rect R0 = Imgproc.boundingRect(contours[index]);
-                
+
                 if (R0.height > 20 && R0.width > 20)
                 {
                     ConsistP.Add(new Point(R0.x, R0.y));
                     ConsistP.Add(new Point(R0.x + R0.width, R0.y + R0.height));
                     clickRGB.Add(clickcolor(RGB, R0));
-                    //Debug.Log(matchDice(src, ConsistP[ConsistP.Count - 1], ConsistP[ConsistP.Count - 2], R0, temp));
+                    int diceCount = matchDice(src, R0, temp);
+                    diceCount = (diceCount - 2) / 2;
+                    Debug.Log("dice count = " + diceCount);
+                    //Mat bestLabel = new Mat();
+                    //OpenCVForUnity.Core.kmeans(temp, 6, bestLabel, new TermCriteria(3,10, 1.0),1,OpenCVForUnity.Core.KMEANS_RANDOM_CENTERS);
+                    //bestLabel.copyTo(temp);
                 }
             }
 
@@ -275,7 +279,7 @@ public class Match : MonoBehaviour {
                 Imgproc.rectangle(temp, ConsistP[i], ConsistP[i + 1], new Scalar(255, 0, 255), 1);
                 int ID = inRange(clickRGB[i / 2]);
                 Imgproc.putText(temp, "ID=" + ID.ToString(), ConsistP[i], 1, 1, new Scalar(255, 0, 255), 1);
-                
+
             }
             ConsistP.Clear();
         }
@@ -318,10 +322,10 @@ public class Match : MonoBehaviour {
         _saveColor.Add(src);
         return _saveColor.Count;
     }
-    int matchDice(Mat src, Point Point_1, Point Point_2,OpenCVForUnity.Rect rect,Mat temp)
+    int matchDice(Mat src,OpenCVForUnity.Rect rect,Mat temp)//src原圖,point1.2是contour左上右下點,rect是框選區,temp是
     {
-        int DiceNum = 0;
-        Point pt;
+        //int DiceNum = 0;
+        //Point pt;
         Mat subRGB = new Mat(src, rect);
         //--FindCircleProcess--//
         Mat grayMat = new Mat();
@@ -331,18 +335,31 @@ public class Match : MonoBehaviour {
         //Imgproc.Canny(grayMat, grayMat, 20, 40);
 
         Mat circles = new Mat();
-        int minRadius = 10;
-        int maxRadius = 50;
+        //int minRadius = 10;
+        //int maxRadius = 50;
 
         // Apply the Hough Transform to find the circles
 
         //Imgproc.HoughCircles(grayMat, circles, Imgproc.CV_HOUGH_GRADIENT, 2, grayMat.rows() / 10, 200, 60, 10, 40); //16:00
-        Imgproc.HoughCircles(grayMat, circles, Imgproc.CV_HOUGH_GRADIENT, 2, grayMat.rows() / 10, 100, 60, 10, 40);
+        //Imgproc.HoughCircles(grayMat, circles, Imgproc.CV_HOUGH_GRADIENT, 2, grayMat.rows() / 10, 100, 60, 10, 40);//最接近
 
-       // Debug.Log("circles toString " + circles.ToString());
-       // Debug.Log("circles dump" + circles.dump());
+        Mat hierarchy = new Mat();
+        List<MatOfPoint> contours = new List<MatOfPoint>();
+        Imgproc.Canny(grayMat, grayMat, 50, 150);
 
-        if (circles.cols() > 0)//找到圓的個數
+        //morphOps(grayMat);
+
+        Imgproc.findContours(grayMat, contours, hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+        for(int i = 0; i < contours.Count; i++)
+        {
+            Imgproc.drawContours(temp, contours, i, new Scalar(255, 255, 255), 2);
+        }
+
+        // Debug.Log("circles toString " + circles.ToString());
+        // Debug.Log("circles dump" + circles.dump());
+
+        /*if (circles.cols() > 0)
+        {//找到圓的個數
             for (int x = 0; x < Math.Min(circles.cols(), 6); x++)
             {
                 double[] vCircle = circles.get(0, x);
@@ -359,8 +376,9 @@ public class Match : MonoBehaviour {
                 Imgproc.circle(temp, pt, radius, new Scalar(255, 255, 255), 3, 8, 0);
                 DiceNum++;
             }
+        }*/
         //int[] face = { Core.FONT_HERSHEY_SIMPLEX };
         //Imgproc.putText(temp, DiceNum.ToString(), new Point(0, 50), face[0], 1.2, new Scalar(255, 255, 255), 2, Imgproc.LINE_AA, false);
-        return DiceNum;
+        return contours.Count;
     }
 }
