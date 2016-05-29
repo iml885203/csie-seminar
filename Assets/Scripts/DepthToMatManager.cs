@@ -98,6 +98,7 @@ public class DepthToMatManager : MonoBehaviour
         Hashtable depthCount = new Hashtable();
         int maxCount = 0;
         int maxCountKey = -1;
+        
         if(_flagDeskDepth){
             for (int i = 0; i < depthData.Length; i++)
             {

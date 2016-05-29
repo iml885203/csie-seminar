@@ -49,9 +49,6 @@ public class DrawBlock : MonoBehaviour {
     //screen size to source size
     private clickPositionTrans _positionTrans;
 
-    //深度Mat縮校的倍數
-    private int _DownsampleSize = 0;
-
     private double _rateWidthRGBDepth = 1;
     private double _rateHeightRGBDepth = 1;
 
@@ -71,8 +68,6 @@ public class DrawBlock : MonoBehaviour {
         MatchHeight = 0;
         MatchDepthWidth = 0;
         MatchDepthHeight = 0;
-        //設定深度倍數
-        _DownsampleSize = DepthToMatManager.getDownsampleSize();
 
         //取得螢幕與輸入cam的影像大小
         _inputWidth = ColorSourceManager.ColorWidth;
