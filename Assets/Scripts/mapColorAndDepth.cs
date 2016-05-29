@@ -32,8 +32,7 @@ public class mapColorAndDepth : MonoBehaviour {
                 _Sensor.Open();
             }
         }
-        Mat colorMat = _ColorSourceManager.GetColorMat();
-        _mapperMat = new Mat(colorMat.height(), colorMat.width(), CvType.CV_8UC3);
+        
     }
 	
 	// Update is called once per frame
@@ -45,7 +44,9 @@ public class mapColorAndDepth : MonoBehaviour {
         Mat colorMat = _ColorSourceManager.GetColorMat();
         ushort[] depthData = _DepthSourceManager.GetData();
         _colorTexture = _ColorSourceManager.GetColorTexture();
-        
+
+        _mapperMat = new Mat(_colorTexture.height, _colorTexture.width, CvType.CV_8UC3);
+
         //mapper
         ColorSpacePoint[] colorSpace = new ColorSpacePoint[depthData.Length];
         _Mapper.MapDepthFrameToColorSpace(depthData, colorSpace);
