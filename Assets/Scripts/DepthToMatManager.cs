@@ -34,6 +34,12 @@ public class DepthToMatManager : MonoBehaviour
 
     int _maxCountKey = -1;
 
+    //各點距離
+    public double Distance_UpLeft { get; private set; }
+    public double Distance_UpRight { get; private set; }
+    public double Distance_DownLeft { get; private set; }
+    public double Distance_DonwRight { get; private set; }
+
     public Mat getDepthMat()
     {
         return _Depth;
@@ -147,6 +153,22 @@ public class DepthToMatManager : MonoBehaviour
                 if(indexX == 64 && indexY == 53 && _kinectDistance !=null)
                 {
                     _kinectDistance.text = "distance: " + avg;
+                }
+                if(x == 0 && y == 0)
+                {
+                    Distance_UpLeft = avg;
+                }
+                if(x == (frameDesc.Width - _DownsampleSize) && y == 0)
+                {
+                    Distance_UpRight = avg;
+                }
+                if (x == 0 && y == (frameDesc.Height - _DownsampleSize))
+                {
+                    Distance_DownLeft = avg;
+                }
+                if (x == (frameDesc.Width - _DownsampleSize) && y == (frameDesc.Height - _DownsampleSize))
+                {
+                    Distance_DonwRight = avg;
                 }
                 //距離1000mm正負200mm
                 //avg = (avg > (845)) ? 0 : 255;

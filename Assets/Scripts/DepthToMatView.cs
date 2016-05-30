@@ -27,7 +27,7 @@ public class DepthToMatView : MonoBehaviour {
         //Debug.Log("W = " + _depthToMat.getWidth() + " H = " + _depthToMat.getheight());
         Mat NewMat = new Mat(_depthToMat.getheight(), _depthToMat.getWidth(), CvType.CV_8UC1);
         NewMat = _depthToMat.getDepthMat();
-        Imgproc.Canny(NewMat, NewMat, _cannyIndex.value, _cannyIndex.value*3);
+        //Imgproc.Canny(NewMat, NewMat, _cannyIndex.value, _cannyIndex.value*3);
         //float x = Input.mousePosition.x;
         //float y = Screen.height - Input.mousePosition.y;
        // Point newPos = _positionTrans.TransToScreen2Pos(new Point(x, y));
@@ -35,5 +35,11 @@ public class DepthToMatView : MonoBehaviour {
 
         Utils.matToTexture2D(NewMat,_tex);
         this.gameObject.GetComponent<RawImage>().texture = _tex;
-	}
+
+        Transform distance = this.gameObject.transform.FindChild("distance");
+        distance.FindChild("upleft").GetComponent<Text>().text = _depthToMat.Distance_UpLeft.ToString();
+        distance.FindChild("upright").GetComponent<Text>().text = _depthToMat.Distance_UpRight.ToString();
+        distance.FindChild("downleft").GetComponent<Text>().text = _depthToMat.Distance_DownLeft.ToString();
+        distance.FindChild("downright").GetComponent<Text>().text = _depthToMat.Distance_DonwRight.ToString();
+    }
 }
