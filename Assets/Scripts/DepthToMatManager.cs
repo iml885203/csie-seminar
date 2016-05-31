@@ -19,8 +19,6 @@ public class DepthToMatManager : MonoBehaviour
     private const int _Speed = 50;
 
     public MultiSourceManager _MultiManager;
-    public ColorSourceManager _ColorManager;
-    public DepthSourceManager _DepthManager;
 
     //二質化index
     public Slider _binaryIndex;
@@ -87,10 +85,10 @@ public class DepthToMatManager : MonoBehaviour
         {
             return;
         }
-        if (_DepthManager == null)
-        {
-            return;
-        }
+        //if (_DepthManager == null)
+        //{
+        //    return;
+        //}
         RefreshData(_MultiManager.GetDepthData(),
                     _MultiManager.ColorWidth,
                     _MultiManager.ColorHeight);

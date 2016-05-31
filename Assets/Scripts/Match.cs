@@ -20,13 +20,16 @@ public class Match : MonoBehaviour {
     ColorObject red = new ColorObject("red");
     ColorObject green = new ColorObject("green");
     /*kinect color */
-    public ColorSourceManager _ColorSourceManager;
     private int _colorWidth;
     private int _colorHeight;
     /*drawBlock*/
     public DrawBlock _drawBlock;
     private Mat blockMat;
-     
+    /*public data*/
+    public int Width { get; private set; }
+    public int Height { get; private set; }
+    public List<Point> MatchObjectPoint { get; private set; }
+
     //物體資訊
     int _clolrRange = 10;
     List<Scalar> _saveColor = new List<Scalar>(); 
@@ -48,6 +51,8 @@ public class Match : MonoBehaviour {
         ColorObject yellow = new ColorObject("yellow");
         ColorObject red = new ColorObject("red");
         ColorObject green = new ColorObject("green");
+
+        MatchObjectPoint = new List<Point>();
     }
 	// Update is called once per frame
 	void Update () {
@@ -59,6 +64,12 @@ public class Match : MonoBehaviour {
         Mat _NewTowMat = new Mat(_drawBlock.MatchHeight, _drawBlock.MatchWidth, CvType.CV_8UC3);
         
         _NewTowMat = _drawBlock.GetBlockMat();
+        // ==========================
+        // set public Width Height ==
+        // ==========================
+        Width = _drawBlock.MatchWidth;
+        Height = _drawBlock.MatchHeight;
+
         Mat BlackMat = new Mat(_drawBlock.MatchHeight, _drawBlock.MatchWidth, CvType.CV_8UC3);
 
        // _NewDepthMat = DepthManager.GetData();
@@ -265,9 +276,10 @@ public class Match : MonoBehaviour {
                     ConsistP.Add(new Point(R0.x, R0.y));
                     ConsistP.Add(new Point(R0.x + R0.width, R0.y + R0.height));
                     clickRGB.Add(clickcolor(RGB, R0));
-                    int diceCount = matchDice(src, R0, temp);
-                    diceCount = (diceCount - 2) / 2;
-                    Debug.Log("dice count = " + diceCount);
+                    //骰子
+                    //int diceCount = matchDice(src, R0, temp);
+                    //diceCount = (diceCount - 2) / 2;
+                    //Debug.Log("dice count = " + diceCount);
                     //Mat bestLabel = new Mat();
                     //OpenCVForUnity.Core.kmeans(temp, 6, bestLabel, new TermCriteria(3,10, 1.0),1,OpenCVForUnity.Core.KMEANS_RANDOM_CENTERS);
                     //bestLabel.copyTo(temp);
@@ -281,7 +293,12 @@ public class Match : MonoBehaviour {
                 Imgproc.putText(temp, "ID=" + ID.ToString(), ConsistP[i], 1, 1, new Scalar(255, 0, 255), 1);
 
             }
-            ConsistP.Clear();
+            // =================================
+            // set public MatchObjectPoint =====
+            // =================================
+            MatchObjectPoint = ConsistP;
+
+            //ConsistP.Clear();
         }
         temp.copyTo(cameraFeed);
         Imgproc.warpAffine(cameraFeed, cameraFeed, cof_mat, cameraFeed.size());
