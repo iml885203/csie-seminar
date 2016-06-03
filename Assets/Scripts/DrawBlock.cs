@@ -72,6 +72,7 @@ public class DrawBlock : MonoBehaviour {
         //取得螢幕與輸入cam的影像大小
         _inputWidth = ColorSourceManager.ColorWidth;
         _inputHeight = ColorSourceManager.ColorHeight;
+        Debug.Log(_inputWidth);
         //_inputDepthWidth = DepthToMatManager.getWidth();
         //_inputDepthHeight = DepthToMatManager.getheight();
         //取得RGB和depth的倍數關係
@@ -99,7 +100,7 @@ public class DrawBlock : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
+        
         //將輸入轉成mat方便openCV使用
         //Utils.webCamTextureToMat(_webcam, _nMat);
         _sourceMat = ColorSourceManager.GetColorMat();
@@ -120,6 +121,7 @@ public class DrawBlock : MonoBehaviour {
             _souceOut = new Texture2D(_inputWidth, _inputHeight);
         }
         //將mat轉換回2D影像
+        
         Utils.matToTexture2D(_sourceMat, _souceOut);
         //放入輸出rawImage
         _inoutImg.texture = _souceOut;        
