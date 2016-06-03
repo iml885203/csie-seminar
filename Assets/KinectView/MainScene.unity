@@ -1394,6 +1394,8 @@ GameObject:
   - 114: {fileID: 838833065}
   - 114: {fileID: 838833069}
   - 114: {fileID: 838833070}
+  - 114: {fileID: 838833072}
+  - 114: {fileID: 838833071}
   m_Layer: 0
   m_Name: outputView
   m_TagString: Untagged
@@ -1483,7 +1485,7 @@ RectTransform:
   m_GameObject: {fileID: 838833061}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 112.5}
-  m_LocalScale: {x: 126.54136, y: 126.54141, z: 2.5308282}
+  m_LocalScale: {x: 158.60686, y: 93.11649, z: 1.8623298}
   m_Children:
   - {fileID: 1045177288}
   m_Father: {fileID: 0}
@@ -1516,7 +1518,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13bf288dee27b96489ce025652529614, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mapCoordinate: {fileID: 0}
+  mazeCoordinate: {fileID: 838833072}
+--- !u!114 &838833071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 838833061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2234d80283d2954db3d8f91fafb5312, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &838833072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 838833061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28c150f9bf0dfda41a094491da0c7551, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _mapData: {fileID: 838833071}
+  _tex: {fileID: 0}
 --- !u!1 &925883282
 GameObject:
   m_ObjectHideFlags: 0
@@ -2046,7 +2072,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1045177288
 Transform:
   m_ObjectHideFlags: 0

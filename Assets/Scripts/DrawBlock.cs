@@ -189,7 +189,7 @@ public class DrawBlock : MonoBehaviour {
         subMat = _sourceMat.submat(minY, MaxY, minX, MaxX);
         subMat.copyTo(_matchImage);        
 
-        _matchImage = _sourceMat.submat(minY, MaxY, minX, MaxX);
+       
         _matchDepthImage = _sourceMatDepth.submat(
             (int)((double)minY / _rateHeightRGBDepth),
             (int)((double)MaxY / _rateHeightRGBDepth),

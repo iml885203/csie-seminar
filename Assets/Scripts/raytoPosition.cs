@@ -1,8 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
+using OpenCVForUnity;
 
 public class raytoPosition : MonoBehaviour {
-    public mapCoordinate _mapCoordinate;
+  //  public mapCoordinate _mapCoordinate;
+    public mazeCoordinate mazeCoordinate;
+    public double posX {get; private set;}
+    public double posY { get; private set; }
 	// Use this for initialization
 	void Start () {
         
@@ -25,10 +29,13 @@ public class raytoPosition : MonoBehaviour {
                 double posX = (transform.localScale.x / 2) + coordinateX;
                 double posY = (transform.localScale.y / 2) - coordinateY;
                 Debug.ClearDeveloperConsole();
-                Debug.Log("coordinate:" + (int)coordinateX + ", " + (int)coordinateY);
+                //Debug.Log("coordinate:" + (int)coordinateX + ", " + (int)coordinateY);
                 Debug.Log("Pos:" + (int)posX + ", " + (int)posY);
+                
                 //map check
-                Debug.Log("checkPos:" + _mapCoordinate.StartBlock.Check(posX, posY));
+                Debug.Log("checkPos:" + mazeCoordinate.StartBlock[0,0].Check(posX, posY));
+                
+                //Debug.Log("checkPos:" + _mapCoordinate.StartBlock.Check(posX, posY));
             }
         }
         

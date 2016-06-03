@@ -44,8 +44,10 @@ public class mapColorAndDepth : MonoBehaviour {
         Mat colorMat = _ColorSourceManager.GetColorMat();
         ushort[] depthData = _DepthSourceManager.GetData();
         _colorTexture = _ColorSourceManager.GetColorTexture();
-
-        _mapperMat = new Mat(_colorTexture.height, _colorTexture.width, CvType.CV_8UC3);
+        if (_mapperMat == null)
+        {
+            _mapperMat = new Mat(_colorTexture.height, _colorTexture.width, CvType.CV_8UC3);
+        }
 
         //mapper
         ColorSpacePoint[] colorSpace = new ColorSpacePoint[depthData.Length];
