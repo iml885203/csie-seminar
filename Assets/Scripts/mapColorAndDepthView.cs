@@ -5,10 +5,11 @@ using OpenCVForUnity;
 
 public class mapColorAndDepthView : MonoBehaviour {
     public mapColorAndDepth _mapColorAndDepth;
-	// Use this for initialization
-	void Start () {
-	    
-	}
+    private Texture2D output;
+    // Use this for initialization
+    void Start () {
+        
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -17,7 +18,11 @@ public class mapColorAndDepthView : MonoBehaviour {
             return;
         }
         Mat mapperMat = _mapColorAndDepth.GetMapperMat();
-        Texture2D output = new Texture2D(mapperMat.width(), mapperMat.height());
+        if(output == null)
+        {
+            output = new Texture2D(mapperMat.width(), mapperMat.height());
+        }
+        
         Utils.matToTexture2D(mapperMat, output);
         this.gameObject.GetComponent<RawImage>().texture = output;
     }
