@@ -20,7 +20,7 @@ public class mapData : MonoBehaviour {
 
 
     public List<Point> getCanMoveArea()
-    {
+    {   
         return _canMoveArea;
     }
     public void setCanMoveArea(Point P)

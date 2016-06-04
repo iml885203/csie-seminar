@@ -66,7 +66,7 @@ public class mapColorAndDepth : MonoBehaviour {
                 _colorTexture.SetPixel((int)x, (int)y, new Color(0, 0, 0));
             }
         }
-        Debug.Log(spaceIndex + ": " + x + ", " + y);
+        //Debug.Log(spaceIndex + ": " + x + ", " + y);
         Utils.texture2DToMat(_colorTexture, _mapperMat);
         //_mapperMat = colorMat;
     }

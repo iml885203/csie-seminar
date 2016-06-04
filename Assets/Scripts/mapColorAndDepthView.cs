@@ -6,6 +6,7 @@ using OpenCVForUnity;
 public class mapColorAndDepthView : MonoBehaviour {
     public mapColorAndDepth _mapColorAndDepth;
     private Texture2D output;
+
     // Use this for initialization
     void Start () {
         
@@ -14,6 +15,10 @@ public class mapColorAndDepthView : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         if (_mapColorAndDepth == null)
+        {
+            return;
+        }
+        if (_mapColorAndDepth.GetMapperMat() == null)
         {
             return;
         }
