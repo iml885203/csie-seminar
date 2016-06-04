@@ -1,12 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 using OpenCVForUnity;
+using UnityEngine.UI;
 
 public class mazeCoordinate : MonoBehaviour {
     //地圖資料
     public mapData _mapData;                    //地圖全部資料
     public Mat _mapMat;                         //畫地圖的mat
     public Texture2D _tex;                      //顯示的結果texture2D
+    //遊戲狀況文字顯示
+    public Text _roundText;
     //地圖方向defind
     private const byte UP = 7;                  //上可走 0111
     private const byte RIGHT = 11;              //右可走1011
@@ -24,7 +27,16 @@ public class mazeCoordinate : MonoBehaviour {
     //設定顏色
     private Scalar _FogOfWarColor = new Scalar(45, 45, 45);                     //戰爭迷霧
     private Scalar _mapWellColor = new Scalar(255, 250, 250);                   //迷宮的牆壁顏色
-    private Scalar _canGoBlock = new Scalar(200, 10, 10);                       //可走的地區顏色
+    private Scalar _canGoBlockColor = new Scalar(200, 10, 10);                       //可走的地區顏色
+    private Scalar[] _playerColor = new Scalar[2];
+    //線條粗細
+    private int _mapWellThickness = 2;
+    private int _mapBlockThickness = 1;
+    //點擊功能class
+    public raytoPosition _rayPosData;
+    //遊戲狀態
+    private int _round;
+    private int _whoRound;
 
 	// Use this for initialization
     void Start()
@@ -40,12 +52,20 @@ public class mazeCoordinate : MonoBehaviour {
         _mapMat = new Mat((int)_mapHeight, (int)_mapWidth, CvType.CV_8UC3);
         _mapMat.setTo(_FogOfWarColor);                                              //設定戰爭迷霧
         _tex = new Texture2D((int)_mapWidth, (int)_mapHeight);                      //設定結果圖片大小
-
+        //設定玩家初始位置
+        _mapData.setPlayerPos(new Point(0, 0));
+        _mapData.setPlayerPos(new Point(4, 4));
+        //設定回合&誰先遊戲
+        _round = 0;
+        _whoRound = 0;
+        //設定玩家顏色
+        _playerColor[0] = new Scalar(0, 0, 255);
+        _playerColor[1] = new Scalar(255, 255, 255);
     }
 
     void Update()
     {
-        CanGo(0, 0, 2);
+        _mapMat.setTo(_FogOfWarColor);
         //顯示大小改變
         if (transform.localScale.x != _mapWidth || transform.localScale.y != _mapHeight)
         {
@@ -55,8 +75,25 @@ public class mazeCoordinate : MonoBehaviour {
             Debug.Log("update map" + _mapWidth + "x" + _mapHeight);
             Init();
         }
-        //畫地圖
+
+        //如果滑鼠點擊
+        if (Input.GetMouseButtonUp(0))
+        {
+            _mapData.clearCanMoveArea();
+            _whoRound = _round % 2;
+            _mapData.setPlayerPos(_whoRound, new Point( _rayPosData.getPos().x , _rayPosData.getPos().y));
+            _round++;
+            _roundText.text = "Round：" + _round;
+            //Debug.Log("WR" + _whoRound + "R " + _round + "NUM " + _mapData.getPlayerCount());
+            //Debug.Log("ID = 0" + "X = " + _mapData.getPlayerPos(0).x + "Y = " + _mapData.getPlayerPos(0).y);
+            //Debug.Log("ID = 1" + "X = " + _mapData.getPlayerPos(1).x + "Y = " + _mapData.getPlayerPos(1).y);
+        }
+        //搜尋玩家可走區塊
+        for (int ID = 0; ID < _mapData.getPlayerCount(); ID++) CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y),3);
+        //畫地圖(外框、可走區塊)
         DrawMap();
+        //畫玩家位置
+        for (int ID = 0; ID < _mapData.getPlayerCount();ID++ )DrawPlayer(ID);
 
         //轉換地圖mat至顯示結果
         Utils.matToTexture2D(_mapMat, _tex);
@@ -73,7 +110,7 @@ public class mazeCoordinate : MonoBehaviour {
         {
             if ((_mapData.getWall(x, y) | UP) == UP)
             {
-                if (!_mapData.isExist(new Point(x, y - 1)))
+                if (!_mapData.isExistCanMoveArea(new Point(x, y - 1)))
                 {
                     _mapData.setCanMoveArea(new Point(x, y - 1));
                     CanGo(x, y - 1, times);
@@ -82,7 +119,7 @@ public class mazeCoordinate : MonoBehaviour {
             }
             if ((_mapData.getWall(x, y) | RIGHT) == RIGHT)
             {
-                if (!_mapData.isExist(new Point(x + 1, y)))
+                if (!_mapData.isExistCanMoveArea(new Point(x + 1, y)))
                 {
                     _mapData.setCanMoveArea(new Point(x + 1, y));
                     CanGo(x + 1, y, times);
@@ -91,7 +128,7 @@ public class mazeCoordinate : MonoBehaviour {
             }
             if ((_mapData.getWall(x, y) | DOWN) == DOWN)
             {
-                if (!_mapData.isExist(new Point(x, y + 1)))
+                if (!_mapData.isExistCanMoveArea(new Point(x, y + 1)))
                 {
                     _mapData.setCanMoveArea(new Point(x, y + 1));
                     CanGo(x, y + 1, times);
@@ -100,7 +137,7 @@ public class mazeCoordinate : MonoBehaviour {
             }
             if ((_mapData.getWall(x, y) | LEFT) == LEFT)
             {
-                if (!_mapData.isExist(new Point(x - 1, y)))
+                if (!_mapData.isExistCanMoveArea(new Point(x - 1, y)))
                 {
                     _mapData.setCanMoveArea(new Point(x - 1, y));
                     CanGo(x - 1, y, times);
@@ -109,6 +146,12 @@ public class mazeCoordinate : MonoBehaviour {
             }
         }
         return;
+    }
+    private void DrawPlayer(int ID)
+    {
+        Point[] P = new Point[2];
+        P = PosToBlock((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y));
+        Imgproc.circle(_mapMat, new Point(_mapWidth - ((P[0].x + P[1].x) / 2), _mapHeight - ((P[0].y + P[1].y) / 2)), (int)((P[1].x - P[0].x) / 3), _playerColor[ID]);
     }
     //傳換座標變成兩點
     private Point[] PosToBlock(int x, int y)
@@ -120,13 +163,15 @@ public class mazeCoordinate : MonoBehaviour {
     }
     public void DrawMap()
     {
+        //劃出地圖邊界
+        Imgproc.rectangle(_mapMat, new Point(0, 0), new Point(_mapMat.width()-1, _mapMat.height()-1), _mapWellColor);
         //跑全部地圖
         for (int i = 0; i < ScreenHeightBlock; i++)
         {
             for (int j = 0; j < ScreenWidthBlock; j++)
             {
                 //如果可以走就畫出來
-                if (_mapData.isExist(new Point(j, i)))
+                if (_mapData.isExistCanMoveArea(new Point(j, i)))
                 {
                     DrawMazeBlock(j, i, _mapData.getWall(j, i));
                 }
@@ -138,22 +183,27 @@ public class mazeCoordinate : MonoBehaviour {
     {
         //取得方格對應的兩點座標
         Point[] P = PosToBlock(x, y);
+        //畫格子與外框(-1是實心)
+        Imgproc.rectangle(_mapMat, new Point(_mapWidth - P[0].x, _mapHeight - P[0].y), new Point(_mapWidth - P[1].x, _mapHeight - P[1].y), _canGoBlockColor,-1);
+        Imgproc.rectangle(_mapMat, new Point(_mapWidth - P[0].x, _mapHeight - P[0].y), new Point(_mapWidth - P[1].x, _mapHeight - P[1].y), _FogOfWarColor, _mapBlockThickness);
+
         //Debug.Log("Draw x = " + x + "y = " + y + "Pos_X" + P[0].x+ "Pos_Y" + P[0].y);
+        //畫牆壁
         if ((_mapData.getWall(x, y) & 8) == 8)//UP
         {
-            Imgproc.line(_mapMat, new Point(_mapWidth - P[0].x, _mapHeight - P[0].y), new Point(_mapWidth - P[1].x, _mapHeight - P[0].y), _mapWellColor);
+            Imgproc.line(_mapMat, new Point(_mapWidth - P[0].x, _mapHeight - P[0].y), new Point(_mapWidth - P[1].x, _mapHeight - P[0].y), _mapWellColor, _mapWellThickness);
         }
         if ((_mapData.getWall(x, y) & 4) == 4)//R
         {
-            Imgproc.line(_mapMat, new Point(_mapWidth - P[1].x, _mapHeight - P[0].y), new Point(_mapWidth - P[1].x, _mapHeight - P[1].y), _mapWellColor);
+            Imgproc.line(_mapMat, new Point(_mapWidth - P[1].x, _mapHeight - P[0].y), new Point(_mapWidth - P[1].x, _mapHeight - P[1].y), _mapWellColor, _mapWellThickness);
         }
         if ((_mapData.getWall(x, y) & 2) == 2)//D
         {
-            Imgproc.line(_mapMat, new Point(_mapWidth - P[0].x, _mapHeight - P[1].y), new Point(_mapWidth - P[1].x, _mapHeight - P[1].y), _mapWellColor);
+            Imgproc.line(_mapMat, new Point(_mapWidth - P[0].x, _mapHeight - P[1].y), new Point(_mapWidth - P[1].x, _mapHeight - P[1].y), _mapWellColor, _mapWellThickness);
         }
         if ((_mapData.getWall(x, y) & 1) == 1)//L
         {
-            Imgproc.line(_mapMat, new Point(_mapWidth - P[0].x, _mapHeight - P[0].y), new Point(_mapWidth - P[0].x, _mapHeight - P[1].y), _mapWellColor);
+            Imgproc.line(_mapMat, new Point(_mapWidth - P[0].x, _mapHeight - P[0].y), new Point(_mapWidth - P[0].x, _mapHeight - P[1].y), _mapWellColor, _mapWellThickness);
         }
     }
     //初始化地圖方格座標

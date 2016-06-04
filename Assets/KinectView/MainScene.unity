@@ -85,6 +85,79 @@ NavMeshSettings:
     cellSize: 0.16666666
     manualCellSize: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &33877783
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 224: {fileID: 33877784}
+  - 222: {fileID: 33877786}
+  - 114: {fileID: 33877785}
+  m_Layer: 5
+  m_Name: mazeGamePlayer2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &33877784
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 33877783}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2037589847}
+  m_RootOrder: 6
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 597, y: 57.000004}
+  m_SizeDelta: {x: 160, y: 30}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &33877785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 33877783}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 708705254, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 25
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 0
+    m_MaxSize: 40
+    m_Alignment: 0
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: "Player \uFF1AP2"
+--- !u!222 &33877786
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 33877783}
 --- !u!1 &112136118
 GameObject:
   m_ObjectHideFlags: 0
@@ -1070,6 +1143,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92ab5bea6110edb4081e490c0982748d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &684503955 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 113168, guid: d7f054b207fab3a48ace80feb7d719d9, type: 2}
+  m_PrefabInternal: {fileID: 1595930870}
 --- !u!1 &689214288
 GameObject:
   m_ObjectHideFlags: 0
@@ -1496,14 +1573,14 @@ RectTransform:
   m_GameObject: {fileID: 838833061}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 112.5}
-  m_LocalScale: {x: 158.60686, y: 93.11649, z: 1.8623298}
+  m_LocalScale: {x: 375.30322, y: 145.92961, z: 1.8623298}
   m_Children:
   - {fileID: 1045177288}
   m_Father: {fileID: 0}
   m_RootOrder: 13
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -116.1, y: 6.0917025}
+  m_AnchoredPosition: {x: -127.2, y: -22.8}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &838833069
@@ -1530,6 +1607,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mazeCoordinate: {fileID: 838833072}
+  posXY:
+    x: 0
+    y: 0
 --- !u!114 &838833071
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1554,6 +1634,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _mapData: {fileID: 838833071}
   _tex: {fileID: 0}
+  _roundText: {fileID: 1328820331}
+  _rayPosData: {fileID: 838833070}
 --- !u!1 &925883282
 GameObject:
   m_ObjectHideFlags: 0
@@ -2027,6 +2109,79 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1006045981}
+--- !u!1 &1022484635
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 224: {fileID: 1022484636}
+  - 222: {fileID: 1022484638}
+  - 114: {fileID: 1022484637}
+  m_Layer: 5
+  m_Name: mazeGamePlayer1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1022484636
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1022484635}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2037589847}
+  m_RootOrder: 5
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -0.000030517578, y: 57.000004}
+  m_SizeDelta: {x: 160, y: 30}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1022484637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1022484635}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 708705254, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 25
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 0
+    m_MaxSize: 40
+    m_Alignment: 0
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: "Player \uFF1AP1"
+--- !u!222 &1022484638
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1022484635}
 --- !u!1 &1022827879
 GameObject:
   m_ObjectHideFlags: 0
@@ -2240,9 +2395,86 @@ Prefab:
       propertyPath: _DepthSourceManager
       value: 
       objectReference: {fileID: 1022827880}
+    - target: {fileID: 175586, guid: 085c208ddf8ed4d419cb06b387dc9253, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 085c208ddf8ed4d419cb06b387dc9253, type: 2}
   m_IsPrefabParent: 0
+--- !u!1 &1328820329
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 224: {fileID: 1328820330}
+  - 222: {fileID: 1328820332}
+  - 114: {fileID: 1328820331}
+  m_Layer: 5
+  m_Name: mazeGameRound
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1328820330
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1328820329}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2037589847}
+  m_RootOrder: 4
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 297, y: 57}
+  m_SizeDelta: {x: 160, y: 30}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1328820331
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1328820329}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 708705254, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 25
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 0
+    m_MaxSize: 40
+    m_Alignment: 0
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: "Round \uFF1A\uFF10"
+--- !u!222 &1328820332
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1328820329}
 --- !u!1 &1329486496
 GameObject:
   m_ObjectHideFlags: 0
@@ -2757,7 +2989,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22419672, guid: d7f054b207fab3a48ace80feb7d719d9, type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -248
+      value: -174
       objectReference: {fileID: 0}
     - target: {fileID: 22419672, guid: d7f054b207fab3a48ace80feb7d719d9, type: 2}
       propertyPath: m_SizeDelta.x
@@ -2797,7 +3029,7 @@ Prefab:
       objectReference: {fileID: 157707084}
     - target: {fileID: 113168, guid: d7f054b207fab3a48ace80feb7d719d9, type: 2}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: d7f054b207fab3a48ace80feb7d719d9, type: 2}
@@ -3060,6 +3292,7 @@ GameObject:
   - 114: {fileID: 1747301868}
   - 114: {fileID: 1747301872}
   - 114: {fileID: 1747301871}
+  - 114: {fileID: 1747301873}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -3234,6 +3467,20 @@ MonoBehaviour:
   - {fileID: 925883282}
   - {fileID: 575574469}
   - {fileID: 1329486496}
+--- !u!114 &1747301873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1747301860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a69def15f6b9cbc489868b22f7367dab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: m
+  cameraView:
+  - {fileID: 684503955}
 --- !u!1 &1791873537
 GameObject:
   m_ObjectHideFlags: 0
@@ -3418,6 +3665,9 @@ RectTransform:
   - {fileID: 575574470}
   - {fileID: 1329486498}
   - {fileID: 1006045982}
+  - {fileID: 1328820330}
+  - {fileID: 1022484636}
+  - {fileID: 33877784}
   m_Father: {fileID: 1540240265}
   m_RootOrder: 9
   m_AnchorMin: {x: 0, y: 0}
