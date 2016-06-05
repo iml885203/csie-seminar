@@ -25,13 +25,13 @@ public class mazeCoordinate : MonoBehaviour {
     //設定地圖方格陣列
     public mapBlock[,] StartBlock;
     //設定顏色
-    private Scalar _treadsureColor = new Scalar(255, 255, 00);                     //寶藏迷霧
-    private Scalar _FogOfWarColor = new Scalar(45, 45, 45);                     //戰爭迷霧
+    private Scalar _treadsureColor = new Scalar(255, 255, 255);                     //寶藏迷霧
+    private Scalar _FogOfWarColor = new Scalar(0, 0, 0);                     //戰爭迷霧
     private Scalar _mapWellColor = new Scalar(255, 250, 250);                   //迷宮的牆壁顏色
-    private Scalar _canGoBlockColor = new Scalar(200, 10, 10);                       //可走的地區顏色
+    private Scalar _canGoBlockColor = new Scalar(0, 0, 0);                       //可走的地區顏色
     private Scalar[] _playerColor = new Scalar[2] { new Scalar(0, 0, 255), new Scalar(255, 255, 255) }; //玩家顏色
     //線條粗細
-    private int _mapWellThickness = 2;
+    private int _mapWellThickness = 1;
     private int _mapBlockThickness = 1;
     //點擊功能class
     public raytoPosition _rayPosData;
@@ -39,12 +39,22 @@ public class mazeCoordinate : MonoBehaviour {
     private int _winerFlag; //-1=>沒人贏 0=>ID 0玩家贏 1=>ID 1玩家贏
     private int _round;
     private int _whoRound;
+    //觸發角色移動
+    private bool _moved;
+    private float _movedTimer;
+    private float _movedTriggerTime;
+    //角色outputView座標
+    public matchPointToOutputView _matchPointToOutputView;
+    private Point[] _pointPlayer;
+    private int _pointRange;
 
-	// Use this for initialization
+    private bool isSave = new bool();
+
+    // Use this for initialization
     void Start()
     {
         StartBlock = new mapBlock[ScreenHeightBlock, ScreenWidthBlock];           //設定初始地圖陣列大小
-
+        isSave = false;
         _mapWidth = transform.localScale.x;
         _mapHeight = transform.localScale.y;
         
@@ -64,8 +74,18 @@ public class mazeCoordinate : MonoBehaviour {
         _round = 0;
         _whoRound = 0;
         //設定玩家顏色
-        _playerColor[0] = new Scalar(0, 0, 255);
-        _playerColor[1] = new Scalar(255, 255, 255);
+        _playerColor[0] = new Scalar(255, 0, 0);
+        _playerColor[1] = new Scalar(255, 0 ,0);
+        //
+        _moved = false;
+        _movedTimer = 0f;
+        _movedTriggerTime = 1;
+        _pointRange = 5;
+        //
+        _pointPlayer = new Point[2];
+        _pointPlayer[0] = new Point(0, 0);
+        _pointPlayer[1] = new Point(0, 0);
+
     }
 
     public void Restart()
@@ -95,6 +115,7 @@ public class mazeCoordinate : MonoBehaviour {
     {
         if (_winerFlag < 0)
         {
+            SetIsSave();
             _mapMat.setTo(_FogOfWarColor);
             //顯示大小改變
             if (transform.localScale.x != _mapWidth || transform.localScale.y != _mapHeight)
@@ -103,6 +124,32 @@ public class mazeCoordinate : MonoBehaviour {
                 Init();
             }
 
+            // set Character Point and trigger
+            Point[] characterPoint = _matchPointToOutputView.outputPoint.ToArray();
+
+            if (characterPoint.Length != 0)
+            {
+                //Debug.Log("round: "+_whoRound);
+                //Debug.Log(characterPoint[_whoRound]);
+                //Debug.Log(_pointPlayer[_whoRound]);
+
+                if (characterPoint[_whoRound].x < _pointPlayer[_whoRound].x + _pointRange && characterPoint[_whoRound].x > _pointPlayer[_whoRound].x - _pointRange &&
+                   characterPoint[_whoRound].y < _pointPlayer[_whoRound].y + _pointRange && characterPoint[_whoRound].y > _pointPlayer[_whoRound].y - _pointRange)
+                {
+                    _movedTimer += Time.deltaTime;
+                    if (_movedTimer > _movedTriggerTime)
+                    {
+                        _movedTimer = 0f;
+                        _moved = true;
+                        Debug.Log("round: " + _whoRound + " Point: " + (int)_pointPlayer[_whoRound].x + "," + (int)_pointPlayer[_whoRound].y);
+                    }
+                }
+                else
+                {
+                    _movedTimer = 0f;
+                    _pointPlayer[_whoRound] = characterPoint[_whoRound];
+                }
+            }
             //如果滑鼠點擊
             this.ClickMouseUpEvent();
 
@@ -119,8 +166,12 @@ public class mazeCoordinate : MonoBehaviour {
                 }
 
             //畫地圖(外框、兩個玩家可走區塊),寶藏,玩家
-            this.DrawMap();
-            this.DrawTreadsure();
+            if (!isSave)
+            {
+                this.DrawMap();
+                this.DrawTreadsure();
+            }
+            
             for (int ID = 0; ID < _mapData.getPlayerCount(); ID++)
                 DrawPlayer(ID);
 
@@ -133,29 +184,58 @@ public class mazeCoordinate : MonoBehaviour {
     //滑鼠點擊事件
     private void ClickMouseUpEvent()
     {
-        if (Input.GetMouseButtonUp(0))
+        if (_moved || Input.GetMouseButtonUp(0))
         {
+            Point triggerPoint = new Point();
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 16; j++)
+                {
+                    if (Input.GetMouseButtonUp(0))
+                    {
+                        if (StartBlock[i, j].Check(_rayPosData.getPos().x, _rayPosData.getPos().y))
+                        {
+                            //Debug.Log("PosX:" + j + "PosX:" + i);
+                            triggerPoint.x = j;
+                            triggerPoint.y = i;
+                        }
+                    }
+                    else
+                    {
+                        if (StartBlock[i, j].Check(_pointPlayer[_whoRound].x, _pointPlayer[_whoRound].y))
+                        {
+                            //Debug.Log("PosX:" + j + "PosX:" + i);
+                            triggerPoint.x = j;
+                            triggerPoint.y = i;
+                        }
+                    }
+                }
+            }
+
             _whoRound = _round % 2;
             this.RefreshOneCanMoveArea(_whoRound);
             this._mapData.RemovePlayerArea();
 
-            if (_mapData.getCanMoveArea().Exists(List => List.x == _rayPosData.getPos().x && List.y == _rayPosData.getPos().y))
+            if (_mapData.getCanMoveArea().Exists(List => List.x == triggerPoint.x && List.y == triggerPoint.y) &&
+                (_mapData.getPlayerPos(_whoRound).x == triggerPoint.x &&
+                 _mapData.getPlayerPos(_whoRound).y == triggerPoint.y) ==false)
             {
-                _mapData.setPlayerPos(_whoRound, new Point(_rayPosData.getPos().x, _rayPosData.getPos().y));
+                _mapData.setPlayerPos(_whoRound, new Point(triggerPoint.x, triggerPoint.y));
                 _round++;
                 _roundText.text = ((_round % 2 == 0) ? "(←) " : "(→) ") + ("Round：" + _round);
                 this.RefreshCanMoveArea();
-                Debug.Log("This point can be move!" + "X = " + _rayPosData.getPos().x + ",Y = " + _rayPosData.getPos().y);
+                Debug.Log("This point can be move!" + "X = " + triggerPoint.x + ",Y = " + triggerPoint.y);
             }
             else
             {
-                Debug.Log("This point can't be move!" + "X = " + _rayPosData.getPos().x + ",Y = " + _rayPosData.getPos().y);
+                Debug.Log("This point can't be move!" + "X = " + triggerPoint.x + ",Y = " + triggerPoint.y);
             }
             this.RefreshOneCanMoveArea(0);
             this.RefreshOneCanMoveArea(1);
             //Debug.Log("WR" + _whoRound + "R " + _round + "NUM " + _mapData.getPlayerCount());
             //Debug.Log("ID = 0" + "X = " + _mapData.getPlayerPos(0).x + "Y = " + _mapData.getPlayerPos(0).y);
             //Debug.Log("ID = 1" + "X = " + _mapData.getPlayerPos(1).x + "Y = " + _mapData.getPlayerPos(1).y);
+            _moved = false;
         }
     }
 
@@ -172,51 +252,51 @@ public class mazeCoordinate : MonoBehaviour {
     {
         _mapData.ClearCanMoveArea();
         CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), 3);
+        CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), 3);
     }
     //搜尋可以走的區塊並加入資料
     public void CanGo(int x,int y,int times)//原始座標x,y剩餘次數
     {
         //超出範圍
         if (x < 0 || y < 0 || x > 16 || y > 9) return;
-        
         //剩餘步數大於0
         if (times-- > 0)
         {
             if ((_mapData.getWall(x, y) | UP) == UP)
             {
-                if (!_mapData.isExistCanMoveArea(new Point(x, y - 1)))
-                {
+               // if (!_mapData.isExistCanMoveArea(new Point(x, y - 1)))
+               // {
                     _mapData.setCanMoveArea(new Point(x, y - 1));
                     CanGo(x, y - 1, times);
                     //Debug.Log("GO X = " + x + "Y = " + (y - 1) + "times = " + times + " UP");
-                }
+               // }
             }
             if ((_mapData.getWall(x, y) | RIGHT) == RIGHT)
             {
-                if (!_mapData.isExistCanMoveArea(new Point(x + 1, y)))
-                {
+                //if (!_mapData.isExistCanMoveArea(new Point(x + 1, y)))
+                //{
                     _mapData.setCanMoveArea(new Point(x + 1, y));
                     CanGo(x + 1, y, times);
                     //Debug.Log("GO X = " + (x + 1) + "Y = " + y + "times = " + times + " RIGHT");
-                }
+                //}
             }
             if ((_mapData.getWall(x, y) | DOWN) == DOWN)
             {
-                if (!_mapData.isExistCanMoveArea(new Point(x, y + 1)))
-                {
+               // if (!_mapData.isExistCanMoveArea(new Point(x, y + 1)))
+                //{
                     _mapData.setCanMoveArea(new Point(x, y + 1));
                     CanGo(x, y + 1, times);
                     //Debug.Log("GO X = " + x + "Y = " + (y + 1) + "times = " + times + " DOWN");
-                }
+                //}
             }
             if ((_mapData.getWall(x, y) | LEFT) == LEFT)
             {
-                if (!_mapData.isExistCanMoveArea(new Point(x - 1, y)))
-                {
+                //if (!_mapData.isExistCanMoveArea(new Point(x - 1, y)))
+                //{
                     _mapData.setCanMoveArea(new Point(x - 1, y));
                     CanGo(x - 1, y, times);
                     //Debug.Log("GO X = " + (x - 1) + "Y = " + y + "times = " + times + " LEFT");
-                }
+                //}
             }
         }
         return;
@@ -317,5 +397,12 @@ public class mazeCoordinate : MonoBehaviour {
             }
         }
     }
-
+    public void SetIsSave()
+    {
+        if (Input.GetKeyUp(KeyCode.Y))
+        {
+            isSave = (isSave) ? false : true;
+            Debug.Log((isSave) ? "isSave Set True" : "isSave Set false");
+        }
+    }
 }

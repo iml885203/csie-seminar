@@ -35,5 +35,11 @@ public class DepthToMatView : MonoBehaviour {
 
         Utils.matToTexture2D(NewMat,_tex);
         this.gameObject.GetComponent<RawImage>().texture = _tex;
-	}
+
+        Transform distance = this.gameObject.transform.FindChild("distance");
+        distance.FindChild("upleft").GetComponent<Text>().text = _depthToMat.Distance_UpLeft.ToString();
+        distance.FindChild("upright").GetComponent<Text>().text = _depthToMat.Distance_UpRight.ToString();
+        distance.FindChild("downleft").GetComponent<Text>().text = _depthToMat.Distance_DownLeft.ToString();
+        distance.FindChild("downright").GetComponent<Text>().text = _depthToMat.Distance_DonwRight.ToString();
+    }
 }

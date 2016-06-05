@@ -19,8 +19,6 @@ public class DepthToMatManager : MonoBehaviour
     private const int _Speed = 50;
 
     public MultiSourceManager _MultiManager;
-    public ColorSourceManager _ColorManager;
-    public DepthSourceManager _DepthManager;
 
     //二質化index
     public Slider _binaryIndex;
@@ -33,6 +31,12 @@ public class DepthToMatManager : MonoBehaviour
     private Mat _Depth;
 
     int _maxCountKey = -1;
+
+    //各點距離
+    public double Distance_UpLeft { get; private set; }
+    public double Distance_UpRight { get; private set; }
+    public double Distance_DownLeft { get; private set; }
+    public double Distance_DonwRight { get; private set; }
 
     public Mat getDepthMat()
     {
@@ -81,10 +85,10 @@ public class DepthToMatManager : MonoBehaviour
         {
             return;
         }
-        if (_DepthManager == null)
-        {
-            return;
-        }
+        //if (_DepthManager == null)
+        //{
+        //    return;
+        //}
         RefreshData(_MultiManager.GetDepthData(),
                     _MultiManager.ColorWidth,
                     _MultiManager.ColorHeight);
@@ -147,6 +151,22 @@ public class DepthToMatManager : MonoBehaviour
                 if(indexX == 64 && indexY == 53 && _kinectDistance !=null)
                 {
                     _kinectDistance.text = "distance: " + avg;
+                }
+                if(x == 0 && y == 0)
+                {
+                    Distance_UpLeft = avg;
+                }
+                if(x == (frameDesc.Width - _DownsampleSize) && y == 0)
+                {
+                    Distance_UpRight = avg;
+                }
+                if (x == 0 && y == (frameDesc.Height - _DownsampleSize))
+                {
+                    Distance_DownLeft = avg;
+                }
+                if (x == (frameDesc.Width - _DownsampleSize) && y == (frameDesc.Height - _DownsampleSize))
+                {
+                    Distance_DonwRight = avg;
                 }
                 //距離1000mm正負200mm
                 //avg = (avg > (845)) ? 0 : 255;
