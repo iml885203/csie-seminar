@@ -337,7 +337,7 @@ public class Match : MonoBehaviour {
                _srcColor[2] < _getrgb[2] + _clolrRange &&
                _srcColor[2] > _getrgb[2] - _clolrRange)
            {
-               _sensingResults[i].SetPoint(P1, P2);
+                SensingResults[i].SetPoint(P1, P2);
                return i;
            }
         }

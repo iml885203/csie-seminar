@@ -45,18 +45,18 @@ public class matchPointToOutputView : MonoBehaviour {
         }
 
         BaseObject[] results = _MatchManager.SensingResults.ToArray();
-        
-            
-        for(int i=0; i< results.Length; i++)
+
+        outputPoint.Clear();
+        for (int i=0; i< results.Length; i++)
         {
             Point[] block = results[i].ObjectBlock;
             var centerX = (block[0].x + block[1].x) / 2;
             var centerY = (block[0].y + block[1].y) / 2;
-            Debug.Log("#" + i + ": " + centerX + "," + centerY);
+            //Debug.Log("#" + i + ": " + centerX + "," + centerY);
             var transPoint = _clickPositionTrans.TransToScreen2Pos(new Point(centerX, centerY));
             //Debug.Log("object" + ": " + transPoint.x + "," + transPoint.y);
-            OutputX = transPoint.x;
-            OutputY = transPoint.y;
+            
+            outputPoint.Add(transPoint);
         }
     }
 }

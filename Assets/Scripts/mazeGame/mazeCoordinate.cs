@@ -37,8 +37,16 @@ public class mazeCoordinate : MonoBehaviour {
     //遊戲狀態
     private int _round;
     private int _whoRound;
+    //觸發角色移動
+    private bool _moved;
+    private float _movedTimer;
+    private float _movedTriggerTime;
+    //角色outputView座標
+    public matchPointToOutputView _matchPointToOutputView;
+    private Point[] _pointPlayer;
+    private int _pointRange;
 
-	// Use this for initialization
+    // Use this for initialization
     void Start()
     {
 
@@ -61,6 +69,16 @@ public class mazeCoordinate : MonoBehaviour {
         //設定玩家顏色
         _playerColor[0] = new Scalar(0, 0, 255);
         _playerColor[1] = new Scalar(255, 255, 255);
+        //
+        _moved = false;
+        _movedTimer = 0f;
+        _movedTriggerTime = 3;
+        _pointRange = 5;
+        //
+        _pointPlayer = new Point[2];
+        _pointPlayer[0] = new Point(0, 0);
+        _pointPlayer[1] = new Point(0, 0);
+
     }
 
     void Update()
@@ -76,28 +94,56 @@ public class mazeCoordinate : MonoBehaviour {
             Init();
         }
 
+        Point[] characterPoint = _matchPointToOutputView.outputPoint.ToArray();
+        
+        if(characterPoint.Length == 2)
+        {
+            //Debug.Log("round: "+_whoRound);
+            //Debug.Log(characterPoint[_whoRound]);
+            //Debug.Log(_pointPlayer[_whoRound]);
+
+            if (characterPoint[_whoRound].x < _pointPlayer[_whoRound].x + _pointRange && characterPoint[_whoRound].x > _pointPlayer[_whoRound].x - _pointRange &&
+               characterPoint[_whoRound].y < _pointPlayer[_whoRound].y + _pointRange && characterPoint[_whoRound].y > _pointPlayer[_whoRound].y - _pointRange)
+            {
+                _movedTimer += Time.deltaTime;
+                if (_movedTimer > _movedTriggerTime)
+                {
+                    _movedTimer = 0f;
+                    _moved = true;
+                    Debug.Log("round: " + _whoRound + " Point: "+ (int)_pointPlayer[_whoRound].x+","+ (int)_pointPlayer[_whoRound].y);
+                }
+            }
+            else
+            {
+                _movedTimer = 0f;
+                _pointPlayer[_whoRound] = characterPoint[_whoRound];
+            }
+        }
+
+
         //如果滑鼠點擊
-        if (Input.GetMouseButtonUp(0))
+        if (_moved)
         {
             _whoRound = _round % 2;
             this.FreshOneCanMoveArea(_whoRound);
 
-            if (_mapData.getCanMoveArea().Exists(List => List.x == _rayPosData.getPos().x && List.y == _rayPosData.getPos().y))
+            if (_mapData.getCanMoveArea().Exists(List => List.x == _pointPlayer[_whoRound].x && List.y == _pointPlayer[_whoRound].y))
             {
-                _mapData.setPlayerPos(_whoRound, new Point(_rayPosData.getPos().x, _rayPosData.getPos().y));
+                _mapData.setPlayerPos(_whoRound, new Point(_pointPlayer[_whoRound].x, _pointPlayer[_whoRound].y));
                 _round++;
                 _roundText.text = ((_round % 2 == 0) ? "(←) " : "(→) ") + ("Round：" + _round);
                 this.RefreshCanMoveArea();
-                Debug.Log("This point can be move!" + "X = " + _rayPosData.getPos().x + ",Y = " + _rayPosData.getPos().y);
+                Debug.Log("This point can be move!" + "X = " + _pointPlayer[_whoRound].x + ",Y = " + _pointPlayer[_whoRound].y);
             }
             else
             {
-                Debug.Log("This point can't be move!" + "X = " + _rayPosData.getPos().x + ",Y = " + _rayPosData.getPos().y);
+                Debug.Log("This point can't be move!" + "X = " + _pointPlayer[_whoRound].x + ",Y = " + _pointPlayer[_whoRound].y);
             }
 
             //Debug.Log("WR" + _whoRound + "R " + _round + "NUM " + _mapData.getPlayerCount());
             //Debug.Log("ID = 0" + "X = " + _mapData.getPlayerPos(0).x + "Y = " + _mapData.getPlayerPos(0).y);
             //Debug.Log("ID = 1" + "X = " + _mapData.getPlayerPos(1).x + "Y = " + _mapData.getPlayerPos(1).y);
+            _moved = false;
         }
         //搜尋兩個玩家可走區塊
         for (int ID = 0; ID < _mapData.getPlayerCount(); ID++)
@@ -132,6 +178,7 @@ public class mazeCoordinate : MonoBehaviour {
     {
         //超出範圍
         if (x < 0 || y < 0 || x > 16 || y > 9) return;
+        _mapData.setCanMoveArea(new Point(x, y));
         //剩餘步數大於0
         if (times-- > 0)
         {
