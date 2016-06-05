@@ -25,23 +25,24 @@ public class mazeCoordinate : MonoBehaviour {
     //設定地圖方格陣列
     public mapBlock[,] StartBlock;
     //設定顏色
+    private Scalar _treadsureColor = new Scalar(255, 255, 00);                     //寶藏迷霧
     private Scalar _FogOfWarColor = new Scalar(45, 45, 45);                     //戰爭迷霧
     private Scalar _mapWellColor = new Scalar(255, 250, 250);                   //迷宮的牆壁顏色
     private Scalar _canGoBlockColor = new Scalar(200, 10, 10);                       //可走的地區顏色
-    private Scalar[] _playerColor = new Scalar[2];
+    private Scalar[] _playerColor = new Scalar[2] { new Scalar(0, 0, 255), new Scalar(255, 255, 255) }; //玩家顏色
     //線條粗細
     private int _mapWellThickness = 2;
     private int _mapBlockThickness = 1;
     //點擊功能class
     public raytoPosition _rayPosData;
     //遊戲狀態
+    private int _winerFlag; //-1=>沒人贏 0=>ID 0玩家贏 1=>ID 1玩家贏
     private int _round;
     private int _whoRound;
 
 	// Use this for initialization
     void Start()
     {
-
         StartBlock = new mapBlock[ScreenHeightBlock, ScreenWidthBlock];           //設定初始地圖陣列大小
 
         _mapWidth = transform.localScale.x;
@@ -55,7 +56,11 @@ public class mazeCoordinate : MonoBehaviour {
         //設定玩家初始位置
         _mapData.setPlayerPos(new Point(0, 0));
         _mapData.setPlayerPos(new Point(4, 4));
-        //設定回合&誰先遊戲
+        //設定寶藏初始位置
+        _mapData.setTreadsurePos(new Point(1, 1));
+        _mapData.setTreadsurePos(new Point(5, 5));
+        //設定回合&誰先遊戲&還沒有人贏
+        _winerFlag = -1;
         _round = 0;
         _whoRound = 0;
         //設定玩家顏色
@@ -63,24 +68,75 @@ public class mazeCoordinate : MonoBehaviour {
         _playerColor[1] = new Scalar(255, 255, 255);
     }
 
+    public void Restart()
+    {
+        _rayPosData.Reset();
+        _mapMat.setTo(_FogOfWarColor);
+        _mapData.ClearPlayerPos();
+        _mapData.ClearCanMoveArea();
+        _mapData.ClearTreadsurePos();
+        //設定玩家初始位置
+        _mapData.setPlayerPos(new Point(0, 0));
+        _mapData.setPlayerPos(new Point(4, 4));
+        //設定寶藏初始位置
+        _mapData.setTreadsurePos(new Point(1, 1));
+        _mapData.setTreadsurePos(new Point(5, 5));
+        //設定回合&誰先遊戲&還沒有人贏
+        _winerFlag = -1;
+        _round = 0;
+        _whoRound = 0;
+        this.DrawMap();
+        this.DrawTreadsure();
+        for (int ID = 0; ID < _mapData.getPlayerCount(); ID++)
+            DrawPlayer(ID);
+    }
+
     void Update()
     {
-        _mapMat.setTo(_FogOfWarColor);
-        //顯示大小改變
-        if (transform.localScale.x != _mapWidth || transform.localScale.y != _mapHeight)
+        if (_winerFlag < 0)
         {
-            //Debug.Log("update map coordinate");
-            _mapWidth = transform.localScale.x;
-            _mapHeight = transform.localScale.y;
-            Debug.Log("update map" + _mapWidth + "x" + _mapHeight);
-            Init();
-        }
+            _mapMat.setTo(_FogOfWarColor);
+            //顯示大小改變
+            if (transform.localScale.x != _mapWidth || transform.localScale.y != _mapHeight)
+            {
+                Debug.Log("update map" + transform.localScale.x + "x" + transform.localScale.y);
+                Init();
+            }
 
-        //如果滑鼠點擊
+            //如果滑鼠點擊
+            this.ClickMouseUpEvent();
+
+            //搜尋兩個玩家可走區塊
+            for (int ID = 0; ID < _mapData.getPlayerCount(); ID++)
+                CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), 3);
+
+            for (int ID = 0; ID < _mapData.getPlayerCount(); ID++)
+                if (this.GetTreadsureOrNot(ID))
+                {
+                    _winerFlag = ID;
+                    _roundText.text = "Player " + ID + " win!!";
+                    Debug.Log("ID = " + ID + ",X = " + _mapData.getPlayerPos(ID).x + ",Y = " + _mapData.getPlayerPos(ID).y + ", get the treadsure");
+                }
+
+            //畫地圖(外框、兩個玩家可走區塊),寶藏,玩家
+            this.DrawMap();
+            this.DrawTreadsure();
+            for (int ID = 0; ID < _mapData.getPlayerCount(); ID++)
+                DrawPlayer(ID);
+
+            //轉換地圖mat至顯示結果
+            Utils.matToTexture2D(_mapMat, _tex);
+            gameObject.GetComponent<Renderer>().material.mainTexture = _tex;
+        }
+    }
+
+    //滑鼠點擊事件
+    private void ClickMouseUpEvent()
+    {
         if (Input.GetMouseButtonUp(0))
         {
             _whoRound = _round % 2;
-            this.FreshOneCanMoveArea(_whoRound);
+            this.RefreshOneCanMoveArea(_whoRound);
 
             if (_mapData.getCanMoveArea().Exists(List => List.x == _rayPosData.getPos().x && List.y == _rayPosData.getPos().y))
             {
@@ -99,32 +155,20 @@ public class mazeCoordinate : MonoBehaviour {
             //Debug.Log("ID = 0" + "X = " + _mapData.getPlayerPos(0).x + "Y = " + _mapData.getPlayerPos(0).y);
             //Debug.Log("ID = 1" + "X = " + _mapData.getPlayerPos(1).x + "Y = " + _mapData.getPlayerPos(1).y);
         }
-        //搜尋兩個玩家可走區塊
-        for (int ID = 0; ID < _mapData.getPlayerCount(); ID++)
-            CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y),3);
-
-        //畫地圖(外框、兩個玩家可走區塊)
-        DrawMap();
-
-        //畫兩個玩家位置
-        for (int ID = 0; ID < _mapData.getPlayerCount();ID++ )
-            DrawPlayer(ID);
-
-        //轉換地圖mat至顯示結果
-        Utils.matToTexture2D(_mapMat, _tex);
-        gameObject.GetComponent<Renderer>().material.mainTexture = _tex;
-
     }
 
-    public void RefreshCanMoveArea()//刷新canMoveArea(包含清除及重新搜尋)
+    //刷新canMoveArea(包含清除及重新搜尋)
+    public void RefreshCanMoveArea()
     {
-        _mapData.clearCanMoveArea();
+        _mapData.ClearCanMoveArea();
         for (int ID = 0; ID < _mapData.getPlayerCount(); ID++)
             CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), 3);
     }
-    public void FreshOneCanMoveArea(int ID)//刷新canMoveArea(包含清除及重新搜尋)
+
+    //刷新canMoveArea(包含清除及重新搜尋)
+    public void RefreshOneCanMoveArea(int ID)
     {
-        _mapData.clearCanMoveArea();
+        _mapData.ClearCanMoveArea();
         CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), 3);
     }
     //搜尋可以走的區塊並加入資料
@@ -184,15 +228,18 @@ public class mazeCoordinate : MonoBehaviour {
     //畫寶藏 永遠畫
     private void DrawTreadsure()
     {
-        /*Point treadsurePoint = new Point();
-        treadsurePoint = PosToBlock((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y));
-        Imgproc.circle(_mapMat, new Point(_mapWidth - ((treadsurePoint[0].x + P[1].x) / 2), _mapHeight - ((treadsurePoint[0].y + P[1].y) / 2)), (int)((treadsurePoint[1].x - P[0].x) / 3), _playerColor[ID]);*/
+        for(int treadsureIndex = 0;treadsureIndex < _mapData.getTreadsurePos().Count; treadsureIndex++)
+        {
+            Point[] treadsurePoint = new Point[2];
+            treadsurePoint = PosToBlock((int)(_mapData.getTreadsurePos()[treadsureIndex].x), (int)(_mapData.getTreadsurePos()[treadsureIndex].y));
+            Imgproc.circle(_mapMat, new Point(_mapWidth - ((treadsurePoint[0].x + treadsurePoint[1].x) / 2), _mapHeight - ((treadsurePoint[0].y + treadsurePoint[1].y) / 2)), (int)((treadsurePoint[1].x - treadsurePoint[0].x) / 3), _treadsureColor,-1);
+        }
     }
 
     //回傳是否得到寶藏 得到->true 沒得到->false
-    private bool GetTreadsureOrNot(int playID)
+    private bool GetTreadsureOrNot(int playerID)
     {
-        if (_mapData.getTreadsurePos().Exists(Point =>Point.x == _mapData.getPlayerPos(playID).x && Point.y == _mapData.getPlayerPos(playID).y))
+        if (_mapData.getTreadsurePos().Exists(Point =>Point.x == _mapData.getPlayerPos(playerID).x && Point.y == _mapData.getPlayerPos(playerID).y))
             return true;
         return false;
     }
@@ -253,6 +300,8 @@ public class mazeCoordinate : MonoBehaviour {
     //初始化地圖方格座標
     private void Init()
     {
+        _mapWidth = transform.localScale.x;
+        _mapHeight = transform.localScale.y;
         //新增開始區塊範圍
         for (int i = 0; i < ScreenHeightBlock; i++)
         {
