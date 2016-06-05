@@ -3,8 +3,15 @@ using System.Collections;
 using OpenCVForUnity;
 
 public class mapBlock : MonoBehaviour {
-    public Point minPos { get; set; }
-    public Point maxPos { get; set; }
+
+    public Point minPos;
+    public Point maxPos;
+
+    public mapBlock()
+    {
+        minPos = new Point(0, 0);
+        maxPos = new Point(0, 0);
+    }
     /*check if in block by Point*/
     public bool Check(Point pos)
     {
