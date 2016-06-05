@@ -79,27 +79,50 @@ public class mazeCoordinate : MonoBehaviour {
         //如果滑鼠點擊
         if (Input.GetMouseButtonUp(0))
         {
-            _mapData.clearCanMoveArea();
             _whoRound = _round % 2;
-            _mapData.setPlayerPos(_whoRound, new Point( _rayPosData.getPos().x , _rayPosData.getPos().y));
-            _round++;
-            _roundText.text = "Round：" + _round;
+            this.RefreshCanMoveArea();
+
+            if (_mapData.getCanMoveArea().Exists(List => List.x == _rayPosData.getPos().x && List.y == _rayPosData.getPos().y))
+            {
+                _mapData.setPlayerPos(_whoRound, new Point(_rayPosData.getPos().x, _rayPosData.getPos().y));
+                _round++;
+                _roundText.text = "Round：" + _round;
+                this.RefreshCanMoveArea();
+                Debug.Log("This point can be move!" + "X = " + _rayPosData.getPos().x + ",Y = " + _rayPosData.getPos().y);
+            }
+            else
+            {
+                Debug.Log("This point can't be move!" + "X = " + _rayPosData.getPos().x + ",Y = " + _rayPosData.getPos().y);
+            }
+
             //Debug.Log("WR" + _whoRound + "R " + _round + "NUM " + _mapData.getPlayerCount());
             //Debug.Log("ID = 0" + "X = " + _mapData.getPlayerPos(0).x + "Y = " + _mapData.getPlayerPos(0).y);
             //Debug.Log("ID = 1" + "X = " + _mapData.getPlayerPos(1).x + "Y = " + _mapData.getPlayerPos(1).y);
         }
-        //搜尋玩家可走區塊
-        for (int ID = 0; ID < _mapData.getPlayerCount(); ID++) CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y),3);
-        //畫地圖(外框、可走區塊)
+        //搜尋兩個玩家可走區塊
+        for (int ID = 0; ID < _mapData.getPlayerCount(); ID++)
+            CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y),3);
+
+        //畫地圖(外框、兩個玩家可走區塊)
         DrawMap();
-        //畫玩家位置
-        for (int ID = 0; ID < _mapData.getPlayerCount();ID++ )DrawPlayer(ID);
+
+        //畫兩個玩家位置
+        for (int ID = 0; ID < _mapData.getPlayerCount();ID++ )
+            DrawPlayer(ID);
 
         //轉換地圖mat至顯示結果
         Utils.matToTexture2D(_mapMat, _tex);
         gameObject.GetComponent<Renderer>().material.mainTexture = _tex;
 
     }
+
+    public void RefreshCanMoveArea()//刷新canMoveArea(包含清除及重新搜尋)
+    {
+        _mapData.clearCanMoveArea();
+        for (int ID = 0; ID < _mapData.getPlayerCount(); ID++)
+            CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), 3);
+    }
+
     //搜尋可以走的區塊並加入資料
     public void CanGo(int x,int y,int times)//原始座標x,y剩餘次數
     {
