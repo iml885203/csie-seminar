@@ -86,7 +86,7 @@ public class mazeCoordinate : MonoBehaviour {
             {
                 _mapData.setPlayerPos(_whoRound, new Point(_rayPosData.getPos().x, _rayPosData.getPos().y));
                 _round++;
-                _roundText.text = "Round：" + _round;
+                _roundText.text = ((_round % 2 == 0) ? "(←) " : "(→) ") + ("Round：" + _round);
                 this.RefreshCanMoveArea();
                 Debug.Log("This point can be move!" + "X = " + _rayPosData.getPos().x + ",Y = " + _rayPosData.getPos().y);
             }
@@ -180,6 +180,23 @@ public class mazeCoordinate : MonoBehaviour {
         P = PosToBlock((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y));
         Imgproc.circle(_mapMat, new Point(_mapWidth - ((P[0].x + P[1].x) / 2), _mapHeight - ((P[0].y + P[1].y) / 2)), (int)((P[1].x - P[0].x) / 3), _playerColor[ID]);
     }
+
+    //畫寶藏 永遠畫
+    private void DrawTreadsure()
+    {
+        /*Point treadsurePoint = new Point();
+        treadsurePoint = PosToBlock((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y));
+        Imgproc.circle(_mapMat, new Point(_mapWidth - ((treadsurePoint[0].x + P[1].x) / 2), _mapHeight - ((treadsurePoint[0].y + P[1].y) / 2)), (int)((treadsurePoint[1].x - P[0].x) / 3), _playerColor[ID]);*/
+    }
+
+    //回傳是否得到寶藏 得到->true 沒得到->false
+    private bool GetTreadsureOrNot(int playID)
+    {
+        if (_mapData.getTreadsurePos().Exists(Point =>Point.x == _mapData.getPlayerPos(playID).x && Point.y == _mapData.getPlayerPos(playID).y))
+            return true;
+        return false;
+    }
+    
     //傳換座標變成兩點
     private Point[] PosToBlock(int x, int y)
     {
