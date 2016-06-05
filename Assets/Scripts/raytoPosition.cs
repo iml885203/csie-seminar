@@ -32,11 +32,12 @@ public class raytoPosition : MonoBehaviour
                 double posX = (transform.localScale.x / 2) + coordinateX;
                 double posY = (transform.localScale.y / 2) - coordinateY;
                 Debug.ClearDeveloperConsole();
+                posXY = new Point(posX, posY);
                 //Debug.Log("point:" + (int)hit.point.x + ", " + (int)hit.point.y);
                 //Debug.Log("coordinate:" + (int)coordinateX + ", " + (int)coordinateY);
                 // Debug.Log("Pos:" + (int)posX + ", " + (int)posY);
                 //map check
-                
+
                 //Debug.Log("checkPos:" + _mapCoordinate.StartBlock.Check(posX, posY));
             }
         }
