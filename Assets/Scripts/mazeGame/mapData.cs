@@ -51,7 +51,11 @@ public class mapData : MonoBehaviour {
     {
         _canMoveArea.Clear();
     }
-
+    public void RemovePlayerArea()
+    {
+        _canMoveArea.Remove(_playerPos[0]);
+        _canMoveArea.Remove(_playerPos[1]);
+    }
     //玩家位置相關功能
     public Point getPlayerPos(int ID)
     {
