@@ -25,11 +25,10 @@ public class mazeCoordinate : MonoBehaviour {
     //設定地圖方格陣列
     public mapBlock[,] StartBlock;
     //設定顏色
-    private Scalar _treadsureColor = new Scalar(255, 255, 0);                     //寶藏顏色(黃)
     private Scalar _FogOfWarColor = new Scalar(45, 45, 45);                     //戰爭迷霧
     private Scalar _mapWellColor = new Scalar(255, 250, 250);                   //迷宮的牆壁顏色
     private Scalar _canGoBlockColor = new Scalar(200, 10, 10);                       //可走的地區顏色
-    private Scalar[] _playerColor = new Scalar[2] { new Scalar(0, 0, 255), new Scalar(255, 255, 255) };//設定玩家顏色
+    private Scalar[] _playerColor = new Scalar[2];
     //線條粗細
     private int _mapWellThickness = 2;
     private int _mapBlockThickness = 1;
@@ -59,6 +58,9 @@ public class mazeCoordinate : MonoBehaviour {
         //設定回合&誰先遊戲
         _round = 0;
         _whoRound = 0;
+        //設定玩家顏色
+        _playerColor[0] = new Scalar(0, 0, 255);
+        _playerColor[1] = new Scalar(255, 255, 255);
     }
 
     void Update()
@@ -78,14 +80,13 @@ public class mazeCoordinate : MonoBehaviour {
         if (Input.GetMouseButtonUp(0))
         {
             _whoRound = _round % 2;
-            this.RefreshCanMoveArea();
+            this.FreshOneCanMoveArea(_whoRound);
 
             if (_mapData.getCanMoveArea().Exists(List => List.x == _rayPosData.getPos().x && List.y == _rayPosData.getPos().y))
             {
                 _mapData.setPlayerPos(_whoRound, new Point(_rayPosData.getPos().x, _rayPosData.getPos().y));
                 _round++;
-                _roundText.text = ((_round % 2 == 0) ? "(←) " : "(→) ") + "Round：" + _round;
-                
+                _roundText.text = "Round：" + _round;
                 this.RefreshCanMoveArea();
                 Debug.Log("This point can be move!" + "X = " + _rayPosData.getPos().x + ",Y = " + _rayPosData.getPos().y);
             }
@@ -121,7 +122,11 @@ public class mazeCoordinate : MonoBehaviour {
         for (int ID = 0; ID < _mapData.getPlayerCount(); ID++)
             CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), 3);
     }
-
+    public void FreshOneCanMoveArea(int ID)//刷新canMoveArea(包含清除及重新搜尋)
+    {
+        _mapData.clearCanMoveArea();
+        CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), 3);
+    }
     //搜尋可以走的區塊並加入資料
     public void CanGo(int x,int y,int times)//原始座標x,y剩餘次數
     {
@@ -169,28 +174,12 @@ public class mazeCoordinate : MonoBehaviour {
         }
         return;
     }
-
     private void DrawPlayer(int ID)
     {
         Point[] P = new Point[2];
         P = PosToBlock((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y));
         Imgproc.circle(_mapMat, new Point(_mapWidth - ((P[0].x + P[1].x) / 2), _mapHeight - ((P[0].y + P[1].y) / 2)), (int)((P[1].x - P[0].x) / 3), _playerColor[ID]);
     }
-
-    //畫寶藏 如果寶藏是在玩家可視區域內,顯示,否則不顯示
-    private void DrawTreadsure()
-    {
-        
-    }
-
-    //回傳是否得到寶藏 得到->true 沒得到->false
-    private bool GetTreadsureOrNot(int playID)
-    {
-        if (_mapData.getTreadsurePos().Exists(Point =>Point.x == _mapData.getPlayerPos(playID).x && Point.y == _mapData.getPlayerPos(playID).y))
-            return true;
-        return false;
-    }
-
     //傳換座標變成兩點
     private Point[] PosToBlock(int x, int y)
     {
@@ -199,7 +188,6 @@ public class mazeCoordinate : MonoBehaviour {
         P[1] = StartBlock[y, x].maxPos;
         return P;
     }
-
     public void DrawMap()
     {
         //劃出地圖邊界
@@ -217,7 +205,6 @@ public class mazeCoordinate : MonoBehaviour {
             }
         }
     }
-
     //畫格子
     public void DrawMazeBlock(int x,int y,byte Block)
     {
@@ -246,7 +233,6 @@ public class mazeCoordinate : MonoBehaviour {
             Imgproc.line(_mapMat, new Point(_mapWidth - P[0].x, _mapHeight - P[0].y), new Point(_mapWidth - P[0].x, _mapHeight - P[1].y), _mapWellColor, _mapWellThickness);
         }
     }
-
     //初始化地圖方格座標
     private void Init()
     {
