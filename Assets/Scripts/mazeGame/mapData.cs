@@ -19,6 +19,8 @@ public class mapData : MonoBehaviour {
     private List<Point> _playerPos = new List<Point>();
     private List<Point> _treadsurePos = new List<Point>();
 
+    
+
     //可走區塊相關功能
     public List<Point> getCanMoveArea()
     {   
@@ -35,7 +37,17 @@ public class mapData : MonoBehaviour {
         return _canMoveArea.Exists(List => List.x == P.x && List.y == P.y);
     }
 
-    public void clearCanMoveArea()
+    public void ClearPlayerPos()
+    {
+        _playerPos.Clear();
+    }
+
+    public void ClearTreadsurePos()
+    {
+        _treadsurePos.Clear();
+    }
+
+    public void ClearCanMoveArea()
     {
         _canMoveArea.Clear();
     }

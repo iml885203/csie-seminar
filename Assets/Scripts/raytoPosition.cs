@@ -2,14 +2,16 @@
 using System.Collections;
 using OpenCVForUnity;
 
-public class raytoPosition : MonoBehaviour {
-  //  public mapCoordinate _mapCoordinate;
+public class raytoPosition : MonoBehaviour
+{
+    //  public mapCoordinate _mapCoordinate;
     public mazeCoordinate mazeCoordinate;
-    public double posX {get; private set;}
+    public double posX { get; private set; }
     public double posY { get; private set; }
     public Point posXY;
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
         posXY = new Point(-1, -1);
         //Debug.Log(_mapCoordinate.StartBlock.maxPos.y);
     }
@@ -31,8 +33,8 @@ public class raytoPosition : MonoBehaviour {
                 double posY = (transform.localScale.y / 2) - coordinateY;
                 Debug.ClearDeveloperConsole();
                 //Debug.Log("coordinate:" + (int)coordinateX + ", " + (int)coordinateY);
-               // Debug.Log("Pos:" + (int)posX + ", " + (int)posY);
-                
+                // Debug.Log("Pos:" + (int)posX + ", " + (int)posY);
+
                 //map check
                 for (int i = 0; i < 9; i++)
                 {
@@ -49,10 +51,16 @@ public class raytoPosition : MonoBehaviour {
                 //Debug.Log("checkPos:" + _mapCoordinate.StartBlock.Check(posX, posY));
             }
         }
-        
+
     }
+
     public Point getPos()
     {
         return posXY;
+    }
+
+    public void Reset()
+    {
+        posXY = new Point(-1, -1);
     }
 }
