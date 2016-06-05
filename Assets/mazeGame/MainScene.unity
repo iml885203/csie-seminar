@@ -1047,6 +1047,10 @@ Prefab:
       propertyPath: _roundText
       value: 
       objectReference: {fileID: 2053491422}
+    - target: {fileID: 11419022, guid: 93abed50a5e878642801c45e4710da99, type: 2}
+      propertyPath: _matchPointToOutputView
+      value: 
+      objectReference: {fileID: 152670502}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 93abed50a5e878642801c45e4710da99, type: 2}
   m_IsPrefabParent: 0

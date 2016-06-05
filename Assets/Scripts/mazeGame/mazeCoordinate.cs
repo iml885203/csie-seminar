@@ -26,15 +26,15 @@ public class mazeCoordinate : MonoBehaviour {
     public mapBlock[,] StartBlock;
     //設定顏色
     private Scalar _treadsureColor = new Scalar(255, 255, 00);                     //寶藏迷霧
-    private Scalar _FogOfWarColor = new Scalar(45, 45, 45);                     //戰爭迷霧
+    private Scalar _FogOfWarColor = new Scalar(0, 0, 0);                     //戰爭迷霧
     private Scalar _mapWellColor = new Scalar(255, 250, 250);                   //迷宮的牆壁顏色
-    private Scalar _canGoBlockColor = new Scalar(200, 10, 10);                       //可走的地區顏色
+    private Scalar _canGoBlockColor = new Scalar(0, 0, 0);                       //可走的地區顏色
     private Scalar[] _playerColor = new Scalar[2] { new Scalar(0, 0, 255), new Scalar(255, 255, 255) }; //玩家顏色
     //線條粗細
-    private int _mapWellThickness = 2;
+    private int _mapWellThickness = 1;
     private int _mapBlockThickness = 1;
     //點擊功能class
-    public raytoPosition _rayPosData;
+    //public raytoPosition _rayPosData;
     //遊戲狀態
     private int _winerFlag; //-1=>沒人贏 0=>ID 0玩家贏 1=>ID 1玩家贏
     private int _round;
@@ -48,11 +48,13 @@ public class mazeCoordinate : MonoBehaviour {
     private Point[] _pointPlayer;
     private int _pointRange;
 
+    private bool isSave = new bool();
+
     // Use this for initialization
     void Start()
     {
         StartBlock = new mapBlock[ScreenHeightBlock, ScreenWidthBlock];           //設定初始地圖陣列大小
-
+        isSave = false;
         _mapWidth = transform.localScale.x;
         _mapHeight = transform.localScale.y;
         
@@ -72,12 +74,12 @@ public class mazeCoordinate : MonoBehaviour {
         _round = 0;
         _whoRound = 0;
         //設定玩家顏色
-        _playerColor[0] = new Scalar(0, 0, 255);
-        _playerColor[1] = new Scalar(255, 255, 255);
+        _playerColor[0] = new Scalar(0, 0, 0);
+        _playerColor[1] = new Scalar(0, 0 ,0);
         //
         _moved = false;
         _movedTimer = 0f;
-        _movedTriggerTime = 3;
+        _movedTriggerTime = 1;
         _pointRange = 5;
         //
         _pointPlayer = new Point[2];
@@ -88,7 +90,7 @@ public class mazeCoordinate : MonoBehaviour {
 
     public void Restart()
     {
-        _rayPosData.Reset();
+        //_rayPosData.Reset();
         _mapMat.setTo(_FogOfWarColor);
         _mapData.ClearPlayerPos();
         _mapData.ClearCanMoveArea();
@@ -113,6 +115,7 @@ public class mazeCoordinate : MonoBehaviour {
     {
         if (_winerFlag < 0)
         {
+            SetIsSave();
             _mapMat.setTo(_FogOfWarColor);
             //顯示大小改變
             if (transform.localScale.x != _mapWidth || transform.localScale.y != _mapHeight)
@@ -124,7 +127,7 @@ public class mazeCoordinate : MonoBehaviour {
             // set Character Point and trigger
             Point[] characterPoint = _matchPointToOutputView.outputPoint.ToArray();
 
-            if (characterPoint.Length == 2)
+            if (characterPoint.Length != 0)
             {
                 //Debug.Log("round: "+_whoRound);
                 //Debug.Log(characterPoint[_whoRound]);
@@ -163,8 +166,12 @@ public class mazeCoordinate : MonoBehaviour {
                 }
 
             //畫地圖(外框、兩個玩家可走區塊),寶藏,玩家
-            this.DrawMap();
-            this.DrawTreadsure();
+            if (!isSave)
+            {
+                this.DrawMap();
+                this.DrawTreadsure();
+            }
+            
             for (int ID = 0; ID < _mapData.getPlayerCount(); ID++)
                 DrawPlayer(ID);
 
@@ -179,20 +186,34 @@ public class mazeCoordinate : MonoBehaviour {
     {
         if (_moved)
         {
+            Point triggerPoint = new Point();
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 16; j++)
+                {
+                    if (StartBlock[i, j].Check(_pointPlayer[_whoRound].x, _pointPlayer[_whoRound].y))
+                    {
+                        //Debug.Log("PosX:" + j + "PosX:" + i);
+                        triggerPoint.x = j;
+                        triggerPoint.y = i;
+                    }
+                }
+            }
+
             _whoRound = _round % 2;
             this.RefreshOneCanMoveArea(_whoRound);
 
-            if (_mapData.getCanMoveArea().Exists(List => List.x == _pointPlayer[_whoRound].x && List.y == _pointPlayer[_whoRound].y))
+            if (_mapData.getCanMoveArea().Exists(List => List.x == triggerPoint.x && List.y == triggerPoint.y))
             {
-                _mapData.setPlayerPos(_whoRound, new Point(_pointPlayer[_whoRound].x, _pointPlayer[_whoRound].y));
+                _mapData.setPlayerPos(_whoRound, new Point(triggerPoint.x, triggerPoint.y));
                 _round++;
                 _roundText.text = ((_round % 2 == 0) ? "(←) " : "(→) ") + ("Round：" + _round);
                 this.RefreshCanMoveArea();
-                Debug.Log("This point can be move!" + "X = " + _pointPlayer[_whoRound].x + ",Y = " + _pointPlayer[_whoRound].y);
+                Debug.Log("This point can be move!" + "X = " + triggerPoint.x + ",Y = " + triggerPoint.y);
             }
             else
             {
-                Debug.Log("This point can't be move!" + "X = " + _pointPlayer[_whoRound].x + ",Y = " + _pointPlayer[_whoRound].y);
+                Debug.Log("This point can't be move!" + "X = " + triggerPoint.x + ",Y = " + triggerPoint.y);
             }
 
             //Debug.Log("WR" + _whoRound + "R " + _round + "NUM " + _mapData.getPlayerCount());
@@ -214,6 +235,7 @@ public class mazeCoordinate : MonoBehaviour {
     public void RefreshOneCanMoveArea(int ID)
     {
         _mapData.ClearCanMoveArea();
+        CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), 3);
         CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), 3);
     }
     //搜尋可以走的區塊並加入資料
@@ -359,5 +381,12 @@ public class mazeCoordinate : MonoBehaviour {
             }
         }
     }
-
+    public void SetIsSave()
+    {
+        if (Input.GetKeyUp(KeyCode.Y))
+        {
+            isSave = (isSave) ? false : true;
+            Debug.Log((isSave) ? "isSave Set True" : "isSave Set false");
+        }
+    }
 }
