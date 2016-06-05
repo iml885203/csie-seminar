@@ -28,8 +28,10 @@ public class Match : MonoBehaviour {
     private Mat blockMat;
      
     //物體資訊
+    List<BaseObject> _sensingResults = new List<BaseObject>();
     int _clolrRange = 10;
-    List<Scalar> _saveColor = new List<Scalar>(); 
+    //是否可以儲存感測到的物件
+    bool isSave = new bool();
 
     public Texture2D GetMatchTexture()
     {
@@ -48,6 +50,7 @@ public class Match : MonoBehaviour {
         ColorObject yellow = new ColorObject("yellow");
         ColorObject red = new ColorObject("red");
         ColorObject green = new ColorObject("green");
+        isSave = false;
     }
 	// Update is called once per frame
 	void Update () {
@@ -55,7 +58,9 @@ public class Match : MonoBehaviour {
         //Mat resizeMat = new Mat(_matchHeight, _matchWidth, CvType.CV_8UC3);
         //Imgproc.resize(_drawBlock.GetBlockMat(), resizeMat, resizeMat.size());
         //進行辨識 getFeature(輸入影像,MaxR,minR,MaxG,minG,MaxB,minB);
-        
+
+        SetIsSave();
+
         Mat _NewTowMat = new Mat(_drawBlock.MatchHeight, _drawBlock.MatchWidth, CvType.CV_8UC3);
         
         _NewTowMat = _drawBlock.GetBlockMat();
@@ -265,9 +270,9 @@ public class Match : MonoBehaviour {
                     ConsistP.Add(new Point(R0.x, R0.y));
                     ConsistP.Add(new Point(R0.x + R0.width, R0.y + R0.height));
                     clickRGB.Add(clickcolor(RGB, R0));
-                    int diceCount = matchDice(src, R0, temp);
-                    diceCount = (diceCount - 2) / 2;
-                    Debug.Log("dice count = " + diceCount);
+                    //int diceCount = matchDice(src, R0, temp);
+                    //diceCount = (diceCount - 2) / 2;
+                    //Debug.Log("dice count = " + diceCount);
                     //Mat bestLabel = new Mat();
                     //OpenCVForUnity.Core.kmeans(temp, 6, bestLabel, new TermCriteria(3,10, 1.0),1,OpenCVForUnity.Core.KMEANS_RANDOM_CENTERS);
                     //bestLabel.copyTo(temp);
@@ -276,10 +281,12 @@ public class Match : MonoBehaviour {
 
             for (int i = 0; i < ConsistP.Count; i += 2)
             {
-                Imgproc.rectangle(temp, ConsistP[i], ConsistP[i + 1], new Scalar(255, 0, 255), 1);
-                int ID = inRange(clickRGB[i / 2]);
-                Imgproc.putText(temp, "ID=" + ID.ToString(), ConsistP[i], 1, 1, new Scalar(255, 0, 255), 1);
-
+                int ID = inRange(ConsistP[i], ConsistP[i + 1], clickRGB[i / 2]);
+                if (ID != -1)
+                {
+                    Imgproc.rectangle(temp, ConsistP[i], ConsistP[i + 1], new Scalar(255, 0, 255), 1);
+                    Imgproc.putText(temp, "ID=" + ID.ToString(), ConsistP[i], 1, 1, new Scalar(255, 0, 255), 1);
+                }
             }
             ConsistP.Clear();
         }
@@ -301,12 +308,12 @@ public class Match : MonoBehaviour {
         
         return new Scalar((int)average_R, (int)average_G, (int)average_B);
     }
-    int inRange(Scalar src)
+    int inRange(Point P1 , Point P2, Scalar src)
     {
         double[] _srcColor =src.val;
-        int ID = -1;
-        for(int i =0;i < _saveColor.Count;i++){
-           double[] _getrgb =_saveColor[i].val;
+        for (int i = 0; i < _sensingResults.Count; i++)
+        {
+            double[] _getrgb = _sensingResults[i].getColor().val;
           // Debug.Log(_getrgb[0] + "," + _getrgb[1] + ","+_getrgb[2]);
            if (_srcColor[0] < _getrgb[0] + _clolrRange &&
                _srcColor[0] > _getrgb[0] - _clolrRange &&
@@ -318,9 +325,14 @@ public class Match : MonoBehaviour {
                return i;
            }
         }
-        Debug.Log("Create" + _saveColor.Count);
-        _saveColor.Add(src);
-        return _saveColor.Count;
+       
+        if (isSave)
+        {
+            Debug.Log("Create" + _sensingResults.Count);
+            _sensingResults.Add(new BaseObject(P1, P2, src));
+            return _sensingResults.Count;
+        }
+        else return -1;
     }
     int matchDice(Mat src,OpenCVForUnity.Rect rect,Mat temp)//src原圖,point1.2是contour左上右下點,rect是框選區,temp是
     {
@@ -380,5 +392,13 @@ public class Match : MonoBehaviour {
         //int[] face = { Core.FONT_HERSHEY_SIMPLEX };
         //Imgproc.putText(temp, DiceNum.ToString(), new Point(0, 50), face[0], 1.2, new Scalar(255, 255, 255), 2, Imgproc.LINE_AA, false);
         return contours.Count;
+    }
+    public void SetIsSave()
+    {
+        if (Input.GetKeyUp(KeyCode.U))
+        {
+            isSave = (isSave) ? false : true;
+            Debug.Log((isSave) ? "isSave Set True" : "isSave Set false");
+        }
     }
 }
