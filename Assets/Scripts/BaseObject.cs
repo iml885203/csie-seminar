@@ -4,7 +4,7 @@ using OpenCVForUnity;
 
 public class BaseObject : MonoBehaviour {
 
-    private Point [] ObjectBlock;
+    public Point[] ObjectBlock { get; private set; }
     private Scalar ObjectColor;
     private string name;
 

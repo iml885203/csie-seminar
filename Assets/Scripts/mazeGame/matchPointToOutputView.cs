@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using OpenCVForUnity;
+using System.Collections.Generic;
 
 public class matchPointToOutputView : MonoBehaviour {
 
@@ -10,6 +11,7 @@ public class matchPointToOutputView : MonoBehaviour {
     private int width;
     private int height;
     private clickPositionTrans _clickPositionTrans;
+    public List<Point> outputPoint { get; private set; }
     public double OutputX { get; private set; }
     public double OutputY { get; private set; }
 
@@ -18,6 +20,7 @@ public class matchPointToOutputView : MonoBehaviour {
     void Start () {
         OutputX = 0.0;
         OutputY = 0.0;
+        outputPoint = new List<Point>();
     }
 	
 	// Update is called once per frame
@@ -40,15 +43,16 @@ public class matchPointToOutputView : MonoBehaviour {
             Debug.Log("object Size: " + _mapobject.transform.localScale.x + " x " + _mapobject.transform.localScale.y);
             _clickPositionTrans = new clickPositionTrans(width, height, _mapobject.transform.localScale.x, _mapobject.transform.localScale.y);
         }
-        
-        Point[] objectPoint = _MatchManager.MatchObjectPoint.ToArray();
+
+        BaseObject[] results = _MatchManager.SensingResults.ToArray();
         
             
-        for(int i=0; i<objectPoint.Length; i=i+2)
+        for(int i=0; i< results.Length; i++)
         {
-            var centerX = (objectPoint[0].x + objectPoint[1].x) / 2;
-            var centerY = (objectPoint[0].y + objectPoint[1].y) / 2;
-            //Debug.Log("#" + (i + 2)/2 + ": " + centerX + "," + centerY);
+            Point[] block = results[i].ObjectBlock;
+            var centerX = (block[0].x + block[1].x) / 2;
+            var centerY = (block[0].y + block[1].y) / 2;
+            Debug.Log("#" + i + ": " + centerX + "," + centerY);
             var transPoint = _clickPositionTrans.TransToScreen2Pos(new Point(centerX, centerY));
             //Debug.Log("object" + ": " + transPoint.x + "," + transPoint.y);
             OutputX = transPoint.x;

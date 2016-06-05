@@ -28,13 +28,13 @@ public class Match : MonoBehaviour {
     /*public data*/
     public int Width { get; private set; }
     public int Height { get; private set; }
-    public List<Point> MatchObjectPoint { get; private set; }
+    //public List<Point> MatchObjectPoint { get; private set; }
 
     //物體資訊
-    List<BaseObject> _sensingResults = new List<BaseObject>();
-    int _clolrRange = 10;
+    public List<BaseObject> SensingResults = new List<BaseObject>();
+    private int _clolrRange = 10;
     //是否可以儲存感測到的物件
-    bool isSave = new bool();
+    private bool isSave = new bool();
 
     public Texture2D GetMatchTexture()
     {
@@ -274,7 +274,7 @@ public class Match : MonoBehaviour {
 
                 OpenCVForUnity.Rect R0 = Imgproc.boundingRect(contours[index]);
 
-                if (R0.height > 20 && R0.width > 20)
+                if (R0.height > 20 && R0.width > 20 && R0.height <_drawBlock.MatchHeight-10 && R0.width < _drawBlock.MatchWidth-10)
                 {
                     ConsistP.Add(new Point(R0.x, R0.y));
                     ConsistP.Add(new Point(R0.x + R0.width, R0.y + R0.height));
@@ -301,7 +301,7 @@ public class Match : MonoBehaviour {
             // =================================
             // set public MatchObjectPoint =====
             // =================================
-            MatchObjectPoint = ConsistP;
+            //MatchObjectPoint = ConsistP;
 
             //ConsistP.Clear();
         }
@@ -326,9 +326,9 @@ public class Match : MonoBehaviour {
     int inRange(Point P1 , Point P2, Scalar src)
     {
         double[] _srcColor =src.val;
-        for (int i = 0; i < _sensingResults.Count; i++)
+        for (int i = 0; i < SensingResults.Count; i++)
         {
-            double[] _getrgb = _sensingResults[i].getColor().val;
+            double[] _getrgb = SensingResults[i].getColor().val;
           // Debug.Log(_getrgb[0] + "," + _getrgb[1] + ","+_getrgb[2]);
            if (_srcColor[0] < _getrgb[0] + _clolrRange &&
                _srcColor[0] > _getrgb[0] - _clolrRange &&
@@ -343,9 +343,9 @@ public class Match : MonoBehaviour {
        
         if (isSave)
         {
-            Debug.Log("Create" + _sensingResults.Count);
-            _sensingResults.Add(new BaseObject(P1, P2, src));
-            return _sensingResults.Count;
+            Debug.Log("Create" + SensingResults.Count);
+            SensingResults.Add(new BaseObject(P1, P2, src));
+            return SensingResults.Count;
         }
         else return -1;
     }
