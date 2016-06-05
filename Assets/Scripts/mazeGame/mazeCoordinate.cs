@@ -81,7 +81,7 @@ public class mazeCoordinate : MonoBehaviour {
         {
             _whoRound = _round % 2;
             this.FreshOneCanMoveArea(_whoRound);
-
+            this._mapData.RemovePlayerArea();
             if (_mapData.getCanMoveArea().Exists(List => List.x == _rayPosData.getPos().x && List.y == _rayPosData.getPos().y))
             {
                 _mapData.setPlayerPos(_whoRound, new Point(_rayPosData.getPos().x, _rayPosData.getPos().y));
@@ -94,7 +94,8 @@ public class mazeCoordinate : MonoBehaviour {
             {
                 Debug.Log("This point can't be move!" + "X = " + _rayPosData.getPos().x + ",Y = " + _rayPosData.getPos().y);
             }
-
+            this.FreshOneCanMoveArea(0);
+            this.FreshOneCanMoveArea(1);
             //Debug.Log("WR" + _whoRound + "R " + _round + "NUM " + _mapData.getPlayerCount());
             //Debug.Log("ID = 0" + "X = " + _mapData.getPlayerPos(0).x + "Y = " + _mapData.getPlayerPos(0).y);
             //Debug.Log("ID = 1" + "X = " + _mapData.getPlayerPos(1).x + "Y = " + _mapData.getPlayerPos(1).y);
@@ -132,6 +133,7 @@ public class mazeCoordinate : MonoBehaviour {
     {
         //超出範圍
         if (x < 0 || y < 0 || x > 16 || y > 9) return;
+        
         //剩餘步數大於0
         if (times-- > 0)
         {
@@ -178,6 +180,7 @@ public class mazeCoordinate : MonoBehaviour {
     {
         Point[] P = new Point[2];
         P = PosToBlock((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y));
+        //Imgproc.rectangle(_mapMat, new Point(_mapWidth - P[0].x - _mapWellThickness, _mapHeight - P[0].y - _mapWellThickness), new Point(_mapWidth - P[1].x + _mapWellThickness, _mapHeight - P[1].y +  _mapWellThickness), _canGoBlockColor, -1);
         Imgproc.circle(_mapMat, new Point(_mapWidth - ((P[0].x + P[1].x) / 2), _mapHeight - ((P[0].y + P[1].y) / 2)), (int)((P[1].x - P[0].x) / 3), _playerColor[ID]);
     }
     //畫寶藏 永遠畫
