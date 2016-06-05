@@ -177,10 +177,12 @@ public class mazeCoordinate : MonoBehaviour {
         Imgproc.circle(_mapMat, new Point(_mapWidth - ((P[0].x + P[1].x) / 2), _mapHeight - ((P[0].y + P[1].y) / 2)), (int)((P[1].x - P[0].x) / 3), _playerColor[ID]);
     }
 
-    //畫寶藏 如果寶藏是在玩家可視區域內,顯示,否則不顯示
+    //畫寶藏 永遠畫
     private void DrawTreadsure()
     {
-        
+        /*Point treadsurePoint = new Point();
+        treadsurePoint = PosToBlock((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y));
+        Imgproc.circle(_mapMat, new Point(_mapWidth - ((treadsurePoint[0].x + P[1].x) / 2), _mapHeight - ((treadsurePoint[0].y + P[1].y) / 2)), (int)((treadsurePoint[1].x - P[0].x) / 3), _playerColor[ID]);*/
     }
 
     //回傳是否得到寶藏 得到->true 沒得到->false
