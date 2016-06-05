@@ -192,6 +192,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a87374eaa1203af46bbe959bb8eab734, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _DrawBlockManager: {fileID: 0}
   _MatchManager: {fileID: 1598937619}
   _mapobject: {fileID: 838833061}
 --- !u!4 &152670503
@@ -1175,7 +1176,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11465922, guid: 2f2b968404457dc46b209b5063ac8cb4, type: 2}
       propertyPath: m_Color.a
-      value: 0.766
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11415458, guid: 2f2b968404457dc46b209b5063ac8cb4, type: 2}
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target

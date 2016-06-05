@@ -4,6 +4,7 @@ using OpenCVForUnity;
 
 public class matchPointToOutputView : MonoBehaviour {
 
+    public DrawBlock _DrawBlockManager;
     public Match _MatchManager;
     public GameObject _mapobject;
     private int width;
@@ -31,10 +32,10 @@ public class matchPointToOutputView : MonoBehaviour {
     
     void showData()
     {
-        if(width != _MatchManager.Width || height != _MatchManager.Height)
+        if(width != _DrawBlockManager.MatchWidth || height != _DrawBlockManager.MatchHeight) // 如果drawblock重新框選
         {
-            width = _MatchManager.Width;
-            height = _MatchManager.Height;
+            width = _DrawBlockManager.MatchWidth;
+            height = _DrawBlockManager.MatchHeight;
             Debug.Log("Block Size: " + width + " x " + height);
             Debug.Log("object Size: " + _mapobject.transform.localScale.x + " x " + _mapobject.transform.localScale.y);
             _clickPositionTrans = new clickPositionTrans(width, height, _mapobject.transform.localScale.x, _mapobject.transform.localScale.y);
