@@ -86,7 +86,7 @@ public class mazeCoordinate : MonoBehaviour {
             {
                 _mapData.setPlayerPos(_whoRound, new Point(_rayPosData.getPos().x, _rayPosData.getPos().y));
                 _round++;
-                _roundText.text = "Round：" + _round;
+                _roundText.text = ((_round % 2 == 0) ? "(←) " : "(→) ") + ("Round：" + _round);
                 this.RefreshCanMoveArea();
                 Debug.Log("This point can be move!" + "X = " + _rayPosData.getPos().x + ",Y = " + _rayPosData.getPos().y);
             }
