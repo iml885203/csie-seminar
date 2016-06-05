@@ -17,41 +17,50 @@ public class mapData : MonoBehaviour {
         {7,3,10,14,7,3,2,6,3,14,11,10,10,6,3,6}};
     private List<Point> _canMoveArea = new List<Point>();
     private List<Point> _playerPos = new List<Point>();
+    private List<Point> _treadsurePos = new List<Point>();
 
     //可走區塊相關功能
     public List<Point> getCanMoveArea()
     {   
         return _canMoveArea;
     }
+
     public void setCanMoveArea(Point P)
     {
         _canMoveArea.Add(P);
     }
+
     public bool isExistCanMoveArea(Point P)
     {
         return _canMoveArea.Exists(List => List.x == P.x && List.y == P.y);
     }
+
     public void clearCanMoveArea()
     {
         _canMoveArea.Clear();
     }
+
     //玩家位置相關功能
     public Point getPlayerPos(int ID)
     {
         return _playerPos[ID];
     }
+
     public void setPlayerPos(Point P)
     {
         _playerPos.Add(P);
     }
+
     public void setPlayerPos(int ID, Point P)
     {
         _playerPos[ID] = P;
     }
+
     public int getPlayerCount()
     {
         return _playerPos.Count;
     }
+
     public bool isExistPlayerPos(Point P)
     {
         return _playerPos.Exists(List => List.x == P.x && List.y == P.y);
@@ -63,4 +72,13 @@ public class mapData : MonoBehaviour {
         return _mapCoordinateByte[y, x];
     }
 
+    public List<Point> getTreadsurePos()
+    {
+        return _treadsurePos;
+    }
+
+    public void setTreadsurePos(Point Point)
+    {
+        _treadsurePos.Add(Point);
+    }
 }
