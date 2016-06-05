@@ -52,6 +52,8 @@ public class DrawBlock : MonoBehaviour {
     private double _rateWidthRGBDepth = 1;
     private double _rateHeightRGBDepth = 1;
 
+    private bool isInput;
+
     public Mat GetBlockMat()
     {
         return _matchImage;
@@ -96,14 +98,24 @@ public class DrawBlock : MonoBehaviour {
         _souceOut = new Texture2D(_inputWidth, _inputHeight);
         _matchOut100 = new Texture2D(100, 100);
         _matchDepthOut100 = new Texture2D(100, 100);
+
+        isInput = false;
     }
 	
 	// Update is called once per frame
 	void Update () {
-        
+
         //將輸入轉成mat方便openCV使用
         //Utils.webCamTextureToMat(_webcam, _nMat);
-        _sourceMat = ColorSourceManager.GetColorMat();
+        if (Input.GetKeyUp(KeyCode.Z))
+        {
+            isInput = !isInput;
+        }
+        if (!isInput)
+        {
+            ColorSourceManager.GetColorMat().copyTo(_sourceMat);
+        }
+        
         //_sourceMatDepth = DepthToMatManager.getDepthMat();
         //將輸入的影像轉換成螢幕大小
         //Imgproc.resize(_sourceMat, _screenMat, _screenMat.size());
