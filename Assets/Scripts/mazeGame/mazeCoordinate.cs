@@ -10,6 +10,9 @@ public class mazeCoordinate : MonoBehaviour {
     public Texture2D _tex;                      //顯示的結果texture2D
     //遊戲狀況文字顯示
     public Text _roundText;
+    public Text _coordinateP1;
+    public Text _coordinateP2;
+    public Text _moveState;
     //地圖方向defind
     private const byte UP = 7;                  //上可走 0111
     private const byte RIGHT = 11;              //右可走1011
@@ -26,9 +29,10 @@ public class mazeCoordinate : MonoBehaviour {
     public mapBlock[,] StartBlock;
     //設定顏色
     private Scalar _treadsureColor = new Scalar(255, 255, 255);                     //寶藏迷霧
-    private Scalar _FogOfWarColor = new Scalar(0, 0, 0);                     //戰爭迷霧
-    private Scalar _mapWellColor = new Scalar(255, 250, 250);                   //迷宮的牆壁顏色
-    private Scalar _canGoBlockColor = new Scalar(0, 0, 0);                       //可走的地區顏色
+    private Scalar _FogOfWarColor = new Scalar(0, 0, 0);                      //戰爭迷霧
+    private Scalar _mapWellColor = new Scalar(255, 250, 250);                 //迷宮的牆壁顏色
+    private Scalar _canGoBlockColor = new Scalar(20, 20, 20);                    //可走的地區顏色
+    private Scalar _blockLineColor = new Scalar(20, 20, 20);                       //方格顯示的線
     private Scalar[] _playerColor = new Scalar[2] { new Scalar(0, 0, 255), new Scalar(255, 255, 255) }; //玩家顏色
     //線條粗細
     private int _mapWellThickness = 1;
@@ -47,14 +51,20 @@ public class mazeCoordinate : MonoBehaviour {
     public matchPointToOutputView _matchPointToOutputView;
     private Point[] _pointPlayer;
     private int _pointRange;
-
+    //設定功能旗標
     private bool isSave = new bool();
+    private bool isDebug = new bool();
+
+    //設定按鍵
+    private KeyCode SaveKey = KeyCode.Y;
+    private KeyCode DebugKey = KeyCode.H;
 
     // Use this for initialization
     void Start()
     {
         StartBlock = new mapBlock[ScreenHeightBlock, ScreenWidthBlock];           //設定初始地圖陣列大小
         isSave = false;
+        isDebug = true;
         _mapWidth = transform.localScale.x;
         _mapHeight = transform.localScale.y;
         
@@ -65,9 +75,8 @@ public class mazeCoordinate : MonoBehaviour {
         _tex = new Texture2D((int)_mapWidth, (int)_mapHeight);                      //設定結果圖片大小
         //設定玩家初始位置
         _mapData.setPlayerPos(new Point(0, 0));
-        _mapData.setPlayerPos(new Point(4, 4));
+        _mapData.setPlayerPos(new Point(15, 0));
         //設定寶藏初始位置
-        _mapData.setTreadsurePos(new Point(1, 1));
         _mapData.setTreadsurePos(new Point(5, 5));
         //設定回合&誰先遊戲&還沒有人贏
         _winerFlag = -1;
@@ -75,13 +84,13 @@ public class mazeCoordinate : MonoBehaviour {
         _whoRound = 0;
         //設定玩家顏色
         _playerColor[0] = new Scalar(255, 0, 0);
-        _playerColor[1] = new Scalar(255, 0 ,0);
+        _playerColor[1] = new Scalar(0, 0 ,255);
         //
         _moved = false;
         _movedTimer = 0f;
         _movedTriggerTime = 1;
         _pointRange = 5;
-        //
+        //玩家位置創建空間
         _pointPlayer = new Point[2];
         _pointPlayer[0] = new Point(0, 0);
         _pointPlayer[1] = new Point(0, 0);
@@ -115,7 +124,7 @@ public class mazeCoordinate : MonoBehaviour {
     {
         if (_winerFlag < 0)
         {
-            SetIsSave();
+            SetIsSaveAndisDebug();
             _mapMat.setTo(_FogOfWarColor);
             //顯示大小改變
             if (transform.localScale.x != _mapWidth || transform.localScale.y != _mapHeight)
@@ -127,7 +136,7 @@ public class mazeCoordinate : MonoBehaviour {
             // set Character Point and trigger
             Point[] characterPoint = _matchPointToOutputView.outputPoint.ToArray();
 
-            if (characterPoint.Length != 0)
+            if (characterPoint.Length != 0 && false)
             {
                 //Debug.Log("round: "+_whoRound);
                 //Debug.Log(characterPoint[_whoRound]);
@@ -150,6 +159,10 @@ public class mazeCoordinate : MonoBehaviour {
                     _pointPlayer[_whoRound] = characterPoint[_whoRound];
                 }
             }
+            //顯示玩家目前座標
+            _coordinateP1.text = "X：" + _mapData.getPlayerPos(0).x.ToString() + "Y：" + _mapData.getPlayerPos(0).y.ToString();
+            _coordinateP2.text = "X：" + _mapData.getPlayerPos(1).x.ToString() + "Y：" + _mapData.getPlayerPos(1).y.ToString();
+
             //如果滑鼠點擊
             this.ClickMouseUpEvent();
 
@@ -161,20 +174,22 @@ public class mazeCoordinate : MonoBehaviour {
                 if (this.GetTreadsureOrNot(ID))
                 {
                     _winerFlag = ID;
-                    _roundText.text = "Player " + ID + " win!!";
+                    _roundText.text = "Player " + (ID +1)  + " win!!";
                     Debug.Log("ID = " + ID + ",X = " + _mapData.getPlayerPos(ID).x + ",Y = " + _mapData.getPlayerPos(ID).y + ", get the treadsure");
                 }
 
-            //畫地圖(外框、兩個玩家可走區塊),寶藏,玩家
+            //畫地圖(外框、兩個玩家可走區塊),寶藏
             if (!isSave)
             {
                 this.DrawMap();
                 this.DrawTreadsure();
             }
-            
-            for (int ID = 0; ID < _mapData.getPlayerCount(); ID++)
-                DrawPlayer(ID);
-
+            //畫玩家
+            if (isDebug)
+            {
+                for (int ID = 0; ID < _mapData.getPlayerCount(); ID++)
+                    DrawPlayer(ID);
+            }
             //轉換地圖mat至顯示結果
             Utils.matToTexture2D(_mapMat, _tex);
             gameObject.GetComponent<Renderer>().material.mainTexture = _tex;
@@ -215,10 +230,9 @@ public class mazeCoordinate : MonoBehaviour {
             _whoRound = _round % 2;
             this.RefreshOneCanMoveArea(_whoRound);
             this._mapData.RemovePlayerArea();
-
+            //判斷是否為可走區域以及是否沒有玩家在該格子上
             if (_mapData.getCanMoveArea().Exists(List => List.x == triggerPoint.x && List.y == triggerPoint.y) &&
-                (_mapData.getPlayerPos(_whoRound).x == triggerPoint.x &&
-                 _mapData.getPlayerPos(_whoRound).y == triggerPoint.y) ==false)
+                _mapData.isExistPlayerPos(new Point(triggerPoint.x, triggerPoint.y))==false)
             {
                 _mapData.setPlayerPos(_whoRound, new Point(triggerPoint.x, triggerPoint.y));
                 _round++;
@@ -228,6 +242,10 @@ public class mazeCoordinate : MonoBehaviour {
             }
             else
             {
+                _moveState.text = "can't  move!" + "X = " + triggerPoint.x + ",Y = " + triggerPoint.y;
+                Point[] mistakeBlock = this.PosToBlock((int)triggerPoint.x,(int)triggerPoint.y);
+                Imgproc.line(_mapMat, new Point(_mapWidth - mistakeBlock[0].x, _mapHeight - mistakeBlock[0].y), new Point(_mapWidth - mistakeBlock[1].x, _mapHeight - mistakeBlock[1].y), new Scalar(255, 0, 0));
+                Imgproc.line(_mapMat, new Point(_mapWidth - mistakeBlock[1].x, _mapHeight - mistakeBlock[0].y), new Point(_mapWidth - mistakeBlock[0].x, _mapHeight - mistakeBlock[1].y), new Scalar(255, 0, 0));
                 Debug.Log("This point can't be move!" + "X = " + triggerPoint.x + ",Y = " + triggerPoint.y);
             }
             this.RefreshOneCanMoveArea(0);
@@ -301,11 +319,11 @@ public class mazeCoordinate : MonoBehaviour {
         }
         return;
     }
+    //畫玩家的圓形
     private void DrawPlayer(int ID)
     {
         Point[] P = new Point[2];
         P = PosToBlock((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y));
-        //Imgproc.rectangle(_mapMat, new Point(_mapWidth - P[0].x - _mapWellThickness, _mapHeight - P[0].y - _mapWellThickness), new Point(_mapWidth - P[1].x + _mapWellThickness, _mapHeight - P[1].y +  _mapWellThickness), _canGoBlockColor, -1);
         Imgproc.circle(_mapMat, new Point(_mapWidth - ((P[0].x + P[1].x) / 2), _mapHeight - ((P[0].y + P[1].y) / 2)), (int)((P[1].x - P[0].x) / 3), _playerColor[ID]);
     }
 
@@ -338,8 +356,7 @@ public class mazeCoordinate : MonoBehaviour {
     }
     public void DrawMap()
     {
-        //劃出地圖邊界
-        Imgproc.rectangle(_mapMat, new Point(0, 0), new Point(_mapMat.width()-1, _mapMat.height()-1), _mapWellColor);
+
         //跑全部地圖
         for (int i = 0; i < ScreenHeightBlock; i++)
         {
@@ -352,6 +369,8 @@ public class mazeCoordinate : MonoBehaviour {
                 }
             }
         }
+        //劃出地圖邊界
+        Imgproc.rectangle(_mapMat, new Point(0, 0), new Point(_mapMat.width() - 1, _mapMat.height() - 1), _mapWellColor);
     }
     //畫格子
     public void DrawMazeBlock(int x,int y,byte Block)
@@ -360,7 +379,7 @@ public class mazeCoordinate : MonoBehaviour {
         Point[] P = PosToBlock(x, y);
         //畫格子與外框(-1是實心)
         Imgproc.rectangle(_mapMat, new Point(_mapWidth - P[0].x, _mapHeight - P[0].y), new Point(_mapWidth - P[1].x, _mapHeight - P[1].y), _canGoBlockColor,-1);
-        Imgproc.rectangle(_mapMat, new Point(_mapWidth - P[0].x, _mapHeight - P[0].y), new Point(_mapWidth - P[1].x, _mapHeight - P[1].y), _FogOfWarColor, _mapBlockThickness);
+        Imgproc.rectangle(_mapMat, new Point(_mapWidth - P[0].x, _mapHeight - P[0].y), new Point(_mapWidth - P[1].x, _mapHeight - P[1].y), _blockLineColor, _mapBlockThickness);
 
         //Debug.Log("Draw x = " + x + "y = " + y + "Pos_X" + P[0].x+ "Pos_Y" + P[0].y);
         //畫牆壁
@@ -397,12 +416,18 @@ public class mazeCoordinate : MonoBehaviour {
             }
         }
     }
-    public void SetIsSave()
+    //設定旗標決定是否畫圖和是否顯示Debug資訊
+    public void SetIsSaveAndisDebug()
     {
-        if (Input.GetKeyUp(KeyCode.Y))
+        if (Input.GetKeyUp(SaveKey))
         {
             isSave = (isSave) ? false : true;
             Debug.Log((isSave) ? "isSave Set True" : "isSave Set false");
+        }
+        if (Input.GetKeyUp(DebugKey))
+        {
+            isDebug = (isDebug) ? false : true;
+            Debug.Log((isDebug) ? "isDebug Set True" : "iisDebug Set false");
         }
     }
 }
