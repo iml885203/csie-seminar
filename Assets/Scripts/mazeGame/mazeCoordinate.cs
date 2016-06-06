@@ -13,8 +13,11 @@ public class mazeCoordinate : MonoBehaviour {
     public Text _coordinateP1;
     public Text _coordinateP2;
     public Text _moveState;
+    //寶藏物件
+    public GameObject _treasure;
+    public GameObject _flages;
     //地圖方向defind
-    private const byte UP = 7;                  //上可走 0111
+    private const byte UP = 7;                  //上可走0111
     private const byte RIGHT = 11;              //右可走1011
     private const byte DOWN = 13;               //下可走1101
     private const byte LEFT = 14;               //左可走1110
@@ -52,30 +55,43 @@ public class mazeCoordinate : MonoBehaviour {
     private Point[] _pointPlayer;
     private int _pointRange;
     //設定功能旗標
-    private bool isSave = new bool();
-    private bool isDebug = new bool();
-
-    //設定按鍵
-    private KeyCode SaveKey = KeyCode.Y;
-    private KeyCode DebugKey = KeyCode.H;
+    private bool _isDraw = new bool();
+    private bool _isDebug = new bool();
+    private bool _isFullMap =new bool();
+    private bool _isReSet = new bool();
+    private bool _isNextLevel = new bool();
+    //設定按鍵(畫圖、角色、全地圖)
+    private KeyCode _saveKey = KeyCode.Y;
+    private KeyCode _debugKey = KeyCode.H;
+    private KeyCode _fullMapKey = KeyCode.J;
+    private KeyCode _reSetKey = KeyCode.K;
+    private KeyCode _nextLevel = KeyCode.L;
 
     // Use this for initialization
     void Start()
     {
         StartBlock = new mapBlock[ScreenHeightBlock, ScreenWidthBlock];           //設定初始地圖陣列大小
-        isSave = false;
-        isDebug = true;
+        //初始旗標狀態
+        _isDraw = false;
+        _isDebug = true;
+        _isFullMap = false;
+        _isReSet = false;
+        //設定地圖像素大小
         _mapWidth = transform.localScale.x;
         _mapHeight = transform.localScale.y;
-        
-        Init();                                                                   //初始化地圖
+        //初始化棋盤格子
+        InitBlock();                                                                   //初始化地圖
        
         _mapMat = new Mat((int)_mapHeight, (int)_mapWidth, CvType.CV_8UC3);
         _mapMat.setTo(_FogOfWarColor);                                              //設定戰爭迷霧
         _tex = new Texture2D((int)_mapWidth, (int)_mapHeight);                      //設定結果圖片大小
+        //玩家位置創建空間
+        _pointPlayer = new Point[2];
+        _pointPlayer[0] = new Point(0, 3);
+        _pointPlayer[1] = new Point(15, 3);
         //設定玩家初始位置
-        _mapData.setPlayerPos(new Point(0, 0));
-        _mapData.setPlayerPos(new Point(15, 0));
+        _mapData.setPlayerPos(_pointPlayer[0]);
+        _mapData.setPlayerPos(_pointPlayer[1]);
         //設定寶藏初始位置
         _mapData.setTreadsurePos(new Point(5, 5));
         //設定回合&誰先遊戲&還沒有人贏
@@ -90,10 +106,14 @@ public class mazeCoordinate : MonoBehaviour {
         _movedTimer = 0f;
         _movedTriggerTime = 1;
         _pointRange = 5;
-        //玩家位置創建空間
-        _pointPlayer = new Point[2];
-        _pointPlayer[0] = new Point(0, 0);
-        _pointPlayer[1] = new Point(0, 0);
+        //創造寶藏
+        Point PBlock = new Point(_mapData.getTreadsurePos(0).x, _mapData.getTreadsurePos(0).y);
+        Point[] PT = PosToBlock((int)PBlock.x, (int)PBlock.y);
+        //Debug.Log("Block XY " + _mapData.getTreadsurePos(0).x +" ," +  _mapData.getTreadsurePos(0).y);
+        //Debug.Log("PT XY " + PT[0].x + " ,"+ (float)PT[0].y);
+        //Debug.Log("Window XY " + this.transform.position.x + " ," + this.transform.position.y);
+        //gameObject.transform.rotation);
+        _treasure.transform.Translate((float)(PT[0].x + PT[1].x) / 2, -(float)(PT[0].y + PT[1].y) / 2, -1);
 
     }
 
@@ -105,23 +125,47 @@ public class mazeCoordinate : MonoBehaviour {
         _mapData.ClearCanMoveArea();
         _mapData.ClearTreadsurePos();
         //設定玩家初始位置
-        _mapData.setPlayerPos(new Point(0, 0));
-        _mapData.setPlayerPos(new Point(4, 4));
+        _mapData.setPlayerPos(_pointPlayer[0]);
+        _mapData.setPlayerPos(_pointPlayer[1]);
         //設定寶藏初始位置
-        _mapData.setTreadsurePos(new Point(1, 1));
         _mapData.setTreadsurePos(new Point(5, 5));
         //設定回合&誰先遊戲&還沒有人贏
         _winerFlag = -1;
         _round = 0;
         _whoRound = 0;
         this.DrawMap();
-        this.DrawTreadsure();
-        for (int ID = 0; ID < _mapData.getPlayerCount(); ID++)
-            DrawPlayer(ID);
+        _isReSet = false;
     }
-
+    public void NextLevel()
+    {
+        //_mapData = new mapData(1);
+        _rayPosData.Reset();
+        _mapMat.setTo(_FogOfWarColor);
+        _mapData.ClearPlayerPos();
+        _mapData.ClearCanMoveArea();
+        _mapData.ClearTreadsurePos();
+        //設定玩家初始位置
+        _mapData.setPlayerPos(_pointPlayer[0]);
+        _mapData.setPlayerPos(_pointPlayer[1]);
+        //設定寶藏初始位置
+        _mapData.setTreadsurePos(new Point(5, 5));
+        //設定回合&誰先遊戲&還沒有人贏
+        _winerFlag = -1;
+        _round = 0;
+        _whoRound = 0;
+        this.DrawMap();
+        _isNextLevel = false;
+    }
     void Update()
     {
+        if (_isReSet)
+        {
+            this.Restart();
+        }
+        if (_isNextLevel)
+        {
+            this.NextLevel();
+        }
         if (_winerFlag < 0)
         {
             SetIsSaveAndisDebug();
@@ -130,7 +174,7 @@ public class mazeCoordinate : MonoBehaviour {
             if (transform.localScale.x != _mapWidth || transform.localScale.y != _mapHeight)
             {
                 Debug.Log("update map" + transform.localScale.x + "x" + transform.localScale.y);
-                Init();
+                InitBlock();
             }
 
             // set Character Point and trigger
@@ -179,13 +223,15 @@ public class mazeCoordinate : MonoBehaviour {
                 }
 
             //畫地圖(外框、兩個玩家可走區塊),寶藏
-            if (!isSave)
+            if (_isDraw)
             {
                 this.DrawMap();
-                this.DrawTreadsure();
+                
+               // this.DrawTreadsure();
             }
+            _treasure.SetActive(_isDraw);
             //畫玩家
-            if (isDebug)
+            if (_isDebug)
             {
                 for (int ID = 0; ID < _mapData.getPlayerCount(); ID++)
                     DrawPlayer(ID);
@@ -236,7 +282,8 @@ public class mazeCoordinate : MonoBehaviour {
             {
                 _mapData.setPlayerPos(_whoRound, new Point(triggerPoint.x, triggerPoint.y));
                 _round++;
-                _roundText.text = ((_round % 2 == 0) ? "(←) " : "(→) ") + ("Round：" + _round);
+                _roundText.text = "Round：" + _round;
+                this.FlageMove();
                 this.RefreshCanMoveArea();
                 Debug.Log("This point can be move!" + "X = " + triggerPoint.x + ",Y = " + triggerPoint.y);
             }
@@ -367,6 +414,10 @@ public class mazeCoordinate : MonoBehaviour {
                 {
                     DrawMazeBlock(j, i, _mapData.getWall(j, i));
                 }
+                else if (_isFullMap)
+                {
+                    DrawMazeBlock(j, i, _mapData.getWall(j, i));
+                }
             }
         }
         //劃出地圖邊界
@@ -401,7 +452,7 @@ public class mazeCoordinate : MonoBehaviour {
         }
     }
     //初始化地圖方格座標
-    private void Init()
+    private void InitBlock()
     {
         _mapWidth = transform.localScale.x;
         _mapHeight = transform.localScale.y;
@@ -419,15 +470,37 @@ public class mazeCoordinate : MonoBehaviour {
     //設定旗標決定是否畫圖和是否顯示Debug資訊
     public void SetIsSaveAndisDebug()
     {
-        if (Input.GetKeyUp(SaveKey))
+        if (Input.GetKeyUp(_saveKey))
         {
-            isSave = (isSave) ? false : true;
-            Debug.Log((isSave) ? "isSave Set True" : "isSave Set false");
+            _isDraw = (_isDraw) ? false : true;
+            Debug.Log((_isDraw) ? "isSave Set True" : "isSave Set false");
+            _moveState.text = (_isDraw) ? "Game Start" : "Place chess on the circle";
         }
-        if (Input.GetKeyUp(DebugKey))
+        if (Input.GetKeyUp(_debugKey))
         {
-            isDebug = (isDebug) ? false : true;
-            Debug.Log((isDebug) ? "isDebug Set True" : "iisDebug Set false");
+            _isDebug = (_isDebug) ? false : true;
+            Debug.Log((_isDebug) ? "isDebug Set True" : "isDebug Set false");
         }
+        if (Input.GetKeyUp(_fullMapKey))
+        {
+            _isFullMap = (_isFullMap) ? false : true;
+            Debug.Log((_isFullMap) ? "isFullMap Set True" : "isFullMap Set false");
+        }
+        if (Input.GetKeyUp(_reSetKey))
+        {
+            _isReSet = (_isReSet) ? false : true;
+            Debug.Log((_isReSet) ? "isReSet Set True" : "isReSet Set false");
+        }
+        if (Input.GetKeyUp(_nextLevel))
+        {
+            _isNextLevel = (_isNextLevel) ? false : true;
+            Debug.Log((_isNextLevel) ? "_isNextLevel Set True" : "_isNextLevel Set false");
+        }
+    }
+    public void FlageMove()
+    {
+        //旗標座標移動
+        if (_round % 2 == 1) _flages.transform.Translate(210, 0, 0);
+        else _flages.transform.Translate(-210, 0, 0);
     }
 }
