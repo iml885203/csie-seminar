@@ -10,6 +10,7 @@ public class DrawBlock : MonoBehaviour {
     public RawImage _blockDepthImg;
     private Mat _screenMat;
     public Mat _sourceMat;
+    private Mat _sourceMat_backup;
     //public Mat _sourceMatDepth;
 
     //結果圖片
@@ -90,6 +91,7 @@ public class DrawBlock : MonoBehaviour {
         _currentHeight = _inputHeight;
         //創造mat儲存影像
         _sourceMat = new Mat(_inputHeight, _inputWidth, CvType.CV_8UC3);
+        _sourceMat_backup = new Mat(_inputHeight, _inputWidth, CvType.CV_8UC3);
         //_sourceMatDepth = new Mat(_inputDepthHeight, _inputDepthWidth, CvType.CV_8UC1);
 
         //創造mat儲存比對用mat(原始比對圖形為未改變比例)
@@ -114,6 +116,11 @@ public class DrawBlock : MonoBehaviour {
         if (!isInput)
         {
             ColorSourceManager.GetColorMat().copyTo(_sourceMat);
+            _sourceMat.copyTo(_sourceMat_backup);
+        }
+        else
+        {
+            _sourceMat_backup.copyTo(_sourceMat);
         }
         
         //_sourceMatDepth = DepthToMatManager.getDepthMat();
