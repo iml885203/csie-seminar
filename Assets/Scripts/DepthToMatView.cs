@@ -8,7 +8,7 @@ public class DepthToMatView : MonoBehaviour {
     public DepthToMatManager _depthToMat;
     private Texture2D _tex;
     private clickPositionTrans _positionTrans;
-    public Slider _cannyIndex;
+    
     int _currentWidth;
     int _currentHeight;
 
@@ -37,9 +37,9 @@ public class DepthToMatView : MonoBehaviour {
         this.gameObject.GetComponent<RawImage>().texture = _tex;
 
         Transform distance = this.gameObject.transform.FindChild("distance");
-        distance.FindChild("upleft").GetComponent<Text>().text = _depthToMat.Distance_UpLeft.ToString();
-        distance.FindChild("upright").GetComponent<Text>().text = _depthToMat.Distance_UpRight.ToString();
-        distance.FindChild("downleft").GetComponent<Text>().text = _depthToMat.Distance_DownLeft.ToString();
-        distance.FindChild("downright").GetComponent<Text>().text = _depthToMat.Distance_DonwRight.ToString();
+        //distance.FindChild("upleft").GetComponent<Text>().text = _depthToMat.Distance_UpLeft.ToString();
+        //distance.FindChild("upright").GetComponent<Text>().text = _depthToMat.Distance_UpRight.ToString();
+        //distance.FindChild("downleft").GetComponent<Text>().text = _depthToMat.Distance_DownLeft.ToString();
+        //distance.FindChild("downright").GetComponent<Text>().text = _depthToMat.Distance_DonwRight.ToString();
     }
 }

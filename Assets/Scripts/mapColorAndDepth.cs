@@ -79,30 +79,30 @@ public class mapColorAndDepth : MonoBehaviour {
 
         // MapColorFrameToDepthSpace
         // 濾掉沒深度的地方
-        //float depthIndex = 0f;
-        //float color = 0f;
-        //for (int i = 0; i < depthSpace.Length; i++)
-        //{
-        //    if (!float.IsNegativeInfinity(depthSpace[i].X) && !float.IsNegativeInfinity(depthSpace[i].Y))
-        //    {
-        //        spaceIndex = i;
-        //        depthIndex = depthSpace[i].X * depthSpace[i].Y;
-        //        color = (float)((depthData[(int)depthIndex] / 4000f));
+        float depthIndex = 0f;
+        float color = 0f;
+        for (int i = 0; i < depthSpace.Length; i++)
+        {
+            if (!float.IsNegativeInfinity(depthSpace[i].X) && !float.IsNegativeInfinity(depthSpace[i].Y))
+            {
+                spaceIndex = i;
+                depthIndex = depthSpace[i].X * depthSpace[i].Y;
+                color = 1-(float)((depthData[(int)depthIndex] / 4000f));
 
 
-        //        //colorMat.put((int)x, (int)y, new byte[3]{ 0, 0, 0});
-        //        _colorTexture.SetPixel((int)i%_colorTexture.width, (int)i/_colorTexture.width, new Color(color, color, color));
-        //        //_colorTexture.SetPixel((int)depthSpace[i].X, (int)depthSpace[i].Y, new Color(0, 0, 0));
-        //    }
-        //    else
-        //    {
-        //        _colorTexture.SetPixel((int)i % _colorTexture.width, (int)i / _colorTexture.width, new Color(0, 0, 0));
+                //colorMat.put((int)x, (int)y, new byte[3]{ 0, 0, 0});
+                //_colorTexture.SetPixel((int)i % _colorTexture.width, (int)i / _colorTexture.width, new Color(color, color, color));
+                //_colorTexture.SetPixel((int)depthSpace[i].X, (int)depthSpace[i].Y, new Color(0, 0, 0));
+            }
+            else
+            {
+                _colorTexture.SetPixel((int)i % _colorTexture.width, (int)i / _colorTexture.width, new Color(0, 0, 0));
 
-        //    }
-        //}
-        
+            }
+        }
+
         //Debug.Log("#"+ depthIndex+": depth :" + depthData[(int)depthIndex] + ", " + color);
-        
+
         Utils.texture2DToMat(_colorTexture, _mapperMat);
         //_mapperMat = colorMat;
     }
