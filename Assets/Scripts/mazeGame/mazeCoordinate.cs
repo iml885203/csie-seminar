@@ -138,7 +138,7 @@ public class mazeCoordinate : MonoBehaviour {
     }
     public void NextLevel()
     {
-        //_mapData = new mapData(1);
+        _mapData = new mapData(1);
         _rayPosData.Reset();
         _mapMat.setTo(_FogOfWarColor);
         _mapData.ClearPlayerPos();
@@ -158,6 +158,7 @@ public class mazeCoordinate : MonoBehaviour {
     }
     void Update()
     {
+        this.SetIsSaveAndisDebug();
         if (_isReSet)
         {
             this.Restart();
@@ -168,7 +169,6 @@ public class mazeCoordinate : MonoBehaviour {
         }
         if (_winerFlag < 0)
         {
-            SetIsSaveAndisDebug();
             _mapMat.setTo(_FogOfWarColor);
             //顯示大小改變
             if (transform.localScale.x != _mapWidth || transform.localScale.y != _mapHeight)

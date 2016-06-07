@@ -36,20 +36,41 @@ public class mapData : MonoBehaviour {
         List<Point> _playerPos = new List<Point>();
         List<Point> _treadsurePos = new List<Point>();
     }
-   /* public mapData(int Level)
+    public mapData(int Level)
     {
-        _mapCoordinateByte = new byte[9, 16];
+        /*_mapCoordinateByte = new byte[9, 16];
         for(int i = 0; i < 9; i++){
             for (int j = 0; j < 16; j++)
             {
                 //_mapCoordinateByte[i, j] = (byte)(int)Random.Range(1, 15);
-                _mapCoordinateByte[i, j] = 15;
+                _mapCoordinateByte[i, j] = 14;
             }
-        }
-     List<Point> _canMoveArea = new List<Point>();
+        }*/
+        _mapCoordinateByte = new byte[9, 16]{
+        {9,8,8,8,8,8,8,8,8,8,8,8,8,8,8,12},
+        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4},
+        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4},
+        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4},
+        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4},
+        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4},
+        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4},
+        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4},
+        {3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,6}};
+
+        /*_mapCoordinateByte = new byte[9, 16]{
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}};*/
+        List<Point> _canMoveArea = new List<Point>();
      List<Point> _playerPos = new List<Point>();
      List<Point> _treadsurePos = new List<Point>();
-    }*/
+    }
     //可走區塊相關功能
     public List<Point> getCanMoveArea()
     {   
