@@ -38,7 +38,7 @@ public class mazeCoordinate : MonoBehaviour {
     private Scalar _blockLineColor = new Scalar(20, 20, 20);                       //方格顯示的線
     private Scalar[] _playerColor = new Scalar[2] { new Scalar(0, 0, 255), new Scalar(255, 255, 255) }; //玩家顏色
     //線條粗細
-    private int _mapWellThickness = 1;
+    private int _mapWellThickness = 2;
     private int _mapBlockThickness = 1;
     //點擊功能class
     public raytoPosition _rayPosData;
@@ -79,6 +79,7 @@ public class mazeCoordinate : MonoBehaviour {
         //設定地圖像素大小
         _mapWidth = transform.localScale.x;
         _mapHeight = transform.localScale.y;
+
         //初始化棋盤格子
         InitBlock();                                                                   //初始化地圖
        
@@ -138,7 +139,6 @@ public class mazeCoordinate : MonoBehaviour {
     }
     public void NextLevel()
     {
-        //_mapData = new mapData(1);
         _rayPosData.Reset();
         _mapMat.setTo(_FogOfWarColor);
         _mapData.ClearPlayerPos();
@@ -153,6 +153,7 @@ public class mazeCoordinate : MonoBehaviour {
         _winerFlag = -1;
         _round = 0;
         _whoRound = 0;
+        _mapData.CreateNewMap();
         this.DrawMap();
         _isNextLevel = false;
     }
@@ -454,8 +455,6 @@ public class mazeCoordinate : MonoBehaviour {
     //初始化地圖方格座標
     private void InitBlock()
     {
-        _mapWidth = transform.localScale.x;
-        _mapHeight = transform.localScale.y;
         //新增開始區塊範圍
         for (int i = 0; i < ScreenHeightBlock; i++)
         {

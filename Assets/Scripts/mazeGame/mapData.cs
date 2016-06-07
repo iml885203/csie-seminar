@@ -36,20 +36,16 @@ public class mapData : MonoBehaviour {
         List<Point> _playerPos = new List<Point>();
         List<Point> _treadsurePos = new List<Point>();
     }
-   /* public mapData(int Level)
+    public void CreateNewMap()
     {
-        _mapCoordinateByte = new byte[9, 16];
         for(int i = 0; i < 9; i++){
             for (int j = 0; j < 16; j++)
             {
                 //_mapCoordinateByte[i, j] = (byte)(int)Random.Range(1, 15);
-                _mapCoordinateByte[i, j] = 15;
+                _mapCoordinateByte[i, j] = 0;
             }
         }
-     List<Point> _canMoveArea = new List<Point>();
-     List<Point> _playerPos = new List<Point>();
-     List<Point> _treadsurePos = new List<Point>();
-    }*/
+    }
     //可走區塊相關功能
     public List<Point> getCanMoveArea()
     {   
