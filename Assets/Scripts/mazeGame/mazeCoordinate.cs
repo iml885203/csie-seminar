@@ -139,7 +139,7 @@ public class mazeCoordinate : MonoBehaviour {
     }
     public void NextLevel()
     {
-        _mapData = new mapData(1);
+        _mapData.CreateNewMap();
         _rayPosData.Reset();
         _mapMat.setTo(_FogOfWarColor);
         _mapData.ClearPlayerPos();
