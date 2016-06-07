@@ -271,12 +271,12 @@ public class mazeCoordinate : MonoBehaviour {
                // this.DrawTreadsure();
             }
             //畫寶藏
-            for (int i = 0; i < _mapData.getTreadsurePos().Count; i++) _treasure.SetActive(_isDraw && _mapData.isExistCanMoveArea(_mapData.getTreadsurePos(i)));
+            for (int i = 0; i < _mapData.getTreadsurePos().Count; i++) _treasure.SetActive(_isDraw && _mapData.isExistCanMoveArea(_mapData.getTreadsurePos(i)) || _isFullMap);
             //畫眼睛道具
             for (int i = 0; i < _mapData.getSightPos().Count; i++)
-                _sight[i].SetActive(_isDraw && _mapData.isExistCanMoveArea(_mapData.getSightPos(i)));
+                _sight[i].SetActive(_isDraw && _mapData.isExistCanMoveArea(_mapData.getSightPos(i)) || _isFullMap);
             for (int i = 0; i < _mapData.getBombPos().Count; i++)
-                _bomb[i].SetActive(_isDraw && _mapData.isExistCanMoveArea(_mapData.getBombPos(i)));
+                _bomb[i].SetActive(_isDraw && _mapData.isExistCanMoveArea(_mapData.getBombPos(i)) || _isFullMap);
             //畫玩家
             if (_isDebug)
             {
