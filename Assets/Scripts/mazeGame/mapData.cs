@@ -18,6 +18,8 @@ public class mapData : MonoBehaviour {
     private List<Point> _canMoveArea = new List<Point>();
     private List<Point> _playerPos = new List<Point>();
     private List<Point> _treadsurePos = new List<Point>();
+    private List<Point> _sightPos = new List<Point>();
+    private List<Point> _bombPos = new List<Point>();
 
 
     public mapData()
@@ -35,6 +37,8 @@ public class mapData : MonoBehaviour {
         List<Point> _canMoveArea = new List<Point>();
         List<Point> _playerPos = new List<Point>();
         List<Point> _treadsurePos = new List<Point>();
+        List<Point> _sightPos = new List<Point>();
+
     }
     public void CreateNewMap()
     {
@@ -152,5 +156,37 @@ public class mapData : MonoBehaviour {
     public void setTreadsurePos(Point Point)
     {
         _treadsurePos.Add(Point);
+    }
+    public List<Point> getSightPos()
+    {
+        return _sightPos;
+    }
+    public Point getSightPos(int ID)
+    {
+        return _sightPos[ID];
+    }
+    public void setSightPos(Point Point)
+    {
+        _sightPos.Add(Point);
+    }
+    public void removeSight(int ID)
+    {
+        _sightPos.RemoveAt(ID);
+    }
+    public List<Point> getBombPos()
+    {
+        return _bombPos;
+    }
+    public Point getBombPos(int ID)
+    {
+        return _bombPos[ID];
+    }
+    public void setBombPos(Point Point)
+    {
+        _bombPos.Add(Point);
+    }
+    public void removeBomb(int ID)
+    {
+        _bombPos.RemoveAt(ID);
     }
 }

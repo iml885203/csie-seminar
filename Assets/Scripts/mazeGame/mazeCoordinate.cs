@@ -16,6 +16,8 @@ public class mazeCoordinate : MonoBehaviour {
     //寶藏物件
     public GameObject _treasure;
     public GameObject _flages;
+    public GameObject [] _sight;
+    public GameObject[] _bomb;
     //地圖方向defind
     private const byte UP = 7;                  //上可走0111
     private const byte RIGHT = 11;              //右可走1011
@@ -54,6 +56,8 @@ public class mazeCoordinate : MonoBehaviour {
     public matchPointToOutputView _matchPointToOutputView;
     private Point[] _pointPlayer;
     private int _pointRange;
+    //玩家視野
+    private int[] _playerCanSee = new int[2];
     //設定功能旗標
     private bool _isDraw = new bool();
     private bool _isDebug = new bool();
@@ -95,6 +99,12 @@ public class mazeCoordinate : MonoBehaviour {
         _mapData.setPlayerPos(_pointPlayer[1]);
         //設定寶藏初始位置
         _mapData.setTreadsurePos(new Point(5, 5));
+        //設定視野道具初始位置
+        _mapData.setSightPos(new Point(1, 1));
+        _mapData.setSightPos(new Point(6, 6));
+        //設定炸彈位置
+        _mapData.setBombPos(new Point(1, 2));
+        _mapData.setBombPos(new Point(10, 6));
         //設定回合&誰先遊戲&還沒有人贏
         _winerFlag = -1;
         _round = 0;
@@ -107,15 +117,31 @@ public class mazeCoordinate : MonoBehaviour {
         _movedTimer = 0f;
         _movedTriggerTime = 1;
         _pointRange = 5;
+        //設定玩家視野
+        _playerCanSee[0] = 2;
+        _playerCanSee[1] = 2;
         //創造寶藏
         Point PBlock = new Point(_mapData.getTreadsurePos(0).x, _mapData.getTreadsurePos(0).y);
         Point[] PT = PosToBlock((int)PBlock.x, (int)PBlock.y);
-        //Debug.Log("Block XY " + _mapData.getTreadsurePos(0).x +" ," +  _mapData.getTreadsurePos(0).y);
-        //Debug.Log("PT XY " + PT[0].x + " ,"+ (float)PT[0].y);
-        //Debug.Log("Window XY " + this.transform.position.x + " ," + this.transform.position.y);
-        //gameObject.transform.rotation);
-        _treasure.transform.Translate((float)(PT[0].x + PT[1].x) / 2, -(float)(PT[0].y + PT[1].y) / 2, -1);
-
+        //設定寶藏位置
+        _treasure.transform.localPosition = new Vector3((float)-0.5 + ((float)(PT[0].x + PT[1].x) / 2 / _mapWidth), (float)0.5 - ((float)(PT[0].y + PT[1].y) / 2 / _mapHeight),-1);
+        //設定視野道具
+        for (int ID = 0; ID < _mapData.getSightPos().Count; ID++)
+        {
+            //創造視野道具
+            PBlock = new Point(_mapData.getSightPos(ID).x, _mapData.getSightPos(ID).y);
+            PT = PosToBlock((int)PBlock.x, (int)PBlock.y);
+            //設定視野道具位置
+            _sight[ID].transform.localPosition = new Vector3((float)-0.5 + ((float)(PT[0].x + PT[1].x) / 2 / _mapWidth), (float)0.5 - ((float)(PT[0].y + PT[1].y) / 2 / _mapHeight), -1);
+        }
+        for (int ID = 0; ID < _mapData.getBombPos().Count; ID++)
+        {
+            //創造炸彈道具
+            PBlock = new Point(_mapData.getBombPos(ID).x, _mapData.getBombPos(ID).y);
+            PT = PosToBlock((int)PBlock.x, (int)PBlock.y);
+            //設定炸彈道具位置
+            _bomb[ID].transform.localPosition = new Vector3((float)-0.5 + ((float)(PT[0].x + PT[1].x) / 2 / _mapWidth), (float)0.5 - ((float)(PT[0].y + PT[1].y) / 2 / _mapHeight), -1);
+        }
     }
 
     public void Restart()
@@ -214,24 +240,43 @@ public class mazeCoordinate : MonoBehaviour {
 
             //搜尋兩個玩家可走區塊
             for (int ID = 0; ID < _mapData.getPlayerCount(); ID++)
-                CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), 3);
+                CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), _playerCanSee[ID]);
 
             for (int ID = 0; ID < _mapData.getPlayerCount(); ID++)
+            {
                 if (this.GetTreadsureOrNot(ID))
                 {
                     _winerFlag = ID;
-                    _roundText.text = "Player " + (ID +1)  + " win!!";
+                    _roundText.text = "Player " + (ID + 1) + " win!!";
                     Debug.Log("ID = " + ID + ",X = " + _mapData.getPlayerPos(ID).x + ",Y = " + _mapData.getPlayerPos(ID).y + ", get the treadsure");
+                } 
+                if (this.GetSightOrNot(ID))
+                {
+                    //視野        
+                    _playerCanSee[ID]++;
                 }
+                if (this.GetBombOrNot(ID))
+                {
+                    //爆炸        
+                    _mapData.setPlayerPos(ID, _pointPlayer[ID]);
+                    _moveState.text = "Boom";
+                }
+            }
+
 
             //畫地圖(外框、兩個玩家可走區塊),寶藏
             if (_isDraw)
             {
                 this.DrawMap();
-                
                // this.DrawTreadsure();
             }
-            _treasure.SetActive(_isDraw);
+            //畫寶藏
+            for (int i = 0; i < _mapData.getTreadsurePos().Count; i++) _treasure.SetActive(_isDraw && _mapData.isExistCanMoveArea(_mapData.getTreadsurePos(i)));
+            //畫眼睛道具
+            for (int i = 0; i < _mapData.getSightPos().Count; i++)
+                _sight[i].SetActive(_isDraw && _mapData.isExistCanMoveArea(_mapData.getSightPos(i)));
+            for (int i = 0; i < _mapData.getBombPos().Count; i++)
+                _bomb[i].SetActive(_isDraw && _mapData.isExistCanMoveArea(_mapData.getBombPos(i)));
             //畫玩家
             if (_isDebug)
             {
@@ -284,7 +329,7 @@ public class mazeCoordinate : MonoBehaviour {
             {
                 _mapData.setPlayerPos(_whoRound, new Point(triggerPoint.x, triggerPoint.y));
                 _round++;
-                _roundText.text = "Round：" + _round;
+                _roundText.text = "Round：" + ((_round/2)+1);
                 this.FlageMove();
                 this.RefreshCanMoveArea();
                 Debug.Log("This point can be move!" + "X = " + triggerPoint.x + ",Y = " + triggerPoint.y);
@@ -311,15 +356,14 @@ public class mazeCoordinate : MonoBehaviour {
     {
         _mapData.ClearCanMoveArea();
         for (int ID = 0; ID < _mapData.getPlayerCount(); ID++)
-            CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), 3);
+            CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), _playerCanSee[ID]);
     }
 
     //刷新canMoveArea(包含清除及重新搜尋)
     public void RefreshOneCanMoveArea(int ID)
     {
         _mapData.ClearCanMoveArea();
-        CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), 3);
-        CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), 3);
+        CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), _playerCanSee[ID]);
     }
     //搜尋可以走的區塊並加入資料
     public void CanGo(int x,int y,int times)//原始座標x,y剩餘次數
@@ -394,7 +438,26 @@ public class mazeCoordinate : MonoBehaviour {
             return true;
         return false;
     }
-    
+    private bool GetSightOrNot(int playerID)
+    {
+        if (_mapData.getSightPos().Exists(Point => Point.x == _mapData.getPlayerPos(playerID).x && Point.y == _mapData.getPlayerPos(playerID).y))
+        {
+            int SightID =  _mapData.getSightPos().FindIndex(Point => Point.x == _mapData.getPlayerPos(playerID).x && Point.y == _mapData.getPlayerPos(playerID).y);
+            _mapData.removeSight(SightID);
+            return true;
+        }       
+        return false;
+    }
+    private bool GetBombOrNot(int playerID)
+    {
+        if (_mapData.getBombPos().Exists(Point => Point.x == _mapData.getPlayerPos(playerID).x && Point.y == _mapData.getPlayerPos(playerID).y))
+        {
+            int BombID = _mapData.getBombPos().FindIndex(Point => Point.x == _mapData.getPlayerPos(playerID).x && Point.y == _mapData.getPlayerPos(playerID).y);
+            _mapData.removeBomb(BombID);
+            return true;
+        }
+        return false;
+    }
     //傳換座標變成兩點
     private Point[] PosToBlock(int x, int y)
     {
@@ -405,7 +468,6 @@ public class mazeCoordinate : MonoBehaviour {
     }
     public void DrawMap()
     {
-
         //跑全部地圖
         for (int i = 0; i < ScreenHeightBlock; i++)
         {
@@ -500,7 +562,7 @@ public class mazeCoordinate : MonoBehaviour {
     public void FlageMove()
     {
         //旗標座標移動
-        if (_round % 2 == 1) _flages.transform.Translate(210, 0, 0);
-        else _flages.transform.Translate(-210, 0, 0);
+        if (_round % 2 == 1) _flages.transform.Translate(900, 0, 0);
+        else _flages.transform.Translate(-900, 0, 0);
     }
 }
