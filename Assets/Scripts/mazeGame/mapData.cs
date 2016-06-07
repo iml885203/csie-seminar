@@ -5,7 +5,7 @@ using OpenCVForUnity;
 
 public class mapData : MonoBehaviour {
 
-    private byte[,] _mapCoordinateByte = new byte[9,16]{//Height,Width
+    private byte[,] _mapCoordinateByte = new byte[9, 16]{//Height,Width
         {9,12,9,10,12,9,10,14,9,10,12,13,13,13,11,12},
         {5,1,2,12,3,6,9,10,0,12,3,6,5,3,12,5},
         {7,1,12,5,13,9,6,11,4,3,10,8,6,11,2,4},
@@ -18,8 +18,13 @@ public class mapData : MonoBehaviour {
     private List<Point> _canMoveArea = new List<Point>();
     private List<Point> _playerPos = new List<Point>();
     private List<Point> _treadsurePos = new List<Point>();
+    private Random rnd = new Random();
+    private int dir = -1;
 
-
+    private int[] dCol = { 0, 1, 0, -1 };
+    private int[] dRow = { -1, 0, 1, 0 };
+    private int[,] used = new int[9, 16];
+    //dir=0 ->dCol=0,dRow=-1  dir=1 ->dCol=1,dRow=0   dir=2 ->dCol=0,dRow=1  dir=3 ->dCol=-1,dRow=0
     public mapData()
     {
         _mapCoordinateByte = new byte[9,16]{
@@ -36,41 +41,129 @@ public class mapData : MonoBehaviour {
         List<Point> _playerPos = new List<Point>();
         List<Point> _treadsurePos = new List<Point>();
     }
-    public mapData(int Level)
+    public void CreatNewMap()
     {
-        /*_mapCoordinateByte = new byte[9, 16];
-        for(int i = 0; i < 9; i++){
+        for (int i = 0; i < 9; i++)
             for (int j = 0; j < 16; j++)
-            {
-                //_mapCoordinateByte[i, j] = (byte)(int)Random.Range(1, 15);
-                _mapCoordinateByte[i, j] = 14;
-            }
-        }*/
-        _mapCoordinateByte = new byte[9, 16]{
-        {9,8,8,8,8,8,8,8,8,8,8,8,8,8,8,12},
-        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4},
-        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4},
-        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4},
-        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4},
-        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4},
-        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4},
-        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4},
-        {3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,6}};
+                used[i, j] = 0;
+        _mapCoordinateByte = new byte[9, 16];
 
-        /*_mapCoordinateByte = new byte[9, 16]{
-        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}};*/
+        for(int i = 0; i < 9; i++)
+            for (int j = 0; j < 16; j++)
+                _mapCoordinateByte[i, j] = 15;
+
+        dfs(0, 0, -1, -1);
+
+        for (int i = 0; i < 9; i++)
+            for (int j = 0; j < 16; j++)
+                Debug.Log( _mapCoordinateByte[i, j]);
         List<Point> _canMoveArea = new List<Point>();
-     List<Point> _playerPos = new List<Point>();
-     List<Point> _treadsurePos = new List<Point>();
+        List<Point> _playerPos = new List<Point>();
+        List<Point> _treadsurePos = new List<Point>();
     }
+
+    private void dfs(int col, int row, int pcol, int prow)
+    {
+        if ((col < 0 || row < 0) || (col >= 16 || row >= 9))//col=16 row=9
+            return;
+        if (used[row, col] == 1)
+            return;
+        used[row, col] = 1;
+        int cnt = 0, dir = 0;
+        if (col == 16 - 1 && row == 9 - 1)
+            return;
+        while (cnt < 10)
+        {
+            dir = Random.Range(0,4);//上dir=0 ->dCol=0,dRow=-1  右dir=1 ->dCol=1,dRow=0   下dir=2 ->dCol=0,dRow=1  左dir=3 ->dCol=-1,dRow=0
+
+            if((col + dCol[dir]) < 16 && (row + dRow[dir]) < 9 && (col + dCol[dir] >= 0 && row + dRow[dir] >= 0) && used[row + dRow[dir], col + dCol[dir]] != 1)
+            {
+                dfs(col + dCol[dir], row + dRow[dir], col, row);
+                //Debug.Log("col = " + col + ",row=" + row);
+                this.DeleteNearWall(row, col, dir);
+                this.DeleteLocalWall(row, col, dir);
+            }
+            cnt++;
+        }
+    }
+
+    //填補牆壁
+    /*private void FillWall(int row, int col, int wallIndex)
+    {
+        switch (wallIndex)
+        {
+            case 0://填補下方
+                _mapCoordinateByte[row - 1, col] += 2;
+                break;
+            case 1://填補左方
+                _mapCoordinateByte[row, col + 1] += 1;
+                break;
+            case 2://填補上方
+                _mapCoordinateByte[row + 1, col] += 8;
+                break;
+            case 3://填補右方
+                _mapCoordinateByte[row, col - 1] += 4;
+                break;
+        }
+    }*/
+
+    private void DeleteLocalWall(int row, int col, int wallIndex)
+    {
+        switch (wallIndex)
+        {
+            case 0://刪除上方
+                _mapCoordinateByte[row, col] -= 8;
+                //_mapCoordinateByte[row, col] &= 7;
+                break;
+            case 1://刪除右方
+                _mapCoordinateByte[row, col] -= 4;
+                //_mapCoordinateByte[row, col] &= 11;
+                break;
+            case 2://刪除下方
+                _mapCoordinateByte[row, col] -= 2;
+                //_mapCoordinateByte[row, col] &= 13;
+                break;
+            case 3://刪除左方
+                _mapCoordinateByte[row, col] -= 1;
+                //_mapCoordinateByte[row, col] &= 14;
+                break;
+        }
+    }
+
+    private void DeleteNearWall(int row, int col, int wallIndex)
+    {
+        switch (wallIndex)
+        {
+            case 0://刪除下方
+                _mapCoordinateByte[row - 1, col] -= 2;
+                //_mapCoordinateByte[row - 1, col] &= 13;
+                break;
+            case 1://刪除左方
+                _mapCoordinateByte[row, col + 1] -= 1;
+                //_mapCoordinateByte[row, col + 1] &= 14;
+                break;
+            case 2://刪除上方
+                _mapCoordinateByte[row + 1, col] -= 8;
+                //_mapCoordinateByte[row + 1, col] &= 7;
+                break;
+            case 3://刪除右方
+                _mapCoordinateByte[row, col - 1] -= 4;
+                //_mapCoordinateByte[row, col - 1] &= 11;
+                break;
+        }
+    }
+
+    private bool RandomTF()
+    {
+        bool response;
+        int testNumber = Random.Range(1,6);
+        if (testNumber == 1)
+            response = true;
+        else 
+            response = false;
+        return response;
+    }
+
     //可走區塊相關功能
     public List<Point> getCanMoveArea()
     {   
