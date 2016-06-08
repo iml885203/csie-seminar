@@ -263,6 +263,10 @@ public class mapData : MonoBehaviour {
     {
         _sightPos.RemoveAt(ID);
     }
+    public void ClearSightPos()
+    {
+        _sightPos.Clear();
+    }
     public List<Point> getBombPos()
     {
         return _bombPos;
@@ -278,5 +282,9 @@ public class mapData : MonoBehaviour {
     public void removeBomb(int ID)
     {
         _bombPos.RemoveAt(ID);
+    }
+    public void ClearBombPos()
+    {
+        _bombPos.Clear();
     }
 }

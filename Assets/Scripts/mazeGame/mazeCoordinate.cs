@@ -40,7 +40,7 @@ public class mazeCoordinate : MonoBehaviour {
     private Scalar _blockLineColor = new Scalar(20, 20, 20);                       //方格顯示的線
     private Scalar[] _playerColor = new Scalar[2] { new Scalar(0, 0, 255), new Scalar(255, 255, 255) }; //玩家顏色
     //線條粗細
-    private int _mapWellThickness = 2;
+    private int _mapWellThickness = 5;
     private int _mapBlockThickness = 1;
     //點擊功能class
     public raytoPosition _rayPosData;
@@ -125,24 +125,8 @@ public class mazeCoordinate : MonoBehaviour {
         Point[] PT = PosToBlock((int)PBlock.x, (int)PBlock.y);
         //設定寶藏位置(說明：　原始座標是0,0在中心點 先減掉0.5倍的原始物件 再加上位置座標)
         _treasure.transform.localPosition = new Vector3((float)-0.5 + ((float)(PT[0].x + PT[1].x) / 2 / _mapWidth), (float)0.5 - ((float)(PT[0].y + PT[1].y) / 2 / _mapHeight),-1);
-        //設定視野道具
-        for (int ID = 0; ID < _mapData.getSightPos().Count; ID++)
-        {
-            //創造視野道具座標點
-            PBlock = new Point(_mapData.getSightPos(ID).x, _mapData.getSightPos(ID).y);
-            PT = PosToBlock((int)PBlock.x, (int)PBlock.y);
-            //設定視野道具位置
-            _sight[ID].transform.localPosition = new Vector3((float)-0.5 + ((float)(PT[0].x + PT[1].x) / 2 / _mapWidth), (float)0.5 - ((float)(PT[0].y + PT[1].y) / 2 / _mapHeight), -1);
-        }
-        //設定炸彈道具
-        for (int ID = 0; ID < _mapData.getBombPos().Count; ID++)
-        {
-            //創造炸彈道具座標點
-            PBlock = new Point(_mapData.getBombPos(ID).x, _mapData.getBombPos(ID).y);
-            PT = PosToBlock((int)PBlock.x, (int)PBlock.y);
-            //設定炸彈道具位置
-            _bomb[ID].transform.localPosition = new Vector3((float)-0.5 + ((float)(PT[0].x + PT[1].x) / 2 / _mapWidth), (float)0.5 - ((float)(PT[0].y + PT[1].y) / 2 / _mapHeight), -1);
-        }
+        SightPosInit();
+        BoomPosInit();
     }
 
     public void Restart()
@@ -152,17 +136,21 @@ public class mazeCoordinate : MonoBehaviour {
         _mapData.ClearPlayerPos();
         _mapData.ClearCanMoveArea();
         _mapData.ClearTreadsurePos();
+        _mapData.ClearBombPos();
+        _mapData.ClearSightPos();
         //設定玩家初始位置
         _mapData.setPlayerPos(_pointPlayer[0]);
         _mapData.setPlayerPos(_pointPlayer[1]);
         //設定寶藏初始位置
-        _mapData.setTreadsurePos(new Point(5, 5));
+        _mapData.setTreadsurePos(new Point(5, Random.Range(0,8)));
         //設定視野道具初始位置
-        _mapData.setSightPos(new Point(1, 1));
-        _mapData.setSightPos(new Point(6, 6));
+        _mapData.setSightPos(new Point(Random.Range(0, 8), Random.Range(0, 8)));
+        _mapData.setSightPos(new Point(Random.Range(8, 15), Random.Range(0, 8)));
         //設定炸彈位置
-        _mapData.setBombPos(new Point(1, 2));
-        _mapData.setBombPos(new Point(10, 6));
+        _mapData.setBombPos(new Point(Random.Range(0, 15), Random.Range(0, 8)));
+        _mapData.setBombPos(new Point(Random.Range(0, 15), Random.Range(0, 8)));
+        SightPosInit();
+        BoomPosInit();
         //設定回合&誰先遊戲&還沒有人贏
         _winerFlag = -1;
         _round = 0;
@@ -171,29 +159,33 @@ public class mazeCoordinate : MonoBehaviour {
     }
     public void NextLevel()
     {
-        _mapData.CreateNewMap();
-        _rayPosData.Reset();
-        _mapMat.setTo(_FogOfWarColor);
-        _mapData.ClearPlayerPos();
-        _mapData.ClearCanMoveArea();
-        _mapData.ClearTreadsurePos();
-        //設定玩家初始位置
-        _mapData.setPlayerPos(_pointPlayer[0]);
-        _mapData.setPlayerPos(_pointPlayer[1]);
-        //設定寶藏初始位置
-        _mapData.setTreadsurePos(new Point(5, 5));
-        //設定視野道具初始位置
-        _mapData.setSightPos(new Point(1, 1));
-        _mapData.setSightPos(new Point(6, 6));
-        //設定炸彈位置
-        _mapData.setBombPos(new Point(1, 2));
-        _mapData.setBombPos(new Point(10, 6));
-        //設定回合&誰先遊戲&還沒有人贏
-        _winerFlag = -1;
-        _round = 0;
-        _whoRound = 0;
+        Restart();
         _mapData.CreateNewMap();
         _isNextLevel = false;
+    }
+    void BoomPosInit()
+    {
+        //設定炸彈道具
+        for (int ID = 0; ID < _mapData.getBombPos().Count; ID++)
+        {
+            //創造炸彈道具座標點
+            Point PBlock = new Point(_mapData.getBombPos(ID).x, _mapData.getBombPos(ID).y);
+            Point [] PT = PosToBlock((int)PBlock.x, (int)PBlock.y);
+            //設定炸彈道具位置
+            _bomb[ID].transform.localPosition = new Vector3((float)-0.5 + ((float)(PT[0].x + PT[1].x) / 2 / _mapWidth), (float)0.5 - ((float)(PT[0].y + PT[1].y) / 2 / _mapHeight), -1);
+        }
+    }
+    void SightPosInit()
+    {
+        //設定視野道具
+        for (int ID = 0; ID < _mapData.getSightPos().Count; ID++)
+        {
+            //創造視野道具座標點
+            Point  PBlock = new Point(_mapData.getSightPos(ID).x, _mapData.getSightPos(ID).y);
+            Point[] PT = PosToBlock((int)PBlock.x, (int)PBlock.y);
+            //設定視野道具位置
+            _sight[ID].transform.localPosition = new Vector3((float)-0.5 + ((float)(PT[0].x + PT[1].x) / 2 / _mapWidth), (float)0.5 - ((float)(PT[0].y + PT[1].y) / 2 / _mapHeight), -1);
+        }
     }
     void Update()
     {
@@ -219,7 +211,7 @@ public class mazeCoordinate : MonoBehaviour {
             // set Character Point and trigger
             Point[] characterPoint = _matchPointToOutputView.outputPoint.ToArray();
 
-            if (characterPoint.Length != 0 && false)
+            if (characterPoint.Length != 0 )
             {
                 //Debug.Log("round: "+_whoRound);
                 //Debug.Log(characterPoint[_whoRound]);
@@ -265,11 +257,13 @@ public class mazeCoordinate : MonoBehaviour {
                 {
                     //視野        
                     _playerCanSee[ID]++;
+                    _moveState.text = "Get Sight";
                 }
                 if (this.GetBombOrNot(ID))
                 {
                     //爆炸        
-                    _mapData.setPlayerPos(ID, _pointPlayer[ID]);
+                    if (ID == 0) _mapData.setPlayerPos(ID, new Point(0, 3));
+                    if (ID == 1) _mapData.setPlayerPos(ID, new Point(15, 3));
                     _moveState.text = "Boom";
                 }
             }
@@ -282,12 +276,17 @@ public class mazeCoordinate : MonoBehaviour {
                // this.DrawTreadsure();
             }
             //畫寶藏
-            for (int i = 0; i < _mapData.getTreadsurePos().Count; i++) _treasure.SetActive(_isDraw && _mapData.isExistCanMoveArea(_mapData.getTreadsurePos(i)));
+            for (int i = 0; i < _mapData.getTreadsurePos().Count; i++)
+                _treasure.SetActive(_isDraw && _mapData.isExistCanMoveArea(_mapData.getTreadsurePos(i)) || _isFullMap);
             //畫眼睛道具
+            //Debug.Log("Num = " + _mapData.getBombPos().Count);
+           // Debug.Log("Num = " + _mapData.getSightPos().Count);
             for (int i = 0; i < _mapData.getSightPos().Count; i++)
-                _sight[i].SetActive(_isDraw && _mapData.isExistCanMoveArea(_mapData.getSightPos(i)));
+                _sight[i].SetActive(_isDraw && _mapData.isExistCanMoveArea(_mapData.getSightPos(i)) || _isFullMap);
             for (int i = 0; i < _mapData.getBombPos().Count; i++)
-                _bomb[i].SetActive(_isDraw && _mapData.isExistCanMoveArea(_mapData.getBombPos(i)));
+            {
+                _bomb[i].SetActive(_isDraw && _mapData.isExistCanMoveArea(_mapData.getBombPos(i)) ||_isFullMap);
+            }
             //畫玩家
             if (_isDebug)
             {
@@ -343,7 +342,7 @@ public class mazeCoordinate : MonoBehaviour {
                 _roundText.text = "Round：" + ((_round/2)+1);
                 this.FlageMove();
                 this.RefreshCanMoveArea();
-                Debug.Log("This point can be move!" + "X = " + triggerPoint.x + ",Y = " + triggerPoint.y);
+                //Debug.Log("This point can be move!" + "X = " + triggerPoint.x + ",Y = " + triggerPoint.y);
             }
             else
             {
@@ -455,6 +454,8 @@ public class mazeCoordinate : MonoBehaviour {
         {
             int SightID =  _mapData.getSightPos().FindIndex(Point => Point.x == _mapData.getPlayerPos(playerID).x && Point.y == _mapData.getPlayerPos(playerID).y);
             _mapData.removeSight(SightID);
+            _sight[SightID].SetActive(false);
+            SightPosInit();
             return true;
         }       
         return false;
@@ -465,6 +466,9 @@ public class mazeCoordinate : MonoBehaviour {
         {
             int BombID = _mapData.getBombPos().FindIndex(Point => Point.x == _mapData.getPlayerPos(playerID).x && Point.y == _mapData.getPlayerPos(playerID).y);
             _mapData.removeBomb(BombID);
+            _bomb[BombID].transform.Translate(0, 0, 2);
+            _bomb[BombID].SetActive(false);
+            BoomPosInit();
             return true;
         }
         return false;
@@ -496,7 +500,7 @@ public class mazeCoordinate : MonoBehaviour {
             }
         }
         //劃出地圖邊界
-        Imgproc.rectangle(_mapMat, new Point(0, 0), new Point(_mapMat.width() - 1, _mapMat.height() - 1), _mapWellColor);
+        Imgproc.rectangle(_mapMat, new Point(0, 0), new Point(_mapMat.width() - 1, _mapMat.height() - 1), _mapWellColor, _mapWellThickness);
     }
     //畫格子
     public void DrawMazeBlock(int x,int y,byte Block)

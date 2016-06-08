@@ -1935,7 +1935,7 @@ RectTransform:
   m_GameObject: {fileID: 838833061}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 112.5}
-  m_LocalScale: {x: 1700, y: 600, z: 1.8623298}
+  m_LocalScale: {x: 1105, y: 464.99994, z: 1.8623298}
   m_Children:
   - {fileID: 1045177288}
   - {fileID: 329532165}
@@ -2028,7 +2028,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _DrawBlockManager: {fileID: 1977478262}
   _MatchManager: {fileID: 1791873538}
-  _mapobject: {fileID: 0}
+  _mapobject: {fileID: 838833061}
 --- !u!1 &925883282
 GameObject:
   m_ObjectHideFlags: 0
