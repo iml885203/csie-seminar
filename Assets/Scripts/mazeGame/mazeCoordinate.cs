@@ -13,6 +13,8 @@ public class mazeCoordinate : MonoBehaviour {
     public Text _coordinateP1;
     public Text _coordinateP2;
     public Text _moveState;
+    public RawImage _boomTip;
+    public RawImage _WinTip;
     //寶藏、旗標、視野道具、炸彈物件
     public GameObject _treasure;
     public GameObject _flages;
@@ -42,6 +44,7 @@ public class mazeCoordinate : MonoBehaviour {
     //線條粗細
     private int _mapWellThickness = 5;
     private int _mapBlockThickness = 1;
+    private int _playerThickness = 1;
     //點擊功能class
     public raytoPosition _rayPosData;
     //遊戲狀態
@@ -70,7 +73,15 @@ public class mazeCoordinate : MonoBehaviour {
     private KeyCode _fullMapKey = KeyCode.J;
     private KeyCode _reSetKey = KeyCode.K;
     private KeyCode _nextLevel = KeyCode.L;
-
+    //觸發炸彈時間
+    private float _boomTimer;
+    private float _boomTriggerTime;
+    //觸發閃爍時間
+    private bool _flicker;
+    private float _flickerTimer;
+    private float _flickerTriggerTime;
+    //勝利顯示圖片計時器
+    private float _winRect = 0;
     // Use this for initialization
     void Start()
     {
@@ -127,6 +138,13 @@ public class mazeCoordinate : MonoBehaviour {
         _treasure.transform.localPosition = new Vector3((float)-0.5 + ((float)(PT[0].x + PT[1].x) / 2 / _mapWidth), (float)0.5 - ((float)(PT[0].y + PT[1].y) / 2 / _mapHeight),-1);
         SightPosInit();
         BoomPosInit();
+        //設定炸彈計時
+        _boomTimer = 0f;
+        _boomTriggerTime = 1;
+        //設定閃爍時間
+         _flicker = true;
+         _flickerTimer = 0f;
+         _flickerTriggerTime = 1;
     }
 
     public void Restart()
@@ -240,7 +258,8 @@ public class mazeCoordinate : MonoBehaviour {
 
             //如果滑鼠點擊
             this.ClickMouseUpEvent();
-
+            //讓道具閃爍
+            this.Flicker();
             //搜尋兩個玩家可走區塊
             for (int ID = 0; ID < _mapData.getPlayerCount(); ID++)
                 CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), _playerCanSee[ID]);
@@ -251,6 +270,7 @@ public class mazeCoordinate : MonoBehaviour {
                 {
                     _winerFlag = ID;
                     _roundText.text = "Player " + (ID + 1) + " win!!";
+                    _WinTip.transform.localPosition = new Vector3(292,-120,-1);
                     Debug.Log("ID = " + ID + ",X = " + _mapData.getPlayerPos(ID).x + ",Y = " + _mapData.getPlayerPos(ID).y + ", get the treadsure");
                 } 
                 if (this.GetSightOrNot(ID))
@@ -264,7 +284,6 @@ public class mazeCoordinate : MonoBehaviour {
                     //爆炸        
                     if (ID == 0) _mapData.setPlayerPos(ID, new Point(0, 3));
                     if (ID == 1) _mapData.setPlayerPos(ID, new Point(15, 3));
-                    _moveState.text = "Boom";
                 }
             }
 
@@ -285,7 +304,8 @@ public class mazeCoordinate : MonoBehaviour {
                 _sight[i].SetActive(_isDraw && _mapData.isExistCanMoveArea(_mapData.getSightPos(i)) || _isFullMap);
             for (int i = 0; i < _mapData.getBombPos().Count; i++)
             {
-                _bomb[i].SetActive(_isDraw && _mapData.isExistCanMoveArea(_mapData.getBombPos(i)) ||_isFullMap);
+               // _bomb[i].SetActive(_isDraw && _mapData.isExistCanMoveArea(_mapData.getBombPos(i)) ||_isFullMap);
+                if (_isFullMap)_bomb[i].SetActive(true);
             }
             //畫玩家
             if (_isDebug)
@@ -296,6 +316,11 @@ public class mazeCoordinate : MonoBehaviour {
             //轉換地圖mat至顯示結果
             Utils.matToTexture2D(_mapMat, _tex);
             gameObject.GetComponent<Renderer>().material.mainTexture = _tex;
+        }
+        else
+        {
+            if (_winRect < 0.5f) _winRect += Time.deltaTime;
+            this.BlowUp(_WinTip, _winRect);
         }
     }
 
@@ -427,7 +452,7 @@ public class mazeCoordinate : MonoBehaviour {
     {
         Point[] P = new Point[2];
         P = PosToBlock((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y));
-        Imgproc.circle(_mapMat, new Point(_mapWidth - ((P[0].x + P[1].x) / 2), _mapHeight - ((P[0].y + P[1].y) / 2)), (int)((P[1].x - P[0].x) / 3), _playerColor[ID]);
+        Imgproc.circle(_mapMat, new Point(_mapWidth - ((P[0].x + P[1].x) / 2), _mapHeight - ((P[0].y + P[1].y) / 2)), (int)((P[1].x - P[0].x) / 3), _playerColor[ID],_playerThickness);
     }
 
     //畫寶藏(關)
@@ -465,11 +490,21 @@ public class mazeCoordinate : MonoBehaviour {
         if (_mapData.getBombPos().Exists(Point => Point.x == _mapData.getPlayerPos(playerID).x && Point.y == _mapData.getPlayerPos(playerID).y))
         {
             int BombID = _mapData.getBombPos().FindIndex(Point => Point.x == _mapData.getPlayerPos(playerID).x && Point.y == _mapData.getPlayerPos(playerID).y);
-            _mapData.removeBomb(BombID);
-            _bomb[BombID].transform.Translate(0, 0, 2);
-            _bomb[BombID].SetActive(false);
-            BoomPosInit();
-            return true;
+            _boomTimer += Time.deltaTime;
+            _moveState.text = "Boom";
+            _bomb[BombID].SetActive(true);
+            _boomTip.transform.localPosition = new Vector3(292, -120, -1);
+            this.BlowUp(_boomTip, _boomTimer);
+            if (_boomTimer > _boomTriggerTime)
+            {
+                _boomTimer = 0f;
+                _mapData.removeBomb(BombID);
+                _bomb[BombID].transform.Translate(0, 0, 2);
+                _bomb[BombID].SetActive(false);
+                BoomPosInit();
+                _boomTip.transform.localPosition = new Vector3(292, -120, 10);
+                return true;
+            }        
         }
         return false;
     }
@@ -579,5 +614,35 @@ public class mazeCoordinate : MonoBehaviour {
         //旗標座標移動
         if (_round % 2 == 1) _flages.transform.Translate(900, 0, 0);
         else _flages.transform.Translate(-900, 0, 0);
+    }
+    public void Flicker()
+    {
+        _flickerTimer += Time.deltaTime;
+        if (_flickerTimer > _flickerTriggerTime && _flicker)
+        {
+            _flickerTimer = 0f;
+            _treasure.transform.Translate(0, 0, 2);
+            _sight[0].transform.Translate(0, 0, 2);
+            _sight[1].transform.Translate(0, 0, 2);
+            _playerThickness = 1;
+            _flicker = false;
+        }
+        else if (_flickerTimer > _flickerTriggerTime && !_flicker)
+        {
+            _flickerTimer = 0f;
+            _treasure.transform.Translate(0, 0, -2);
+            _sight[0].transform.Translate(0, 0, -2);
+            _sight[1].transform.Translate(0, 0, -2);
+            _playerThickness = -1;
+            _flicker = true;
+        }
+    }
+    public void BlowUp(RawImage inObject,float time)
+    {
+        float Rect = time / _boomTriggerTime;
+        float Enlarge = 3;
+        Rect *= Enlarge;
+        if (Rect > (Enlarge / 2)) inObject.transform.localScale = new Vector3(Enlarge - Rect, Enlarge - Rect, 0);
+        else  inObject.transform.localScale = new Vector3(Rect, Rect, 0);
     }
 }
