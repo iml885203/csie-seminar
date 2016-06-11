@@ -296,6 +296,10 @@ Prefab:
       propertyPath: _WinTip
       value: 
       objectReference: {fileID: 1850543226}
+    - target: {fileID: 11418822, guid: 51067365bb596434ca4672cf2af1d8b3, type: 2}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 51067365bb596434ca4672cf2af1d8b3, type: 2}
   m_IsPrefabParent: 0
@@ -410,8 +414,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mazeGameObject:
-  - {fileID: 0}
   - {fileID: 965231429}
+  - {fileID: 0}
   gameStateButtonText: {fileID: 1305138246}
   gameStartGround: {fileID: 862388643}
 --- !u!4 &197937198
@@ -940,7 +944,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &862388644
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1208,7 +1212,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &965231430
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1295,7 +1299,7 @@ RectTransform:
   m_GameObject: {fileID: 1251544722}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 10}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0, y: 0, z: 1}
   m_Children: []
   m_Father: {fileID: 965231430}
   m_RootOrder: 7
@@ -1836,7 +1840,7 @@ RectTransform:
   m_GameObject: {fileID: 1850543224}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 10}
-  m_LocalScale: {x: 0.1, y: 0.1, z: 1}
+  m_LocalScale: {x: 0, y: 0, z: 1}
   m_Children: []
   m_Father: {fileID: 965231430}
   m_RootOrder: 8

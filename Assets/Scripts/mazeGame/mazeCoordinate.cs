@@ -327,14 +327,16 @@ public class mazeCoordinate : MonoBehaviour {
     //滑鼠點擊事件
     private void ClickMouseUpEvent()
     {
-        if (_moved || Input.GetMouseButtonUp(0))
+        bool isMouse = false;
+        if (Input.GetMouseButtonUp(0)) isMouse =true;
+        if (_moved || isMouse)
         {
             Point triggerPoint = new Point();
             for (int i = 0; i < 9; i++)
             {
                 for (int j = 0; j < 16; j++)
                 {
-                    if (Input.GetMouseButtonUp(0))
+                    if (isMouse)
                     {
                         if (StartBlock[i, j].Check(_rayPosData.getPos().x, _rayPosData.getPos().y))
                         {
