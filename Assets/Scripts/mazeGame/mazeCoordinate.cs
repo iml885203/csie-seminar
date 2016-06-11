@@ -42,7 +42,7 @@ public class mazeCoordinate : MonoBehaviour {
     private Scalar _blockLineColor = new Scalar(20, 20, 20);                       //方格顯示的線
     private Scalar[] _playerColor = new Scalar[2] { new Scalar(0, 0, 255), new Scalar(255, 255, 255) }; //玩家顏色
     //線條粗細
-    private int _mapWellThickness = 5;
+    private int _mapWellThickness = 1;
     private int _mapBlockThickness = 1;
     private int _playerThickness = 1;
     //點擊功能class
@@ -103,7 +103,7 @@ public class mazeCoordinate : MonoBehaviour {
         _tex = new Texture2D((int)_mapWidth, (int)_mapHeight);                      //設定結果圖片大小
         //玩家位置創建空間
         _pointPlayer = new Point[2];
-        _pointPlayer[0] = new Point(0, 3);
+        _pointPlayer[0] = new Point(0, 4);
         _pointPlayer[1] = new Point(15, 3);
         //設定玩家初始位置
         _mapData.setPlayerPos(_pointPlayer[0]);
@@ -157,8 +157,8 @@ public class mazeCoordinate : MonoBehaviour {
         _mapData.ClearBombPos();
         _mapData.ClearSightPos();
         //設定玩家初始位置
-        _mapData.setPlayerPos(_pointPlayer[0]);
-        _mapData.setPlayerPos(_pointPlayer[1]);
+        _mapData.setPlayerPos(new Point(0, 4));
+        _mapData.setPlayerPos(new Point(15, 3));
         //設定寶藏初始位置
         _mapData.setTreadsurePos(new Point(5, Random.Range(0,8)));
         //設定視野道具初始位置
@@ -282,7 +282,7 @@ public class mazeCoordinate : MonoBehaviour {
                 if (this.GetBombOrNot(ID))
                 {
                     //爆炸        
-                    if (ID == 0) _mapData.setPlayerPos(ID, new Point(0, 3));
+                    if (ID == 0) _mapData.setPlayerPos(ID, new Point(0, 4));
                     if (ID == 1) _mapData.setPlayerPos(ID, new Point(15, 3));
                 }
             }

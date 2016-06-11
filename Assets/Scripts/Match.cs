@@ -32,7 +32,7 @@ public class Match : MonoBehaviour {
 
     //物體資訊
     public List<BaseObject> SensingResults = new List<BaseObject>();
-    private int _clolrRange = 10;
+    private int _clolrRange = 15;
     //是否可以儲存感測到的物件
     private bool isSave = new bool();
 
