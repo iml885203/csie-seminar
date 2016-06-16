@@ -504,7 +504,7 @@ public class mazeCoordinate : MonoBehaviour {
                 _bomb[BombID].transform.Translate(0, 0, 2);
                 _bomb[BombID].SetActive(false);
                 BoomPosInit();
-                _boomTip.transform.localPosition = new Vector3(292, -120, 10);
+                _boomTip.transform.localPosition = new Vector3(500, -500, 10);
                 return true;
             }        
         }
