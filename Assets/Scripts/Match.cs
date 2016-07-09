@@ -29,13 +29,17 @@ public class Match : MonoBehaviour {
     public int Width { get; private set; }
     public int Height { get; private set; }
     //public List<Point> MatchObjectPoint { get; private set; }
-    public DiceRecognition _dice = new DiceRecognition();
+    DiceRecognition _dice = new DiceRecognition();
 
     //物體資訊
     public List<BaseObject> SensingResults = new List<BaseObject>();
     private int _clolrRange = 15;
     //是否可以儲存感測到的物件
     private bool isSave = new bool();
+
+    public Mat src;
+    public OpenCVForUnity.Rect R0;
+    public Mat diceTemp;
 
     public Texture2D GetMatchTexture()
     {
@@ -215,7 +219,7 @@ public class Match : MonoBehaviour {
             for (int index = 0; index < numObjects; index++)
             {
 
-                OpenCVForUnity.Rect R0 = Imgproc.boundingRect(contours[index]);
+                R0 = Imgproc.boundingRect(contours[index]);
 
                 if (R0.height > 10 && R0.width > 10)
                 {
@@ -243,29 +247,29 @@ public class Match : MonoBehaviour {
         Mat cof_mat = Imgproc.getRotationMatrix2D(cof_center, 180, 1.0);
         Imgproc.warpAffine(cameraFeed, cameraFeed, cof_mat, cameraFeed.size());
 
-        Mat src = new Mat();
+        src = new Mat();
         RGB.copyTo(src);
 
         List<ColorObject> colorObjects = new List<ColorObject>();
-        Mat temp = new Mat();
+        diceTemp = new Mat();
        // threshold.copyTo(temp);
         Mat hierarchy = new Mat();
         List<Point> ConsistP = new List<Point>();
         List<MatOfPoint> contours = new List<MatOfPoint>();
 
         Imgproc.blur(RGB, RGB, new Size(3, 3));
-        Imgproc.Canny(RGB, temp, 50,150);
-        morphOps(temp);
+        Imgproc.Canny(RGB, diceTemp, 50,150);
+        morphOps(diceTemp);
         //cameraFeed = RGB;
         //RGB.copyTo(cameraFeed);
         //Debug.Log("Test");
-        Imgproc.findContours(temp, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);//Imgproc.RETR_EXTERNAL那邊0-3都可以
+        Imgproc.findContours(diceTemp, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);//Imgproc.RETR_EXTERNAL那邊0-3都可以
         
         int numObjects = contours.Count;
         List<Scalar> clickRGB = new List<Scalar>();
         for (int i = 0; i < numObjects; i++)
         {
-            Imgproc.drawContours(temp, contours, i, new Scalar(255, 255, 255),1);
+            Imgproc.drawContours(diceTemp, contours, i, new Scalar(255, 255, 255),1);
         }
         double[] GetRGB = new double[10];
         if (numObjects > 0)
@@ -281,7 +285,7 @@ public class Match : MonoBehaviour {
                     ConsistP.Add(new Point(R0.x + R0.width, R0.y + R0.height));
                     clickRGB.Add(clickcolor(RGB, R0));
                     //骰子
-                    //int diceCount = _dice.matchDice(src, R0, temp);
+                    //int diceCount = _dice.matchDice(src, R0, diceTemp);
                     //diceCount = (diceCount - 2) / 2;
                     //Debug.Log("dice count = " + diceCount);
                     //Mat bestLabel = new Mat();
@@ -295,8 +299,8 @@ public class Match : MonoBehaviour {
                 int ID = inRange(ConsistP[i], ConsistP[i + 1], clickRGB[i / 2]);
                 if (ID != -1)
                 {
-                    Imgproc.rectangle(temp, ConsistP[i], ConsistP[i + 1], new Scalar(255, 0, 255), 1);
-                    Imgproc.putText(temp, "ID=" + ID.ToString(), ConsistP[i], 1, 1, new Scalar(255, 0, 255), 1);
+                    Imgproc.rectangle(diceTemp, ConsistP[i], ConsistP[i + 1], new Scalar(255, 0, 255), 1);
+                    Imgproc.putText(diceTemp, "ID=" + ID.ToString(), ConsistP[i], 1, 1, new Scalar(255, 0, 255), 1);
                 }
             }
             // =================================
@@ -306,7 +310,7 @@ public class Match : MonoBehaviour {
 
             //ConsistP.Clear();
         }
-        temp.copyTo(cameraFeed);
+        diceTemp.copyTo(cameraFeed);
         Imgproc.warpAffine(cameraFeed, cameraFeed, cof_mat, cameraFeed.size());
     }
     Scalar clickcolor(Mat src, OpenCVForUnity.Rect R)

@@ -7,10 +7,8 @@ using System.Collections.Generic;
 public class DiceRecognition : MonoBehaviour
 {
     Point pt;
-    int circleCount = 0;
+    public int circleCount = 0;
 	// Use this for initialization
-	void Start ()
-	{
 
 		/*Texture2D imgTexture = Resources.Load ("5") as Texture2D;
 
@@ -72,30 +70,20 @@ public class DiceRecognition : MonoBehaviour
 			
 
 		gameObject.GetComponent<Renderer> ().material.mainTexture = texture;*/
-
-	}
+        
 	
 	// Update is called once per frame
-	void Update ()
-	{
-            
-    }
-
-	public void OnBackButton ()
-	{
-						
-	}
+	
 
     public int matchDice(Mat src, OpenCVForUnity.Rect rect, Mat temp)
     {
-        //int DiceNum = 0;
-        //Point pt;
         Mat subRGB = new Mat(src, rect);
-        //--FindCircleProcess--//
+
+        //灰階
         Mat grayMat = new Mat();
         Imgproc.cvtColor(subRGB, grayMat, Imgproc.COLOR_RGB2GRAY);
 
-        //morphOps(grayMat);
+        //morphOps(grayMat);//侵蝕膨脹
         //Imgproc.Canny(grayMat, grayMat, 20, 40);
 
         Mat circles = new Mat();
@@ -143,6 +131,7 @@ public class DiceRecognition : MonoBehaviour
         }*/
         //int[] face = { Core.FONT_HERSHEY_SIMPLEX };
         //Imgproc.putText(temp, DiceNum.ToString(), new Point(0, 50), face[0], 1.2, new Scalar(255, 255, 255), 2, Imgproc.LINE_AA, false);
-        return contours.Count;
+        circleCount = contours.Count;
+        return circleCount;
     }
 }
