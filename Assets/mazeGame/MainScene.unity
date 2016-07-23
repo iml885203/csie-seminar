@@ -202,7 +202,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &152670502
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -337,7 +337,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22419672, guid: d7f054b207fab3a48ace80feb7d719d9, type: 2}
       propertyPath: m_LocalPosition.z
-      value: -247.64798
+      value: -148
       objectReference: {fileID: 0}
     - target: {fileID: 22419672, guid: d7f054b207fab3a48ace80feb7d719d9, type: 2}
       propertyPath: m_LocalRotation.x
@@ -361,7 +361,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22419672, guid: d7f054b207fab3a48ace80feb7d719d9, type: 2}
       propertyPath: m_AnchoredPosition.x
-      value: 170
+      value: 431
       objectReference: {fileID: 0}
     - target: {fileID: 22419672, guid: d7f054b207fab3a48ace80feb7d719d9, type: 2}
       propertyPath: m_AnchoredPosition.y
@@ -459,7 +459,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22460150, guid: 085c208ddf8ed4d419cb06b387dc9253, type: 2}
       propertyPath: m_RootOrder
-      value: 10
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 22460150, guid: 085c208ddf8ed4d419cb06b387dc9253, type: 2}
       propertyPath: m_AnchoredPosition.x
@@ -704,7 +704,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 425668, guid: 7819b94b919c6b947b9070ca655e1f80, type: 2}
       propertyPath: m_RootOrder
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 11444992, guid: 7819b94b919c6b947b9070ca655e1f80, type: 2}
       propertyPath: ColorSourceManager
@@ -847,6 +847,10 @@ Prefab:
     - target: {fileID: 22453966, guid: 2b61ea7f3896c3e40835257139d4389e, type: 2}
       propertyPath: m_AnchorMax.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 190848, guid: 2b61ea7f3896c3e40835257139d4389e, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2b61ea7f3896c3e40835257139d4389e, type: 2}
@@ -1082,7 +1086,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22473346, guid: 93abed50a5e878642801c45e4710da99, type: 2}
       propertyPath: m_RootOrder
-      value: 8
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 22473346, guid: 93abed50a5e878642801c45e4710da99, type: 2}
       propertyPath: m_AnchoredPosition.x
@@ -1148,6 +1152,10 @@ Prefab:
       propertyPath: _matchPointToOutputView
       value: 
       objectReference: {fileID: 152670502}
+    - target: {fileID: 193862, guid: 93abed50a5e878642801c45e4710da99, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 93abed50a5e878642801c45e4710da99, type: 2}
   m_IsPrefabParent: 0
@@ -1415,12 +1423,16 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400878, guid: 223c15246826ef445b7abda2f5687f3d, type: 2}
       propertyPath: m_RootOrder
-      value: 6
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 11451550, guid: 223c15246826ef445b7abda2f5687f3d, type: 2}
       propertyPath: _drawBlock
       value: 
       objectReference: {fileID: 1305977130}
+    - target: {fileID: 114910, guid: 223c15246826ef445b7abda2f5687f3d, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 223c15246826ef445b7abda2f5687f3d, type: 2}
   m_IsPrefabParent: 0

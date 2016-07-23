@@ -31,7 +31,8 @@ public class DrawBlock : MonoBehaviour {
     public int _inputHeight;
     public int _inputDepthWidth ;
     public int _inputDepthHeight;
-    
+    public ushort[] _depthData;
+
     //滑鼠是否點擊
     private bool mouseclick = false;
     
@@ -40,7 +41,8 @@ public class DrawBlock : MonoBehaviour {
 
     //get kinect color texture
     public ColorSourceManager ColorSourceManager;
-    public DepthToMatManager DepthToMatManager;
+    public DepthSourceManager DepthSourceManager;
+    //public DepthToMatManager DepthToMatManager;
 
     //output to texture
     Texture2D _souceOut;
@@ -79,11 +81,13 @@ public class DrawBlock : MonoBehaviour {
         _inputWidth = ColorSourceManager.ColorWidth;
         _inputHeight = ColorSourceManager.ColorHeight;
         Debug.Log(_inputWidth);
-        _inputDepthWidth = DepthToMatManager.getWidth();
-        _inputDepthHeight = DepthToMatManager.getheight();
+        _depthData = DepthSourceManager.GetData();
+        Debug.Log(_depthData.Length);
+        //_inputDepthWidth = DepthToMatManager.getWidth();
+        //_inputDepthHeight = DepthToMatManager.getheight();
         //取得RGB和depth的倍數關係
-        _rateWidthRGBDepth = (double)_inputWidth / (double)_inputDepthWidth;
-        _rateHeightRGBDepth = (double)_inputHeight / (double)_inputDepthHeight;
+        //_rateWidthRGBDepth = (double)_inputWidth / (double)_inputDepthWidth;
+        //_rateHeightRGBDepth = (double)_inputHeight / (double)_inputDepthHeight;
         _currentWidth = Screen.width;
         _currentHeight = Screen.height;
         //螢幕大小與來源比例初始化
@@ -95,7 +99,7 @@ public class DrawBlock : MonoBehaviour {
         //創造mat儲存影像
         _sourceMat = new Mat(_inputHeight, _inputWidth, CvType.CV_8UC3);
         _sourceMat_backup = new Mat(_inputHeight, _inputWidth, CvType.CV_8UC3);
-        _sourceMatDepth = new Mat(_inputDepthHeight, _inputDepthWidth, CvType.CV_8UC1);
+        //_sourceMatDepth = new Mat(_inputDepthHeight, _inputDepthWidth, CvType.CV_8UC1);
 
         //創造mat儲存比對用mat(原始比對圖形為未改變比例)
         _matchImage = new Mat(_inputHeight, _inputWidth, CvType.CV_8UC3);
@@ -126,7 +130,7 @@ public class DrawBlock : MonoBehaviour {
             _sourceMat_backup.copyTo(_sourceMat);
         }
         
-        _sourceMatDepth = DepthToMatManager.getDepthMat();
+        //_sourceMatDepth = DepthToMatManager.getDepthMat();
         //將輸入的影像轉換成螢幕大小
         //Imgproc.resize(_sourceMat, _screenMat, _screenMat.size());
         if(mouseclick)TestPointmove();
@@ -206,37 +210,70 @@ public class DrawBlock : MonoBehaviour {
         }
         MatchWidth = MaxX - minX;
         MatchHeight = MaxY - minY;
-        MatchDepthWidth = (int)((double)(MaxX - minX) / _rateWidthRGBDepth);
-        MatchDepthHeight = (int)((double)(MaxY - minY) / _rateHeightRGBDepth);
+        //MatchDepthWidth = (int)((double)(MaxX - minX) / _rateWidthRGBDepth);
+        //MatchDepthHeight = (int)((double)(MaxY - minY) / _rateHeightRGBDepth);
         _matchImage = new Mat(MatchWidth, MatchHeight,CvType.CV_8UC3);
         _matchDepthImage = new Mat(MatchDepthWidth, MatchDepthHeight, CvType.CV_8UC1);
+
+        
+        //抓取sub depth data
+        Debug.Log(minX + ", " + minY);
+        Debug.Log(MaxX + ", " + MaxY);
+
+        List<ushort> depthDataSub = new List<ushort>();
+        List<Point> depthDataSubColorPoint = new List<Point>();
+
+        for (int depthIndex = 0; depthIndex < _depthData.Length; depthIndex++)
+        {
+            Point colorPoint = _map.DepthIndexToColorPoint(depthIndex);
+            if (colorPoint.x > minX && colorPoint.x < MaxX && colorPoint.y > minY && colorPoint.y < MaxY)
+            {
+                depthDataSubColorPoint.Add(colorPoint);
+                depthDataSub.Add(_depthData[depthIndex]);
+            }
+        }
+        //Debug.Log(depthDataSub.Count + ", " + depthDataSubColorPoint.Count);
+
+        //清除depth == 0 的pixel
+        for (int i = 0; i < depthDataSub.Count; i++)
+        {
+            //if(depthDataSub[i] == 0)
+            //{
+            //    double[] color = new double[3] {0, 0, 0};
+
+            //    _sourceMat.put((int)depthDataSubColorPoint[i].y, (int)depthDataSubColorPoint[i].x, color);
+            //}
+            double avg = 255 - (depthDataSub[i] / 4000 * 255);
+            avg = (avg == 255) ? 0 : avg;
+            double[] color = new double[3] { avg, avg, avg };
+            _sourceMat.put((int)depthDataSubColorPoint[i].y, (int)depthDataSubColorPoint[i].x, color);
+        }
 
         //做一個新的Mat存放切割後的Mat
         Mat subMat = new Mat();
         subMat = _sourceMat.submat(minY, MaxY, minX, MaxX);
         subMat.copyTo(_matchImage);
+        //Point newMin = _map.ColorPointToDepthPoint(new Point(minX, minY));
+        //Point newMax = _map.ColorPointToDepthPoint(new Point(MaxX, MaxY));
+        //Debug.Log(newMin.x + ", " + newMin.y);
+        //Debug.Log(newMax.x + ", " + newMax.y);
+        //if (double.IsNegativeInfinity(newMin.x) || double.IsNegativeInfinity(newMin.y) || double.IsNegativeInfinity(newMax.x) || double.IsNegativeInfinity(newMax.y))
+        //{
+        //    Debug.Log("error: get Point error");
 
-        Mat subMatDepth = new Mat();
-        Debug.Log(minX + ", " + minY);
-        Point newMin = _map.ColorPointToDepthPoint(new Point(minX, minY));
-        Point newMax = _map.ColorPointToDepthPoint(new Point(MaxX, MaxX));
-        if(double.IsNegativeInfinity(newMin.x) || double.IsNegativeInfinity(newMin.y) || double.IsNegativeInfinity(newMax.x) || double.IsNegativeInfinity(newMax.y))
-        {
-            Debug.Log("error: get Point error");
-            
-        }
-        else if (newMin.x > newMax.x || newMin.y > newMax.y)
-        {
-            Debug.Log("error: min > max");
-        }
-        else
-        {
-            subMatDepth = _sourceMatDepth.submat((int)newMin.y, (int)newMax.y, (int)newMin.x, (int)newMax.x);
-            subMatDepth.copyTo(_matchDepthImage);
-        }
+        //}
+        //else if (newMin.x > newMax.x || newMin.y > newMax.y)
+        //{
+        //    Debug.Log("error: min > max");
+        //}
+        //else
+        //{
+        //    //subMatDepth = _sourceMatDepth.submat((int)newMin.y, (int)newMax.y, (int)newMin.x, (int)newMax.x);
+        //    //subMatDepth.copyTo(_matchDepthImage);
+        //}
         //subMatDepth = _sourceMatDepth.submat((int)newMin.y, (int)newMax.y, (int)newMin.x, (int)newMax.x);
-        
-        
+
+
 
 
         //_matchImage = _sourceMat.submat(minY, MaxY, minX, MaxX);

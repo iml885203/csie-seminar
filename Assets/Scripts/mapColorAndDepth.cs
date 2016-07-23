@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using Windows.Kinect;
 using OpenCVForUnity;
 
@@ -107,15 +106,15 @@ public class mapColorAndDepth : MonoBehaviour {
         //_mapperMat = colorMat;
     }
 
-    public Point DepthPointToColorPoint(Point depthPoint)
+    public Point DepthIndexToColorPoint(int depthIndex)
     {
-        int depthIndex = (int)(depthPoint.x * depthPoint.y);
         return new Point(colorSpace[depthIndex].X, colorSpace[depthIndex].Y);
     }
 
     public Point ColorPointToDepthPoint(Point colorPoint)
     {
         int colorIndex = (int)(colorPoint.x * colorPoint.y);
+        Debug.Log(depthSpace.Length + ", " + colorIndex);
         return new Point(depthSpace[colorIndex].X, depthSpace[colorIndex].Y);
     }
 }
