@@ -730,6 +730,10 @@ Prefab:
       propertyPath: DepthToMatManager
       value: 
       objectReference: {fileID: 1582825557}
+    - target: {fileID: 11444992, guid: 7819b94b919c6b947b9070ca655e1f80, type: 2}
+      propertyPath: DepthSourceManager
+      value: 
+      objectReference: {fileID: 2052683804}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7819b94b919c6b947b9070ca655e1f80, type: 2}
   m_IsPrefabParent: 0
