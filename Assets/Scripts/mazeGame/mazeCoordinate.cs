@@ -4,6 +4,7 @@ using OpenCVForUnity;
 using UnityEngine.UI;
 
 public class mazeCoordinate : MonoBehaviour {
+
     //地圖資料
     public mapData _mapData;                    //地圖全部資料
     public Mat _mapMat;                         //畫地圖的mat
@@ -82,6 +83,7 @@ public class mazeCoordinate : MonoBehaviour {
     private float _flickerTriggerTime;
     //勝利顯示圖片計時器
     private float _winRect = 0;
+
     // Use this for initialization
     void Start()
     {
@@ -123,7 +125,7 @@ public class mazeCoordinate : MonoBehaviour {
         //設定玩家顏色
         _playerColor[0] = new Scalar(255, 0, 0);
         _playerColor[1] = new Scalar(0, 0 ,255);
-        //
+        //設定移動資訊
         _moved = false;
         _movedTimer = 0f;
         _movedTriggerTime = 1;
@@ -147,10 +149,12 @@ public class mazeCoordinate : MonoBehaviour {
          _flickerTriggerTime = 1;
     }
 
+    //重啟遊戲
     public void Restart()
     {
         _rayPosData.Reset();
         _mapMat.setTo(_FogOfWarColor);
+        //清除資訊
         _mapData.ClearPlayerPos();
         _mapData.ClearCanMoveArea();
         _mapData.ClearTreadsurePos();
@@ -175,12 +179,16 @@ public class mazeCoordinate : MonoBehaviour {
         _whoRound = 0;
         _isReSet = false;
     }
+
+    //換關初始化
     public void NextLevel()
     {
         Restart();
         _mapData.CreateNewMap();
         _isNextLevel = false;
     }
+
+    //炸彈座標初始化
     void BoomPosInit()
     {
         //設定炸彈道具
@@ -193,6 +201,8 @@ public class mazeCoordinate : MonoBehaviour {
             _bomb[ID].transform.localPosition = new Vector3((float)-0.5 + ((float)(PT[0].x + PT[1].x) / 2 / _mapWidth), (float)0.5 - ((float)(PT[0].y + PT[1].y) / 2 / _mapHeight), -1);
         }
     }
+
+    //晶球座標初始化
     void SightPosInit()
     {
         //設定視野道具
@@ -205,17 +215,21 @@ public class mazeCoordinate : MonoBehaviour {
             _sight[ID].transform.localPosition = new Vector3((float)-0.5 + ((float)(PT[0].x + PT[1].x) / 2 / _mapWidth), (float)0.5 - ((float)(PT[0].y + PT[1].y) / 2 / _mapHeight), -1);
         }
     }
+
     void Update()
     {
         this.SetIsSaveAndisDebug();
+        //重制按鈕
         if (_isReSet)
         {
             this.Restart();
         }
+        //換關按鈕
         if (_isNextLevel)
         {
             this.NextLevel();
         }
+        //當沒有贏家的時候
         if (_winerFlag < 0)
         {
             _mapMat.setTo(_FogOfWarColor);
@@ -226,7 +240,7 @@ public class mazeCoordinate : MonoBehaviour {
                 InitBlock();
             }
 
-            // set Character Point and trigger
+            //設定角色座標和trigger
             Point[] characterPoint = _matchPointToOutputView.outputPoint.ToArray();
 
             if (characterPoint.Length != 0 )
@@ -234,11 +248,13 @@ public class mazeCoordinate : MonoBehaviour {
                 //Debug.Log("round: "+_whoRound);
                 //Debug.Log(characterPoint[_whoRound]);
                 //Debug.Log(_pointPlayer[_whoRound]);
-
+                //判斷在玩家可走範圍內
                 if (characterPoint[_whoRound].x < _pointPlayer[_whoRound].x + _pointRange && characterPoint[_whoRound].x > _pointPlayer[_whoRound].x - _pointRange &&
                    characterPoint[_whoRound].y < _pointPlayer[_whoRound].y + _pointRange && characterPoint[_whoRound].y > _pointPlayer[_whoRound].y - _pointRange)
                 {
+                    //累積移動時間增加
                     _movedTimer += Time.deltaTime;
+                    //累積移動時間大於_movedTriggerTime,就移動玩家座標
                     if (_movedTimer > _movedTriggerTime)
                     {
                         _movedTimer = 0f;
@@ -248,26 +264,32 @@ public class mazeCoordinate : MonoBehaviour {
                 }
                 else
                 {
+                    //累積移動時間歸零,玩家維持原座標
                     _movedTimer = 0f;
                     _pointPlayer[_whoRound] = characterPoint[_whoRound];
                 }
             }
+
             //顯示玩家目前座標
             _coordinateP1.text = "X：" + _mapData.getPlayerPos(0).x.ToString() + "Y：" + _mapData.getPlayerPos(0).y.ToString();
             _coordinateP2.text = "X：" + _mapData.getPlayerPos(1).x.ToString() + "Y：" + _mapData.getPlayerPos(1).y.ToString();
 
             //如果滑鼠點擊
             this.ClickMouseUpEvent();
+
             //讓道具閃爍
             this.Flicker();
+
             //搜尋兩個玩家可走區塊
             for (int ID = 0; ID < _mapData.getPlayerCount(); ID++)
                 CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), _playerCanSee[ID]);
 
+            //確認有沒有玩家碰到道具
             for (int ID = 0; ID < _mapData.getPlayerCount(); ID++)
             {
                 if (this.GetTreadsureOrNot(ID))
                 {
+                    //寶藏
                     _winerFlag = ID;
                     _roundText.text = "Player " + (ID + 1) + " win!!";
                     _WinTip.transform.localPosition = new Vector3(292,-120,-1);
@@ -287,16 +309,17 @@ public class mazeCoordinate : MonoBehaviour {
                 }
             }
 
-
             //畫地圖(外框、兩個玩家可走區塊),寶藏
             if (_isDraw)
             {
                 this.DrawMap();
                // this.DrawTreadsure();
             }
+
             //畫寶藏
             for (int i = 0; i < _mapData.getTreadsurePos().Count; i++)
                 _treasure.SetActive(_isDraw && _mapData.isExistCanMoveArea(_mapData.getTreadsurePos(i)) || _isFullMap);
+
             //畫眼睛道具
             //Debug.Log("Num = " + _mapData.getBombPos().Count);
            // Debug.Log("Num = " + _mapData.getSightPos().Count);
@@ -319,6 +342,7 @@ public class mazeCoordinate : MonoBehaviour {
         }
         else
         {
+            //有贏家的時候
             if (_winRect < 0.5f) _winRect += Time.deltaTime;
             this.BlowUp(_WinTip, _winRect);
         }
@@ -338,6 +362,7 @@ public class mazeCoordinate : MonoBehaviour {
                 {
                     if (isMouse)
                     {
+                        //trigger到指定格子
                         if (StartBlock[i, j].Check(_rayPosData.getPos().x, _rayPosData.getPos().y))
                         {
                             //Debug.Log("PosX:" + j + "PosX:" + i);
@@ -347,6 +372,7 @@ public class mazeCoordinate : MonoBehaviour {
                     }
                     else
                     {
+                        //維持原本格子
                         if (StartBlock[i, j].Check(_pointPlayer[_whoRound].x, _pointPlayer[_whoRound].y))
                         {
                             //Debug.Log("PosX:" + j + "PosX:" + i);
@@ -360,10 +386,12 @@ public class mazeCoordinate : MonoBehaviour {
             _whoRound = _round % 2;
             this.RefreshOneCanMoveArea(_whoRound);
             this._mapData.RemovePlayerArea();
+
             //判斷是否為可走區域以及是否沒有玩家在該格子上
             if (_mapData.getCanMoveArea().Exists(List => List.x == triggerPoint.x && List.y == triggerPoint.y) &&
                 _mapData.isExistPlayerPos(new Point(triggerPoint.x, triggerPoint.y))==false)
             {
+                //可以的話,設定玩家到新座標
                 _mapData.setPlayerPos(_whoRound, new Point(triggerPoint.x, triggerPoint.y));
                 _round++;
                 _roundText.text = "Round：" + ((_round/2)+1);
@@ -379,8 +407,11 @@ public class mazeCoordinate : MonoBehaviour {
                 Imgproc.line(_mapMat, new Point(_mapWidth - mistakeBlock[1].x, _mapHeight - mistakeBlock[0].y), new Point(_mapWidth - mistakeBlock[0].x, _mapHeight - mistakeBlock[1].y), new Scalar(255, 0, 0));
                 Debug.Log("This point can't be move!" + "X = " + triggerPoint.x + ",Y = " + triggerPoint.y);
             }
+
+            //重新跑過各玩家可以走的地方
             this.RefreshOneCanMoveArea(0);
             this.RefreshOneCanMoveArea(1);
+
             //Debug.Log("WR" + _whoRound + "R " + _round + "NUM " + _mapData.getPlayerCount());
             //Debug.Log("ID = 0" + "X = " + _mapData.getPlayerPos(0).x + "Y = " + _mapData.getPlayerPos(0).y);
             //Debug.Log("ID = 1" + "X = " + _mapData.getPlayerPos(1).x + "Y = " + _mapData.getPlayerPos(1).y);
@@ -402,6 +433,7 @@ public class mazeCoordinate : MonoBehaviour {
         _mapData.ClearCanMoveArea();
         CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), _playerCanSee[ID]);
     }
+
     //搜尋可以走的區塊並加入資料
     public void CanGo(int x,int y,int times)//原始座標x,y剩餘次數
     {
@@ -449,6 +481,7 @@ public class mazeCoordinate : MonoBehaviour {
         }
         return;
     }
+
     //畫玩家的圓形
     private void DrawPlayer(int ID)
     {
@@ -475,6 +508,8 @@ public class mazeCoordinate : MonoBehaviour {
             return true;
         return false;
     }
+
+    //回傳是否得到晶球 得到->true 沒得到->false
     private bool GetSightOrNot(int playerID)
     {
         if (_mapData.getSightPos().Exists(Point => Point.x == _mapData.getPlayerPos(playerID).x && Point.y == _mapData.getPlayerPos(playerID).y))
@@ -487,6 +522,8 @@ public class mazeCoordinate : MonoBehaviour {
         }       
         return false;
     }
+
+    //回傳是否碰到炸彈 得到->true 沒得到->false
     private bool GetBombOrNot(int playerID)
     {
         if (_mapData.getBombPos().Exists(Point => Point.x == _mapData.getPlayerPos(playerID).x && Point.y == _mapData.getPlayerPos(playerID).y))
@@ -510,6 +547,7 @@ public class mazeCoordinate : MonoBehaviour {
         }
         return false;
     }
+
     //傳換座標變成兩點
     private Point[] PosToBlock(int x, int y)
     {
@@ -518,6 +556,8 @@ public class mazeCoordinate : MonoBehaviour {
         P[1] = StartBlock[y, x].maxPos;
         return P;
     }
+
+    //畫地圖
     public void DrawMap()
     {
         //跑全部地圖
@@ -539,7 +579,8 @@ public class mazeCoordinate : MonoBehaviour {
         //劃出地圖邊界
         Imgproc.rectangle(_mapMat, new Point(0, 0), new Point(_mapMat.width() - 1, _mapMat.height() - 1), _mapWellColor, _mapWellThickness);
     }
-    //畫格子
+
+    //畫格子,DrawMap子function
     public void DrawMazeBlock(int x,int y,byte Block)
     {
         //取得方格對應的兩點座標
@@ -567,6 +608,7 @@ public class mazeCoordinate : MonoBehaviour {
             Imgproc.line(_mapMat, new Point(_mapWidth - P[0].x, _mapHeight - P[0].y), new Point(_mapWidth - P[0].x, _mapHeight - P[1].y), _mapWellColor, _mapWellThickness);
         }
     }
+
     //初始化地圖方格座標
     private void InitBlock()
     {
@@ -581,6 +623,7 @@ public class mazeCoordinate : MonoBehaviour {
             }
         }
     }
+
     //設定旗標決定是否畫圖和是否顯示Debug資訊
     public void SetIsSaveAndisDebug()
     {
@@ -611,12 +654,16 @@ public class mazeCoordinate : MonoBehaviour {
             Debug.Log((_isNextLevel) ? "_isNextLevel Set True" : "_isNextLevel Set false");
         }
     }
+
+    //換場輪替的旗幟轉換
     public void FlageMove()
     {
         //旗標座標移動
         if (_round % 2 == 1) _flages.transform.Translate(900, 0, 0);
         else _flages.transform.Translate(-900, 0, 0);
     }
+
+    //閃爍
     public void Flicker()
     {
         _flickerTimer += Time.deltaTime;
@@ -639,6 +686,8 @@ public class mazeCoordinate : MonoBehaviour {
             _flicker = true;
         }
     }
+
+
     public void BlowUp(RawImage inObject,float time)
     {
         float Rect = time / _boomTriggerTime;
