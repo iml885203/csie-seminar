@@ -415,7 +415,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 110212, guid: 4cf3149c62c99624588cdf1e2938db18, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 22440228, guid: 4cf3149c62c99624588cdf1e2938db18, type: 2}
       propertyPath: m_AnchoredPosition.x
@@ -507,6 +507,12 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 193857567}
+--- !u!114 &211502769 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 11488008, guid: 4cf3149c62c99624588cdf1e2938db18,
+    type: 2}
+  m_PrefabInternal: {fileID: 158859304}
+  m_Script: {fileID: 11500000, guid: f8e37f6e5cb43374b863a54cd84abae8, type: 3}
 --- !u!1 &252019523
 GameObject:
   m_ObjectHideFlags: 0
@@ -808,12 +814,6 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &439845584 stripped
-MonoBehaviour:
-  m_PrefabParentObject: {fileID: 11430512, guid: 4cf3149c62c99624588cdf1e2938db18,
-    type: 2}
-  m_PrefabInternal: {fileID: 158859304}
-  m_Script: {fileID: 11500000, guid: 51358ef92d5cc82478272970e0b5e7c0, type: 3}
 --- !u!1 &463208261 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 154178, guid: 4cf3149c62c99624588cdf1e2938db18, type: 2}
@@ -1205,7 +1205,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1022827880
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2033,6 +2033,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 1977478263}
   - 114: {fileID: 1977478262}
+  - 114: {fileID: 1977478264}
   m_Layer: 0
   m_Name: DrawBlockManager
   m_TagString: Untagged
@@ -2058,8 +2059,10 @@ MonoBehaviour:
   _inputHeight: 0
   _inputDepthWidth: 0
   _inputDepthHeight: 0
+  _depthData: 
   ColorSourceManager: {fileID: 679549943}
-  DepthToMatManager: {fileID: 439845584}
+  DepthSourceManager: {fileID: 1977478264}
+  _map: {fileID: 211502769}
 --- !u!4 &1977478263
 Transform:
   m_ObjectHideFlags: 0
@@ -2072,6 +2075,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 11
+--- !u!114 &1977478264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1977478261}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cd019cdd7a54604b9ae8091d242d8a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1988608400 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 151624, guid: 4cf3149c62c99624588cdf1e2938db18, type: 2}

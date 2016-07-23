@@ -235,19 +235,19 @@ public class DrawBlock : MonoBehaviour {
         //Debug.Log(depthDataSub.Count + ", " + depthDataSubColorPoint.Count);
 
         //清除depth == 0 的pixel
-        for (int i = 0; i < depthDataSub.Count; i++)
-        {
-            //if(depthDataSub[i] == 0)
-            //{
-            //    double[] color = new double[3] {0, 0, 0};
+        //for (int i = 0; i < depthDataSub.Count; i++)
+        //{
+        //    //if(depthDataSub[i] == 0)
+        //    //{
+        //    //    double[] color = new double[3] {0, 0, 0};
 
-            //    _sourceMat.put((int)depthDataSubColorPoint[i].y, (int)depthDataSubColorPoint[i].x, color);
-            //}
-            double avg = 255 - (depthDataSub[i] / 4000 * 255);
-            avg = (avg == 255) ? 0 : avg;
-            double[] color = new double[3] { avg, avg, avg };
-            _sourceMat.put((int)depthDataSubColorPoint[i].y, (int)depthDataSubColorPoint[i].x, color);
-        }
+        //    //    _sourceMat.put((int)depthDataSubColorPoint[i].y, (int)depthDataSubColorPoint[i].x, color);
+        //    //}
+        //    double avg = 255 - (depthDataSub[i] / 4000 * 255);
+        //    avg = (avg == 255) ? 0 : avg;
+        //    double[] color = new double[3] { avg, avg, avg };
+        //    _sourceMat.put((int)depthDataSubColorPoint[i].y, (int)depthDataSubColorPoint[i].x, color);
+        //}
 
         //做一個新的Mat存放切割後的Mat
         Mat subMat = new Mat();
