@@ -14,14 +14,14 @@ public class DepthToMatManager : MonoBehaviour
     private int[] _Triangles;
 
     // Only works at 4 right now
-    private const int _DownsampleSize = 2;
+    private const int _DownsampleSize = 8;
     private const double _DepthScale = 0.02f;
     private const int _Speed = 50;
 
-    public MultiSourceManager _MultiManager;
+    public DepthSourceManager _DepthManager;
 
     //二質化index
-    public Slider _binaryIndex;
+    public int _binaryIndex = 0;
     public Text _kinectDistance;
 
     //設定桌面深度旗標
@@ -81,7 +81,7 @@ public class DepthToMatManager : MonoBehaviour
             return;
         }
 
-        if (_MultiManager == null)
+        if (_DepthManager == null)
         {
             return;
         }
@@ -89,12 +89,10 @@ public class DepthToMatManager : MonoBehaviour
         //{
         //    return;
         //}
-        RefreshData(_MultiManager.GetDepthData(),
-                    _MultiManager.ColorWidth,
-                    _MultiManager.ColorHeight);
+        RefreshData(_DepthManager.GetData());
 
 	}
-    private void RefreshData(ushort[] depthData, int colorWidth, int colorHeight)
+    private void RefreshData(ushort[] depthData)
     {
 
         var frameDesc = _Sensor.DepthFrameSource.FrameDescription;
@@ -169,9 +167,10 @@ public class DepthToMatManager : MonoBehaviour
                     Distance_DonwRight = avg;
                 }
                 //距離1000mm正負200mm
-                //avg = (avg > (845)) ? 0 : 255;
-                avg = (avg > (double)(_maxCountKey + _binaryIndex.value)) ? 0 : 255;
-                //avg = (avg - 800) / 3200 * 255;
+
+                //avg = (avg > (double)(_maxCountKey + _binaryIndex)) ? 0 : 255;
+                avg = 255-(avg / 4000 * 255);
+                avg = (avg == 255) ? 0 : avg;
 
                 _Vertices[smallIndex].z = (float)avg;
                 _Depth.put(y / _DownsampleSize, frameDesc.Width / _DownsampleSize - x / _DownsampleSize, avg);

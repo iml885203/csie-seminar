@@ -11,7 +11,7 @@ public class DrawBlock : MonoBehaviour {
     private Mat _screenMat;
     public Mat _sourceMat;
     private Mat _sourceMat_backup;
-    //public Mat _sourceMatDepth;
+    public Mat _sourceMatDepth;
 
     //結果圖片
     private Mat _matchImage;
@@ -31,7 +31,8 @@ public class DrawBlock : MonoBehaviour {
     public int _inputHeight;
     public int _inputDepthWidth ;
     public int _inputDepthHeight;
-    
+    public ushort[] _depthData;
+
     //滑鼠是否點擊
     private bool mouseclick = false;
     
@@ -40,7 +41,8 @@ public class DrawBlock : MonoBehaviour {
 
     //get kinect color texture
     public ColorSourceManager ColorSourceManager;
-    public DepthToMatManager DepthToMatManager;
+    public DepthSourceManager DepthSourceManager;
+    //public DepthToMatManager DepthToMatManager;
 
     //output to texture
     Texture2D _souceOut;
@@ -54,6 +56,9 @@ public class DrawBlock : MonoBehaviour {
     private double _rateHeightRGBDepth = 1;
 
     private bool isInput;
+
+    //map color and depth
+    public mapColorAndDepth _map;
 
     public Mat GetBlockMat()
     {
@@ -76,11 +81,13 @@ public class DrawBlock : MonoBehaviour {
         _inputWidth = ColorSourceManager.ColorWidth;
         _inputHeight = ColorSourceManager.ColorHeight;
         Debug.Log(_inputWidth);
+        _depthData = DepthSourceManager.GetData();
+        Debug.Log(_depthData.Length);
         //_inputDepthWidth = DepthToMatManager.getWidth();
         //_inputDepthHeight = DepthToMatManager.getheight();
         //取得RGB和depth的倍數關係
-        _rateWidthRGBDepth = (double)_inputWidth / (double)_inputDepthWidth;
-        _rateHeightRGBDepth = (double)_inputHeight / (double)_inputDepthHeight;
+        //_rateWidthRGBDepth = (double)_inputWidth / (double)_inputDepthWidth;
+        //_rateHeightRGBDepth = (double)_inputHeight / (double)_inputDepthHeight;
         _currentWidth = Screen.width;
         _currentHeight = Screen.height;
         //螢幕大小與來源比例初始化
@@ -203,15 +210,71 @@ public class DrawBlock : MonoBehaviour {
         }
         MatchWidth = MaxX - minX;
         MatchHeight = MaxY - minY;
-        MatchDepthWidth = (int)((double)(MaxX - minX) / _rateWidthRGBDepth);
-        MatchDepthHeight = (int)((double)(MaxY - minY) / _rateHeightRGBDepth);
+        //MatchDepthWidth = (int)((double)(MaxX - minX) / _rateWidthRGBDepth);
+        //MatchDepthHeight = (int)((double)(MaxY - minY) / _rateHeightRGBDepth);
         _matchImage = new Mat(MatchWidth, MatchHeight,CvType.CV_8UC3);
-        //_matchDepthImage = new Mat(MatchDepthWidth, MatchDepthHeight, CvType.CV_8UC1);
+        _matchDepthImage = new Mat(MatchDepthWidth, MatchDepthHeight, CvType.CV_8UC1);
+
+        
+        //抓取sub depth data
+        Debug.Log(minX + ", " + minY);
+        Debug.Log(MaxX + ", " + MaxY);
+
+        List<ushort> depthDataSub = new List<ushort>();
+        List<Point> depthDataSubColorPoint = new List<Point>();
+
+        for (int depthIndex = 0; depthIndex < _depthData.Length; depthIndex++)
+        {
+            Point colorPoint = _map.DepthIndexToColorPoint(depthIndex);
+            if (colorPoint.x > minX && colorPoint.x < MaxX && colorPoint.y > minY && colorPoint.y < MaxY)
+            {
+                depthDataSubColorPoint.Add(colorPoint);
+                depthDataSub.Add(_depthData[depthIndex]);
+            }
+        }
+        //Debug.Log(depthDataSub.Count + ", " + depthDataSubColorPoint.Count);
+
+        //清除depth == 0 的pixel
+        for (int i = 0; i < depthDataSub.Count; i++)
+        {
+            //if(depthDataSub[i] == 0)
+            //{
+            //    double[] color = new double[3] {0, 0, 0};
+
+            //    _sourceMat.put((int)depthDataSubColorPoint[i].y, (int)depthDataSubColorPoint[i].x, color);
+            //}
+            double avg = 255 - (depthDataSub[i] / 4000 * 255);
+            avg = (avg == 255) ? 0 : avg;
+            double[] color = new double[3] { avg, avg, avg };
+            _sourceMat.put((int)depthDataSubColorPoint[i].y, (int)depthDataSubColorPoint[i].x, color);
+        }
 
         //做一個新的Mat存放切割後的Mat
         Mat subMat = new Mat();
         subMat = _sourceMat.submat(minY, MaxY, minX, MaxX);
-        subMat.copyTo(_matchImage);        
+        subMat.copyTo(_matchImage);
+        //Point newMin = _map.ColorPointToDepthPoint(new Point(minX, minY));
+        //Point newMax = _map.ColorPointToDepthPoint(new Point(MaxX, MaxY));
+        //Debug.Log(newMin.x + ", " + newMin.y);
+        //Debug.Log(newMax.x + ", " + newMax.y);
+        //if (double.IsNegativeInfinity(newMin.x) || double.IsNegativeInfinity(newMin.y) || double.IsNegativeInfinity(newMax.x) || double.IsNegativeInfinity(newMax.y))
+        //{
+        //    Debug.Log("error: get Point error");
+
+        //}
+        //else if (newMin.x > newMax.x || newMin.y > newMax.y)
+        //{
+        //    Debug.Log("error: min > max");
+        //}
+        //else
+        //{
+        //    //subMatDepth = _sourceMatDepth.submat((int)newMin.y, (int)newMax.y, (int)newMin.x, (int)newMax.x);
+        //    //subMatDepth.copyTo(_matchDepthImage);
+        //}
+        //subMatDepth = _sourceMatDepth.submat((int)newMin.y, (int)newMax.y, (int)newMin.x, (int)newMax.x);
+
+
+
 
         //_matchImage = _sourceMat.submat(minY, MaxY, minX, MaxX);
         //_matchDepthImage = _sourceMatDepth.submat(
@@ -231,14 +294,14 @@ public class DrawBlock : MonoBehaviour {
 
         //比對圖形輸出(深度)
         Mat _OutMatchDepthMat = new Mat(100, 100, CvType.CV_8UC1);
-        //Imgproc.resize(_matchDepthImage, _OutMatchDepthMat, _OutMatchDepthMat.size());
+        Imgproc.resize(_matchDepthImage, _OutMatchDepthMat, _OutMatchDepthMat.size());
 
         //擷取輸出
         Utils.matToTexture2D(_OutMatchMat, _matchOut100);
         _blockImg.texture = _matchOut100;
         //擷取輸出(顯示深度的切割結果)
-        //Utils.matToTexture2D(_OutMatchDepthMat, _matchDepthOut100);
-        //_blockDepthImg.texture = _matchDepthOut100;
+        Utils.matToTexture2D(_OutMatchDepthMat, _matchDepthOut100);
+        _blockDepthImg.texture = _matchDepthOut100;
     }
     public void TestPointmove()//滑鼠放開
     {
