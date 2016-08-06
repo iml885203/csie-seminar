@@ -3,7 +3,7 @@ using System.Collections;
 using OpenCVForUnity;
 using UnityEngine.UI;
 
-public class mazeCoordinate : MonoBehaviour {
+public class GHSMain : MonoBehaviour {
 
     //地圖資料
     public mapData _mapData;                    //地圖全部資料
