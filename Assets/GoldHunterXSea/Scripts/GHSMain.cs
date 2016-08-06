@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class GHSMain : MonoBehaviour {
 
     //地圖資料
-    public mapData _mapData;                    //地圖全部資料
+    public GHSMapData _mapData;                    //地圖全部資料
     public Mat _mapMat;                         //畫地圖的mat
     public Texture2D _tex;                      //顯示的結果texture2D
     //遊戲狀況文字顯示
