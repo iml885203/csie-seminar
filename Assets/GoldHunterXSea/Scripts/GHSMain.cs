@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class GHSMain : MonoBehaviour {
 
     //地圖資料
-    public GHSMapData _mapData;                    //地圖全部資料
+    public GHSMapData _mapData;                  //地圖全部資料
     public Mat _mapMat;                         //畫地圖的mat
     public Texture2D _tex;                      //顯示的結果texture2D
     //遊戲狀況文字顯示
@@ -19,6 +19,7 @@ public class GHSMain : MonoBehaviour {
     //寶藏、旗標、視野道具、炸彈物件
     public GameObject _treasure;
     public GameObject _flages;
+    public GameObject [] _flashLights;
     public GameObject [] _sight;
     public GameObject[] _bomb;
     //地圖方向defind
@@ -118,6 +119,8 @@ public class GHSMain : MonoBehaviour {
         //設定炸彈位置
         _mapData.setBombPos(new Point(1, 2));
         _mapData.setBombPos(new Point(10, 6));
+        //設定照明彈位置
+        _mapData.setFlashLightPos(new Point(1, 0));
         //設定回合&誰先遊戲&還沒有人贏
         _winerFlag = -1;
         _round = 0;
@@ -171,6 +174,8 @@ public class GHSMain : MonoBehaviour {
         //設定炸彈位置
         _mapData.setBombPos(new Point(Random.Range(0, 15), Random.Range(0, 8)));
         _mapData.setBombPos(new Point(Random.Range(0, 15), Random.Range(0, 8)));
+        //設定照明彈位置
+        //_mapData.FlashLightPos = new Point(Random.Range(0, 1), Random.Range(1, 8));
         SightPosInit();
         BoomPosInit();
         //設定回合&誰先遊戲&還沒有人贏
@@ -444,39 +449,27 @@ public class GHSMain : MonoBehaviour {
         {
             if ((_mapData.getWall(x, y) | UP) == UP)
             {
-               // if (!_mapData.isExistCanMoveArea(new Point(x, y - 1)))
-               // {
-                    _mapData.setCanMoveArea(new Point(x, y - 1));
-                    CanGo(x, y - 1, times);
-                    //Debug.Log("GO X = " + x + "Y = " + (y - 1) + "times = " + times + " UP");
-               // }
+                _mapData.setCanMoveArea(new Point(x, y - 1));
+                CanGo(x, y - 1, times);
+                //Debug.Log("GO X = " + x + "Y = " + (y - 1) + "times = " + times + " UP");
             }
             if ((_mapData.getWall(x, y) | RIGHT) == RIGHT)
             {
-                //if (!_mapData.isExistCanMoveArea(new Point(x + 1, y)))
-                //{
-                    _mapData.setCanMoveArea(new Point(x + 1, y));
-                    CanGo(x + 1, y, times);
-                    //Debug.Log("GO X = " + (x + 1) + "Y = " + y + "times = " + times + " RIGHT");
-                //}
+                _mapData.setCanMoveArea(new Point(x + 1, y));
+                CanGo(x + 1, y, times);
+                //Debug.Log("GO X = " + (x + 1) + "Y = " + y + "times = " + times + " RIGHT");
             }
             if ((_mapData.getWall(x, y) | DOWN) == DOWN)
             {
-               // if (!_mapData.isExistCanMoveArea(new Point(x, y + 1)))
-                //{
-                    _mapData.setCanMoveArea(new Point(x, y + 1));
-                    CanGo(x, y + 1, times);
-                    //Debug.Log("GO X = " + x + "Y = " + (y + 1) + "times = " + times + " DOWN");
-                //}
+                _mapData.setCanMoveArea(new Point(x, y + 1));
+                CanGo(x, y + 1, times);
+                //Debug.Log("GO X = " + x + "Y = " + (y + 1) + "times = " + times + " DOWN");
             }
             if ((_mapData.getWall(x, y) | LEFT) == LEFT)
             {
-                //if (!_mapData.isExistCanMoveArea(new Point(x - 1, y)))
-                //{
-                    _mapData.setCanMoveArea(new Point(x - 1, y));
-                    CanGo(x - 1, y, times);
-                    //Debug.Log("GO X = " + (x - 1) + "Y = " + y + "times = " + times + " LEFT");
-                //}
+                _mapData.setCanMoveArea(new Point(x - 1, y));
+                CanGo(x - 1, y, times);
+                //Debug.Log("GO X = " + (x - 1) + "Y = " + y + "times = " + times + " LEFT");
             }
         }
         return;
