@@ -11,10 +11,11 @@ public class GHSMain : MonoBehaviour {
     public Texture2D _tex;                      //顯示的結果texture2D
     //遊戲狀況文字顯示
     public Text _roundText;
-    public Text _coordinateP1;
-    public Text _coordinateP2;
-    public Text _coordinateP3;
-    public Text _coordinateP4;
+    public Text[] _coordinatePlayer;
+    //public Text _coordinateP1;
+    //public Text _coordinateP2;
+    //public Text _coordinateP3;
+    //public Text _coordinateP4;
     public Text _moveState;
     public RawImage _boomTip;
     public RawImage _WinTip;
@@ -44,7 +45,7 @@ public class GHSMain : MonoBehaviour {
     private Scalar _mapWellColor = new Scalar(255, 250, 250);                 //迷宮的牆壁顏色
     private Scalar _canGoBlockColor = new Scalar(20, 20, 20);                    //可走的地區顏色
     private Scalar _blockLineColor = new Scalar(20, 20, 20);                       //方格顯示的線
-    private Scalar[] _playerColor = new Scalar[4] { new Scalar(0, 0, 255), new Scalar(255, 255, 255), new Scalar(0, 255, 0), new Scalar(0, 0, 255) }; //玩家顏色
+    private Scalar[] _playerColor = new Scalar[4] { new Scalar(0, 0, 255), new Scalar(0, 0, 255), new Scalar(0, 255, 0), new Scalar(255, 255, 255) }; //玩家顏色
     //線條粗細
     private int _mapWellThickness = 1;
     private int _mapBlockThickness = 1;
@@ -55,6 +56,8 @@ public class GHSMain : MonoBehaviour {
     private int _winerFlag; //-1=>沒人贏 0=>ID 1玩家贏 1=>ID 2玩家贏
     private int _round;
     private int _whoRound;
+    //角色啟用
+    private bool[] _isEnablePlayer = { false, false, false, false };
     //觸發角色移動
     private bool _moved;
     private float _movedTimer;
@@ -69,7 +72,7 @@ public class GHSMain : MonoBehaviour {
     //設定功能旗標
     private bool _isDraw = new bool();
     private bool _isDebug = new bool();
-    private bool _isFullMap =new bool();
+    private bool _isCheatMode = new bool();
     private bool _isReSet = new bool();
     private bool _isNextLevel = new bool();
     //設定按鍵(畫圖、角色、全地圖)
@@ -91,11 +94,15 @@ public class GHSMain : MonoBehaviour {
     //初始化
     void Start()
     {
+        _isEnablePlayer[0] = true;
+        //_isEnablePlayer[1] = true;
+        _isEnablePlayer[2] = true;
+        _isEnablePlayer[3] = true;
         StartBlock = new mapBlock[ScreenHeightBlock, ScreenWidthBlock];           //設定初始地圖陣列大小
         //初始旗標狀態
         _isDraw = false;
         _isDebug = true;
-        _isFullMap = false;
+        _isCheatMode = false;
         _isReSet = false;
         //設定地圖像素大小
         _mapWidth = transform.localScale.x;
@@ -103,21 +110,23 @@ public class GHSMain : MonoBehaviour {
 
         //初始化棋盤格子
         InitBlock();                                                                   //初始化地圖
-       
         _mapMat = new Mat((int)_mapHeight, (int)_mapWidth, CvType.CV_8UC3);
         _mapMat.setTo(_FogOfWarColor);                                              //設定戰爭迷霧
         _tex = new Texture2D((int)_mapWidth, (int)_mapHeight);                      //設定結果圖片大小
+
         //玩家位置創建空間
         _pointPlayer = new Point[4];
         _pointPlayer[0] = new Point(0, 0);
-        _pointPlayer[1] = new Point(7, 8);
-        _pointPlayer[2] = new Point(7, 0);
+        _pointPlayer[1] = new Point(15, 0);
+        _pointPlayer[2] = new Point(15, 8);
         _pointPlayer[3] = new Point(0, 8);
+
         //設定玩家初始位置
-        _mapData.setPlayerPos(_pointPlayer[0]);
-        _mapData.setPlayerPos(_pointPlayer[1]);
-        _mapData.setPlayerPos(_pointPlayer[2]);
-        _mapData.setPlayerPos(_pointPlayer[3]);
+        for(int ID = 0; ID < 4; ID++)
+        {
+            _mapData.setPlayerPos(_pointPlayer[ID]);
+        }
+
         //設定寶藏初始位置
         _mapData.setTreadsurePos(new Point(5, 5));
         //設定視野道具初始位置
@@ -134,7 +143,7 @@ public class GHSMain : MonoBehaviour {
         _whoRound = 0;
         //設定玩家顏色
         _playerColor[0] = new Scalar(255, 0, 0);
-        _playerColor[1] = new Scalar(0, 0 ,255);
+        _playerColor[1] = new Scalar(0, 0, 255);
         _playerColor[2] = new Scalar(0, 255, 0);
         _playerColor[3] = new Scalar(255, 255, 255);
         //設定移動資訊
@@ -143,10 +152,11 @@ public class GHSMain : MonoBehaviour {
         _movedTriggerTime = 1;
         _pointRange = 5;
         //設定玩家視野
-        _playerCanSee[0] = 2;
-        _playerCanSee[1] = 2;
-        _playerCanSee[2] = 2;
-        _playerCanSee[3] = 2;
+        for (int enablePlayer = 0; enablePlayer < 4; enablePlayer++)
+        {
+            if (_isEnablePlayer[enablePlayer])
+                _playerCanSee[enablePlayer] = 2;
+        }
         //創造寶藏
         Point PBlock = new Point(_mapData.getTreadsurePos(0).x, _mapData.getTreadsurePos(0).y);
         Point[] PT = PosToBlock((int)PBlock.x, (int)PBlock.y);
@@ -274,7 +284,7 @@ public class GHSMain : MonoBehaviour {
             //設定角色座標和trigger
             Point[] characterPoint = _matchPointToOutputView.outputPoint.ToArray();
 
-            if (characterPoint.Length != 0 )
+            if (characterPoint.Length != 0)
             {
                 //Debug.Log("round: "+_whoRound);
                 //Debug.Log(characterPoint[_whoRound]);
@@ -302,45 +312,56 @@ public class GHSMain : MonoBehaviour {
             }
 
             //顯示玩家目前座標 2人
-            _coordinateP1.text = "X：" + _mapData.getPlayerPos(0).x.ToString() + "Y：" + _mapData.getPlayerPos(0).y.ToString();
-            _coordinateP2.text = "X：" + _mapData.getPlayerPos(1).x.ToString() + "Y：" + _mapData.getPlayerPos(1).y.ToString();
-            _coordinateP2.text = "X：" + _mapData.getPlayerPos(2).x.ToString() + "Y：" + _mapData.getPlayerPos(2).y.ToString();
-            _coordinateP2.text = "X：" + _mapData.getPlayerPos(3).x.ToString() + "Y：" + _mapData.getPlayerPos(3).y.ToString();
-
+            for(int enablePlayer = 0; enablePlayer < 4; enablePlayer++)
+            {
+                if (_isEnablePlayer[enablePlayer])
+                {
+                    _coordinatePlayer[enablePlayer].text = "X：" + _mapData.getPlayerPos(enablePlayer).x.ToString() + "Y：" + _mapData.getPlayerPos(enablePlayer).y.ToString();
+                }
+            }
+            
             //如果滑鼠點擊
             this.ClickMouseUpEvent();
 
             //讓道具閃爍
             this.Flicker();
-
+            
             //搜尋兩個玩家可走區塊
-            for (int ID = 0; ID < _mapData.getPlayerCount(); ID++)
-                CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), _playerCanSee[ID]);
+            for (int ID = 0; ID < 4; ID++)
+            {
+                if (_isEnablePlayer[ID])
+                {
+                    CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), _playerCanSee[ID]);
+                }
+            }
 
             //確認有沒有玩家碰到道具
-            for (int ID = 0; ID < _mapData.getPlayerCount(); ID++)
+            for (int ID = 0; ID < 4; ID++)
             {
-                if (this.GetTreadsureOrNot(ID))
+                if (_isEnablePlayer[ID])
                 {
-                    //寶藏
-                    _winerFlag = ID;
-                    _roundText.text = "Player " + (ID + 1) + " win!!";
-                    _WinTip.transform.localPosition = new Vector3(292,-120,-1);
-                    Debug.Log("ID = " + ID + ",X = " + _mapData.getPlayerPos(ID).x + ",Y = " + _mapData.getPlayerPos(ID).y + ", get the treadsure");
-                } 
-                if (this.GetSightOrNot(ID))
-                {
-                    //視野        
-                    _playerCanSee[ID]++;
-                    _moveState.text = "Get Sight";
-                }
-                if (this.GetBombOrNot(ID))
-                {
-                    //爆炸        
-                    if (ID == 0) _mapData.setPlayerPos(ID, new Point(0, 0));
-                    if (ID == 1) _mapData.setPlayerPos(ID, new Point(16, 9));
-                    if (ID == 2) _mapData.setPlayerPos(ID, new Point(16, 0));
-                    if (ID == 3) _mapData.setPlayerPos(ID, new Point(0, 9));
+                    if (this.GetTreadsureOrNot(ID))
+                    {
+                        //寶藏
+                        _winerFlag = ID;
+                        _roundText.text = "Player " + (ID + 1) + " win!!";
+                        _WinTip.transform.localPosition = new Vector3(292, -120, -1);
+                        Debug.Log("ID = " + ID + ",X = " + _mapData.getPlayerPos(ID).x + ",Y = " + _mapData.getPlayerPos(ID).y + ", get the treadsure");
+                    }
+                    if (this.GetSightOrNot(ID))
+                    {
+                        //視野        
+                        _playerCanSee[ID]++;
+                        _moveState.text = "Get Sight";
+                    }
+                    if (this.GetBombOrNot(ID))
+                    {
+                        //爆炸
+                        if (ID == 0) _mapData.setPlayerPos(ID, new Point(0, 0));
+                        if (ID == 1) _mapData.setPlayerPos(ID, new Point(15, 8));
+                        if (ID == 2) _mapData.setPlayerPos(ID, new Point(15, 0));
+                        if (ID == 3) _mapData.setPlayerPos(ID, new Point(0, 8));
+                    }
                 }
             }
 
@@ -353,23 +374,33 @@ public class GHSMain : MonoBehaviour {
 
             //畫寶藏
             for (int i = 0; i < _mapData.getTreadsurePos().Count; i++)
-                _treasure.SetActive(_isDraw && _mapData.isExistCanMoveArea(_mapData.getTreadsurePos(i)) || _isFullMap);
+            {
+                _treasure.SetActive(_isDraw && _mapData.isExistCanMoveArea(_mapData.getTreadsurePos(i)) || _isCheatMode);
+            }
+                
 
             //畫眼睛道具
-            //Debug.Log("Num = " + _mapData.getBombPos().Count);
-           // Debug.Log("Num = " + _mapData.getSightPos().Count);
             for (int i = 0; i < _mapData.getSightPos().Count; i++)
-                _sight[i].SetActive(_isDraw && _mapData.isExistCanMoveArea(_mapData.getSightPos(i)) || _isFullMap);
+            {
+                _sight[i].SetActive(_isDraw && _mapData.isExistCanMoveArea(_mapData.getSightPos(i)) || _isCheatMode);
+            }
+                
+            //畫炸彈(理應只有作弊模式)
             for (int i = 0; i < _mapData.getBombPos().Count; i++)
             {
-               // _bomb[i].SetActive(_isDraw && _mapData.isExistCanMoveArea(_mapData.getBombPos(i)) ||_isFullMap);
-                if (_isFullMap)_bomb[i].SetActive(true);
+               // _bomb[i].SetActive(_isDraw && _mapData.isExistCanMoveArea(_mapData.getBombPos(i)) ||_isCheatMode);
+                if (_isCheatMode)_bomb[i].SetActive(true);
             }
             //畫玩家
             if (_isDebug)
             {
-                for (int ID = 0; ID < _mapData.getPlayerCount(); ID++)
-                    DrawPlayer(ID);
+                for (int ID = 0; ID < 4; ID++)
+                {
+                    if (_isEnablePlayer[ID])
+                    {
+                        DrawPlayer(ID);
+                    }
+                }
             }
             //轉換地圖mat至顯示結果
             Utils.matToTexture2D(_mapMat, _tex);
@@ -387,7 +418,9 @@ public class GHSMain : MonoBehaviour {
     private void ClickMouseUpEvent()
     {
         bool isMouse = false;
-        if (Input.GetMouseButtonUp(0)) isMouse =true;
+        if (Input.GetMouseButtonUp(0))
+            isMouse = true;
+            
         if (_moved || isMouse)
         {
             Point triggerPoint = new Point();
@@ -418,9 +451,17 @@ public class GHSMain : MonoBehaviour {
                 }
             }
 
-            _whoRound = _round % 4;
+            _whoRound = _round;
             this.RefreshOneCanMoveArea(_whoRound);
-            this._mapData.RemovePlayerArea();
+            for(int enablePlayer = 0; enablePlayer < 4; enablePlayer++)
+            {
+                if (_isEnablePlayer[enablePlayer])
+                {
+                    this._mapData.RemovePlayerAreaByIndex(enablePlayer);
+                }
+            }
+
+            //Debug.Log("triggerPoint.x = " + triggerPoint.x + ", triggerPoint.y = " + triggerPoint.y);
 
             //判斷是否為可走區域以及是否沒有玩家在該格子上
             if (_mapData.getCanMoveArea().Exists(List => List.x == triggerPoint.x && List.y == triggerPoint.y) &&
@@ -428,7 +469,11 @@ public class GHSMain : MonoBehaviour {
             {
                 //可以的話,設定玩家到新座標
                 _mapData.setPlayerPos(_whoRound, new Point(triggerPoint.x, triggerPoint.y));
-                _round++;
+                
+                do
+                    _round = (_round + 1) % 4;
+                while (!_isEnablePlayer[_round % 4]);
+                    
                 _roundText.text = "Round：" + ((_round/2)+1);
                 this.FlageMove();
                 this.RefreshCanMoveArea();
@@ -444,10 +489,13 @@ public class GHSMain : MonoBehaviour {
             }
 
             //重新跑過各玩家可以走的地方
-            this.RefreshOneCanMoveArea(0);
-            this.RefreshOneCanMoveArea(1);
-            this.RefreshOneCanMoveArea(2);
-            this.RefreshOneCanMoveArea(3);
+            for(int enablePlayer = 0; enablePlayer < 4; enablePlayer++)
+            {
+                if (_isEnablePlayer[enablePlayer])
+                {
+                    this.RefreshOneCanMoveArea(enablePlayer);
+                }
+            }
 
             //Debug.Log("WR" + _whoRound + "R " + _round + "NUM " + _mapData.getPlayerCount());
             //Debug.Log("ID = 0" + "X = " + _mapData.getPlayerPos(0).x + "Y = " + _mapData.getPlayerPos(0).y);
@@ -460,8 +508,13 @@ public class GHSMain : MonoBehaviour {
     public void RefreshCanMoveArea()
     {
         _mapData.ClearCanMoveArea();
-        for (int ID = 0; ID < _mapData.getPlayerCount(); ID++)
-            CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), _playerCanSee[ID]);
+        for (int ID = 0; ID < 4; ID++)
+        {
+            if (_isEnablePlayer[ID])
+            {
+                CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), _playerCanSee[ID]);
+            }
+        }
     }
 
     //刷新canMoveArea(包含清除及重新搜尋)
@@ -609,7 +662,7 @@ public class GHSMain : MonoBehaviour {
                 {
                     DrawMazeBlock(j, i, _mapData.getWall(j, i));
                 }
-                else if (_isFullMap)
+                else if (_isCheatMode)
                 {
                     DrawMazeBlock(j, i, _mapData.getWall(j, i));
                 }
@@ -679,8 +732,8 @@ public class GHSMain : MonoBehaviour {
         }
         if (Input.GetKeyUp(_fullMapKey))
         {
-            _isFullMap = (_isFullMap) ? false : true;
-            Debug.Log((_isFullMap) ? "isFullMap Set True" : "isFullMap Set false");
+            _isCheatMode = (_isCheatMode) ? false : true;
+            Debug.Log((_isCheatMode) ? "isFullMap Set True" : "isFullMap Set false");
         }
         if (Input.GetKeyUp(_reSetKey))
         {

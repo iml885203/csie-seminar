@@ -206,12 +206,12 @@ public class GHSMapData : MonoBehaviour {
     }
 
     //清除兩玩家可走區域
-    public void RemovePlayerArea()
+    public void RemovePlayerAreaByIndex(int ID)
     {
-        _canMoveArea.Remove(_playerPos[0]);
-        _canMoveArea.Remove(_playerPos[1]);
-        _canMoveArea.Remove(_playerPos[2]);
-        _canMoveArea.Remove(_playerPos[3]);
+        _canMoveArea.Remove(_playerPos[ID]);
+        //_canMoveArea.Remove(_playerPos[1]);
+        //_canMoveArea.Remove(_playerPos[2]);
+        //_canMoveArea.Remove(_playerPos[3]);
     }
 
     //回傳玩家位置相關功能

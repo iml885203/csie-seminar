@@ -19,29 +19,26 @@ public class raytoPosition : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonUp(0))
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, 1000))
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
+            //transform.position = new Vector3(hit.point.x, hit.point.y, hit.point.z);
+            double coordinateX = hit.point.x - transform.position.x;
+            double coordinateY = hit.point.y - transform.position.y;
+            double posX = (transform.localScale.x / 2) + coordinateX;
+            double posY = (transform.localScale.y / 2) - coordinateY;
+            Debug.ClearDeveloperConsole();
+            posXY = new Point(posX, posY);
+            //Debug.Log("point:" + (int)hit.point.x + ", " + (int)hit.point.y);
+            //Debug.Log("coordinate:" + (int)coordinateX + ", " + (int)coordinateY);
+            // Debug.Log("Pos:" + (int)posX + ", " + (int)posY);
+            //map check
 
-            if (Physics.Raycast(ray, out hit, 1000))
-            {
-                //transform.position = new Vector3(hit.point.x, hit.point.y, hit.point.z);
-                double coordinateX = hit.point.x - transform.position.x;
-                double coordinateY = hit.point.y - transform.position.y;
-                double posX = (transform.localScale.x / 2) + coordinateX;
-                double posY = (transform.localScale.y / 2) - coordinateY;
-                Debug.ClearDeveloperConsole();
-                posXY = new Point(posX, posY);
-                //Debug.Log("point:" + (int)hit.point.x + ", " + (int)hit.point.y);
-                //Debug.Log("coordinate:" + (int)coordinateX + ", " + (int)coordinateY);
-                // Debug.Log("Pos:" + (int)posX + ", " + (int)posY);
-                //map check
-
-                //Debug.Log("checkPos:" + _mapCoordinate.StartBlock.Check(posX, posY));
-            }
+            //Debug.Log("checkPos:" + _mapCoordinate.StartBlock.Check(posX, posY));
+            //Debug.Log("In the raytoPosition, and posXY = " + posXY);
         }
-
     }
 
     public Point getPos()
