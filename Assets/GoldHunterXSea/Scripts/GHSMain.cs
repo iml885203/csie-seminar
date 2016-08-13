@@ -13,6 +13,8 @@ public class GHSMain : MonoBehaviour {
     public Text _roundText;
     public Text _coordinateP1;
     public Text _coordinateP2;
+    public Text _coordinateP3;
+    public Text _coordinateP4;
     public Text _moveState;
     public RawImage _boomTip;
     public RawImage _WinTip;
@@ -21,7 +23,7 @@ public class GHSMain : MonoBehaviour {
     public GameObject _flages;
     public GameObject [] _flashLights;
     public GameObject [] _sight;
-    public GameObject[] _bomb;
+    public GameObject [] _bomb;
     //地圖方向defind
     private const byte UP = 7;                  //上可走0111
     private const byte RIGHT = 11;              //右可走1011
@@ -42,7 +44,7 @@ public class GHSMain : MonoBehaviour {
     private Scalar _mapWellColor = new Scalar(255, 250, 250);                 //迷宮的牆壁顏色
     private Scalar _canGoBlockColor = new Scalar(20, 20, 20);                    //可走的地區顏色
     private Scalar _blockLineColor = new Scalar(20, 20, 20);                       //方格顯示的線
-    private Scalar[] _playerColor = new Scalar[2] { new Scalar(0, 0, 255), new Scalar(255, 255, 255) }; //玩家顏色
+    private Scalar[] _playerColor = new Scalar[4] { new Scalar(0, 0, 255), new Scalar(255, 255, 255), new Scalar(0, 255, 0), new Scalar(0, 0, 255) }; //玩家顏色
     //線條粗細
     private int _mapWellThickness = 1;
     private int _mapBlockThickness = 1;
@@ -57,12 +59,13 @@ public class GHSMain : MonoBehaviour {
     private bool _moved;
     private float _movedTimer;
     private float _movedTriggerTime;
-    //角色outputView座標
+    //角色outputView座標 玩家數量
+    int _playerCount = 0;
     public matchPointToOutputView _matchPointToOutputView;
     private Point[] _pointPlayer;
     private int _pointRange;
     //玩家視野
-    private int[] _playerCanSee = new int[2];
+    private int[] _playerCanSee = new int[4];
     //設定功能旗標
     private bool _isDraw = new bool();
     private bool _isDebug = new bool();
@@ -85,7 +88,7 @@ public class GHSMain : MonoBehaviour {
     //勝利顯示圖片計時器
     private float _winRect = 0;
 
-    // Use this for initialization
+    //初始化
     void Start()
     {
         StartBlock = new mapBlock[ScreenHeightBlock, ScreenWidthBlock];           //設定初始地圖陣列大小
@@ -105,12 +108,16 @@ public class GHSMain : MonoBehaviour {
         _mapMat.setTo(_FogOfWarColor);                                              //設定戰爭迷霧
         _tex = new Texture2D((int)_mapWidth, (int)_mapHeight);                      //設定結果圖片大小
         //玩家位置創建空間
-        _pointPlayer = new Point[2];
-        _pointPlayer[0] = new Point(0, 4);
-        _pointPlayer[1] = new Point(15, 3);
+        _pointPlayer = new Point[4];
+        _pointPlayer[0] = new Point(0, 0);
+        _pointPlayer[1] = new Point(7, 8);
+        _pointPlayer[2] = new Point(7, 0);
+        _pointPlayer[3] = new Point(0, 8);
         //設定玩家初始位置
         _mapData.setPlayerPos(_pointPlayer[0]);
         _mapData.setPlayerPos(_pointPlayer[1]);
+        _mapData.setPlayerPos(_pointPlayer[2]);
+        _mapData.setPlayerPos(_pointPlayer[3]);
         //設定寶藏初始位置
         _mapData.setTreadsurePos(new Point(5, 5));
         //設定視野道具初始位置
@@ -128,6 +135,8 @@ public class GHSMain : MonoBehaviour {
         //設定玩家顏色
         _playerColor[0] = new Scalar(255, 0, 0);
         _playerColor[1] = new Scalar(0, 0 ,255);
+        _playerColor[2] = new Scalar(0, 255, 0);
+        _playerColor[3] = new Scalar(255, 255, 255);
         //設定移動資訊
         _moved = false;
         _movedTimer = 0f;
@@ -136,6 +145,8 @@ public class GHSMain : MonoBehaviour {
         //設定玩家視野
         _playerCanSee[0] = 2;
         _playerCanSee[1] = 2;
+        _playerCanSee[2] = 2;
+        _playerCanSee[3] = 2;
         //創造寶藏
         Point PBlock = new Point(_mapData.getTreadsurePos(0).x, _mapData.getTreadsurePos(0).y);
         Point[] PT = PosToBlock((int)PBlock.x, (int)PBlock.y);
@@ -175,7 +186,7 @@ public class GHSMain : MonoBehaviour {
         _mapData.setBombPos(new Point(Random.Range(0, 15), Random.Range(0, 8)));
         _mapData.setBombPos(new Point(Random.Range(0, 15), Random.Range(0, 8)));
         //設定照明彈位置
-        //_mapData.FlashLightPos = new Point(Random.Range(0, 1), Random.Range(1, 8));
+        _mapData.setFlashLightPos(new Point(Random.Range(0, 1), Random.Range(1, 8)));
         SightPosInit();
         BoomPosInit();
         //設定回合&誰先遊戲&還沒有人贏
@@ -221,6 +232,21 @@ public class GHSMain : MonoBehaviour {
         }
     }
 
+    //照明燈座標初始化
+    void FlashLightPosInit()
+    {
+        //設定視野道具
+        for (int ID = 0; ID < _mapData.getFlashLightPos().Count; ID++)
+        {
+            //創造視野道具座標點
+            Point PBlock = new Point(_mapData.getFlashLightPos(ID).x, _mapData.getFlashLightPos(ID).y);
+            Point[] PT = PosToBlock((int)PBlock.x, (int)PBlock.y);
+            //設定視野道具位置
+            _flashLights[ID].transform.localPosition = new Vector3((float)-0.5 + ((float)(PT[0].x + PT[1].x) / 2 / _mapWidth), (float)0.5 - ((float)(PT[0].y + PT[1].y) / 2 / _mapHeight), -1);
+        }
+    }
+
+    //Update
     void Update()
     {
         this.SetIsSaveAndisDebug();
@@ -275,9 +301,11 @@ public class GHSMain : MonoBehaviour {
                 }
             }
 
-            //顯示玩家目前座標
+            //顯示玩家目前座標 2人
             _coordinateP1.text = "X：" + _mapData.getPlayerPos(0).x.ToString() + "Y：" + _mapData.getPlayerPos(0).y.ToString();
             _coordinateP2.text = "X：" + _mapData.getPlayerPos(1).x.ToString() + "Y：" + _mapData.getPlayerPos(1).y.ToString();
+            _coordinateP2.text = "X：" + _mapData.getPlayerPos(2).x.ToString() + "Y：" + _mapData.getPlayerPos(2).y.ToString();
+            _coordinateP2.text = "X：" + _mapData.getPlayerPos(3).x.ToString() + "Y：" + _mapData.getPlayerPos(3).y.ToString();
 
             //如果滑鼠點擊
             this.ClickMouseUpEvent();
@@ -309,8 +337,10 @@ public class GHSMain : MonoBehaviour {
                 if (this.GetBombOrNot(ID))
                 {
                     //爆炸        
-                    if (ID == 0) _mapData.setPlayerPos(ID, new Point(0, 4));
-                    if (ID == 1) _mapData.setPlayerPos(ID, new Point(15, 3));
+                    if (ID == 0) _mapData.setPlayerPos(ID, new Point(0, 0));
+                    if (ID == 1) _mapData.setPlayerPos(ID, new Point(16, 9));
+                    if (ID == 2) _mapData.setPlayerPos(ID, new Point(16, 0));
+                    if (ID == 3) _mapData.setPlayerPos(ID, new Point(0, 9));
                 }
             }
 
@@ -388,7 +418,7 @@ public class GHSMain : MonoBehaviour {
                 }
             }
 
-            _whoRound = _round % 2;
+            _whoRound = _round % 4;
             this.RefreshOneCanMoveArea(_whoRound);
             this._mapData.RemovePlayerArea();
 
@@ -416,6 +446,8 @@ public class GHSMain : MonoBehaviour {
             //重新跑過各玩家可以走的地方
             this.RefreshOneCanMoveArea(0);
             this.RefreshOneCanMoveArea(1);
+            this.RefreshOneCanMoveArea(2);
+            this.RefreshOneCanMoveArea(3);
 
             //Debug.Log("WR" + _whoRound + "R " + _round + "NUM " + _mapData.getPlayerCount());
             //Debug.Log("ID = 0" + "X = " + _mapData.getPlayerPos(0).x + "Y = " + _mapData.getPlayerPos(0).y);
@@ -516,7 +548,7 @@ public class GHSMain : MonoBehaviour {
         return false;
     }
 
-    //回傳是否碰到炸彈 得到->true 沒得到->false
+    //回傳是否得到炸彈 得到->true 沒得到->false
     private bool GetBombOrNot(int playerID)
     {
         if (_mapData.getBombPos().Exists(Point => Point.x == _mapData.getPlayerPos(playerID).x && Point.y == _mapData.getPlayerPos(playerID).y))
@@ -537,6 +569,20 @@ public class GHSMain : MonoBehaviour {
                 _boomTip.transform.localPosition = new Vector3(500, -500, 10);
                 return true;
             }        
+        }
+        return false;
+    }
+
+    //回傳是否得到照明燈 得到->true 沒得到->false
+    private bool GetFlashLightOrNot(int playerID)
+    {
+        if (_mapData.getFlashLightPos().Exists(Point => Point.x == _mapData.getPlayerPos(playerID).x && Point.y == _mapData.getPlayerPos(playerID).y))
+        {
+            int FlashLightID = _mapData.getFlashLightPos().FindIndex(Point => Point.x == _mapData.getPlayerPos(playerID).x && Point.y == _mapData.getPlayerPos(playerID).y);
+            _mapData.removeFlashLight(FlashLightID);
+            _flashLights[FlashLightID].SetActive(false);
+            BoomPosInit();
+            return true;
         }
         return false;
     }

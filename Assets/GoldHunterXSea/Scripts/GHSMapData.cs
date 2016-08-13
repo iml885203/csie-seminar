@@ -210,6 +210,8 @@ public class GHSMapData : MonoBehaviour {
     {
         _canMoveArea.Remove(_playerPos[0]);
         _canMoveArea.Remove(_playerPos[1]);
+        _canMoveArea.Remove(_playerPos[2]);
+        _canMoveArea.Remove(_playerPos[3]);
     }
 
     //回傳玩家位置相關功能
@@ -331,9 +333,19 @@ public class GHSMapData : MonoBehaviour {
         return _flashLight[ID];
     }
 
+    public List<Point> getFlashLightPos()
+    {
+        return _flashLight;
+    }
+
     public void setFlashLightPos(Point Point)
     {
         _flashLight.Add(Point);
+    }
+
+    public void removeFlashLight(int ID)
+    {
+        _flashLight.RemoveAt(ID);
     }
 
     public void clearFlashLight()
