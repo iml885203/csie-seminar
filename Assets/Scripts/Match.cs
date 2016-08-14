@@ -149,7 +149,7 @@ public class Match : MonoBehaviour {
     List<Point> getMaxMin(Mat _inImage)
     {
         //設定red框位置初值
-        int MaxX = 0, minX = 9999, MaxY = 0, minY = 9999;
+        int maxX = 0, minX = 9999, maxY = 0, minY = 9999;
         //設定兩點位置初值
         Point _liftP = new Point(0, 0);
         Point _rightP = new Point(0, 0);
@@ -168,17 +168,17 @@ public class Match : MonoBehaviour {
                 _goalPixel = _inImage.get(i, j);
                 if (_goalPixel[0] >= 240)
                 {
-                    if (j > MaxX)
+                    if (j > maxX)
                     {
-                        MaxX = j;
+                        maxX = j;
                     }
                     else if (j < minX)
                     {
                         minX = j;
                     }
-                    if (i > MaxY)
+                    if (i > maxY)
                     {
-                        MaxY = i;
+                        maxY = i;
                     }
                     else if (i < minY)
                     {
@@ -188,8 +188,8 @@ public class Match : MonoBehaviour {
             }
         }
         //設定紅框兩點
-        _liftP.x = MaxX;
-        _liftP.y = MaxY;
+        _liftP.x = maxX;
+        _liftP.y = maxY;
         _rightP.x = minX;
         _rightP.y = minY;
 
