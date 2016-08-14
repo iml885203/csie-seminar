@@ -27,11 +27,11 @@ public class DrawBlock : MonoBehaviour {
     //設定螢幕與輸入cam的影像大小
     int _currentWidth;
     int _currentHeight;
-    public int _inputWidth;
-    public int _inputHeight;
-    public int _inputDepthWidth ;
-    public int _inputDepthHeight;
-    public ushort[] _depthData;
+    int _inputWidth;
+    int _inputHeight;
+    int _inputDepthWidth ;
+    int _inputDepthHeight;
+    ushort[] _depthData;
 
     //滑鼠是否點擊
     private bool mouseclick = false;
@@ -62,6 +62,10 @@ public class DrawBlock : MonoBehaviour {
     //選取區深度資料
     List<ushort> _depthDataSub = new List<ushort>();
     List<Point> _depthDataSubColorPoint = new List<Point>();
+
+    //設定深度偵測距離(mm)
+    public int _minDepthDistance = 500;
+    public int _maxDepthDistance = 1000;
 
     public Mat GetBlockMat()
     {
@@ -337,13 +341,13 @@ public class DrawBlock : MonoBehaviour {
         for (int i = 0; i < _depthDataSub.Count; i++)
         {
             double avg;
-            if (_depthDataSub[i] > 1000) //大於100公分不顯示
+            if (_depthDataSub[i] > _maxDepthDistance) //大於最大距離不顯示
             {
                 avg = 0;
             }
             else
             {
-                avg = 255 - ((double)(_depthDataSub[i] - 500) / 500 * 255); //顯示50公分到100公分深度顏色
+                avg = 255 - ((double)(_depthDataSub[i] - _minDepthDistance) / (_maxDepthDistance - _minDepthDistance) * 255); //顯示範圍內深度顏色
                 //avg = 255; //binary
             }
 
