@@ -110,7 +110,8 @@ public class Match : MonoBehaviour {
       // Imgproc.cvtColor(_NewTowMat, hsvMat, Imgproc.COLOR_RGB2HSV);
       //  getContours(_NewTowMat, BlackMat);
         //方法三 用特徵點抓物件
-        descriptorsORB(_NewTowMat, BlackMat);
+        descriptorsORB(_NewTowMat, BlackMat, "queen");
+        descriptorsORB(BlackMat, BlackMat, "lena");
 
         Mat resizeMat = new Mat(_matchHeight, _matchWidth, CvType.CV_8UC3);
         Imgproc.resize(BlackMat, resizeMat, resizeMat.size());
@@ -369,7 +370,7 @@ public class Match : MonoBehaviour {
             Debug.Log((isSave) ? "isSave Set True" : "isSave Set false");
         }
     }
-    public bool descriptorsORB(Mat RGB, Mat cameraFeed)//找出特徵的顏色方法三
+    public bool descriptorsORB(Mat RGB, Mat cameraFeed,string targetName)//找出特徵的顏色方法三
     {
         if (RGB == null)
         {
@@ -381,28 +382,12 @@ public class Match : MonoBehaviour {
         
         RGB.copyTo(SrcMat);
         //比對樣本
-        Texture2D imgTexture = Resources.Load("lena") as Texture2D;
+        Texture2D imgTexture = Resources.Load(targetName) as Texture2D;
       //  Texture2D imgTexture2 = Resources.Load("lenaK") as Texture2D;
         
         //Texture2D轉Mat
         Mat img1Mat = new Mat(imgTexture.height, imgTexture.width, CvType.CV_8UC3);
         Utils.texture2DToMat(imgTexture, img1Mat);
-       // Debug.Log("img1Mat dst ToString " + img1Mat.ToString());
-
-        //Mat img2Mat = new Mat(imgTexture2.height, imgTexture2.width, CvType.CV_8UC3);
-        //Utils.texture2DToMat(imgTexture2, img2Mat);
-        //Debug.Log("img2Mat dst ToString " + img2Mat.ToString());
-
-
-        ////做旋轉
-        //float angle = UnityEngine.Random.Range(0, 360), scale = 1.0f;
-        //angle = 0;
-        ////設定迴轉值
-        //Point center = new Point(img2Mat.cols() * 0.5f, img2Mat.rows() * 0.5f);
-        ////做旋轉
-        //Mat affine_matrix = Imgproc.getRotationMatrix2D(center, angle, scale);
-        ////將 圖片計算 放回去
-        //Imgproc.warpAffine(img2Mat, img2Mat, affine_matrix, img2Mat.size());
 
         //創建 ORB的特徵點裝置
         FeatureDetector detector = FeatureDetector.create(FeatureDetector.ORB);
@@ -415,9 +400,6 @@ public class Match : MonoBehaviour {
         //找特徵點圖1
         detector.detect(img1Mat, keypoints1);
         extractor.compute(img1Mat, keypoints1, descriptors1);
-        //找特徵點圖2
-        //detector.detect(img2Mat, keypoints2);
-        //extractor.compute(img2Mat, keypoints2, descriptors2);
         //找特徵點圖Src
         detector.detect(SrcMat, keypointsSrc);
         extractor.compute(SrcMat, keypointsSrc, descriptorsSrc);
@@ -546,14 +528,7 @@ public class Match : MonoBehaviour {
         Imgproc.line(SrcMat, srcPointCornersSave[1], srcPointCornersSave[2], new Scalar(255, 0, 0), 3);
         Imgproc.line(SrcMat, srcPointCornersSave[2], srcPointCornersSave[3], new Scalar(255, 0, 0), 3);
         Imgproc.line(SrcMat, srcPointCornersSave[3], srcPointCornersSave[0], new Scalar(255, 0, 0), 3);
-        /*Imgproc.warpPerspective(img1Mat,
-         resultImg,
-         H,
-         new Size(img1Mat.height(), img1Mat.width()),
-         Imgproc.INTER_CUBIC);*/
-
-        //Imgproc.line(resultImg, new Point(keypoints1.toArray()[matchesGoodList[0].queryIdx].pt.x, keypoints1.toArray()[matchesGoodList[0].queryIdx].pt.y), new Point(keypoints1.toArray()[matchesGoodList[0].queryIdx].pt.x, keypoints1.toArray()[matchesGoodList[0].queryIdx].pt.y), new Scalar(45, 45, 45,0.5), 50);
-        
+     
         SrcMat.copyTo(cameraFeed);
         keypoints1.release();
         img1Mat.release();
