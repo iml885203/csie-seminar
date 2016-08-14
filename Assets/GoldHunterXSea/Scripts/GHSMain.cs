@@ -12,13 +12,9 @@ public class GHSMain : MonoBehaviour {
     //遊戲狀況文字顯示
     public Text _roundText;
     public Text[] _coordinatePlayer;
-    //public Text _coordinateP1;
-    //public Text _coordinateP2;
-    //public Text _coordinateP3;
-    //public Text _coordinateP4;
     public Text _moveState;
     public RawImage _boomTip;
-    public RawImage _WinTip;
+    public RawImage _winTip;
     //寶藏、旗標、視野道具、炸彈物件
     public GameObject _treasure;
     public GameObject _flages;
@@ -57,7 +53,7 @@ public class GHSMain : MonoBehaviour {
     private int _round;
     private int _whoRound;
     //角色啟用
-    private bool[] _isEnablePlayer = { false, false, false, false };
+    private GHSPlayerState _playerState = new GHSPlayerState();
     //觸發角色移動
     private bool _moved;
     private float _movedTimer;
@@ -94,10 +90,10 @@ public class GHSMain : MonoBehaviour {
     //初始化
     void Start()
     {
-        _isEnablePlayer[0] = true;
-        //_isEnablePlayer[1] = true;
-        _isEnablePlayer[2] = true;
-        _isEnablePlayer[3] = true;
+        _playerState.SetPlayerEnableByIndex(0);
+        _playerState.SetPlayerEnableByIndex(1);
+        _playerState.SetPlayerDisableByIndex(2);
+        _playerState.SetPlayerEnableByIndex(3);
         StartBlock = new mapBlock[ScreenHeightBlock, ScreenWidthBlock];           //設定初始地圖陣列大小
         //初始旗標狀態
         _isDraw = false;
@@ -154,7 +150,7 @@ public class GHSMain : MonoBehaviour {
         //設定玩家視野
         for (int enablePlayer = 0; enablePlayer < 4; enablePlayer++)
         {
-            if (_isEnablePlayer[enablePlayer])
+            if (_playerState.GetIsPlayerEnableOrNotByIndex(enablePlayer))
                 _playerCanSee[enablePlayer] = 2;
         }
         //創造寶藏
@@ -314,7 +310,7 @@ public class GHSMain : MonoBehaviour {
             //顯示玩家目前座標 2人
             for(int enablePlayer = 0; enablePlayer < 4; enablePlayer++)
             {
-                if (_isEnablePlayer[enablePlayer])
+                if (_playerState.GetIsPlayerEnableOrNotByIndex(enablePlayer))
                 {
                     _coordinatePlayer[enablePlayer].text = "X：" + _mapData.getPlayerPos(enablePlayer).x.ToString() + "Y：" + _mapData.getPlayerPos(enablePlayer).y.ToString();
                 }
@@ -329,7 +325,7 @@ public class GHSMain : MonoBehaviour {
             //搜尋兩個玩家可走區塊
             for (int ID = 0; ID < 4; ID++)
             {
-                if (_isEnablePlayer[ID])
+                if (_playerState.GetIsPlayerEnableOrNotByIndex(ID))
                 {
                     CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), _playerCanSee[ID]);
                 }
@@ -338,14 +334,14 @@ public class GHSMain : MonoBehaviour {
             //確認有沒有玩家碰到道具
             for (int ID = 0; ID < 4; ID++)
             {
-                if (_isEnablePlayer[ID])
+                if (_playerState.GetIsPlayerEnableOrNotByIndex(ID))
                 {
                     if (this.GetTreadsureOrNot(ID))
                     {
                         //寶藏
                         _winerFlag = ID;
                         _roundText.text = "Player " + (ID + 1) + " win!!";
-                        _WinTip.transform.localPosition = new Vector3(292, -120, -1);
+                        _winTip.transform.localPosition = new Vector3(292, -120, -1);
                         Debug.Log("ID = " + ID + ",X = " + _mapData.getPlayerPos(ID).x + ",Y = " + _mapData.getPlayerPos(ID).y + ", get the treadsure");
                     }
                     if (this.GetSightOrNot(ID))
@@ -396,7 +392,7 @@ public class GHSMain : MonoBehaviour {
             {
                 for (int ID = 0; ID < 4; ID++)
                 {
-                    if (_isEnablePlayer[ID])
+                    if (_playerState.GetIsPlayerEnableOrNotByIndex(ID))
                     {
                         DrawPlayer(ID);
                     }
@@ -410,7 +406,7 @@ public class GHSMain : MonoBehaviour {
         {
             //有贏家的時候
             if (_winRect < 0.5f) _winRect += Time.deltaTime;
-            this.BlowUp(_WinTip, _winRect);
+            this.BlowUp(_winTip, _winRect);
         }
     }
 
@@ -455,7 +451,7 @@ public class GHSMain : MonoBehaviour {
             this.RefreshOneCanMoveArea(_whoRound);
             for(int enablePlayer = 0; enablePlayer < 4; enablePlayer++)
             {
-                if (_isEnablePlayer[enablePlayer])
+                if (_playerState.GetIsPlayerEnableOrNotByIndex(enablePlayer))
                 {
                     this._mapData.RemovePlayerAreaByIndex(enablePlayer);
                 }
@@ -472,7 +468,7 @@ public class GHSMain : MonoBehaviour {
                 
                 do
                     _round = (_round + 1) % 4;
-                while (!_isEnablePlayer[_round % 4]);
+                while (!_playerState.GetIsPlayerEnableOrNotByIndex(_round % 4));
                     
                 _roundText.text = "Round：" + ((_round/2)+1);
                 this.FlageMove();
@@ -491,7 +487,7 @@ public class GHSMain : MonoBehaviour {
             //重新跑過各玩家可以走的地方
             for(int enablePlayer = 0; enablePlayer < 4; enablePlayer++)
             {
-                if (_isEnablePlayer[enablePlayer])
+                if (_playerState.GetIsPlayerEnableOrNotByIndex(enablePlayer))
                 {
                     this.RefreshOneCanMoveArea(enablePlayer);
                 }
@@ -510,7 +506,7 @@ public class GHSMain : MonoBehaviour {
         _mapData.ClearCanMoveArea();
         for (int ID = 0; ID < 4; ID++)
         {
-            if (_isEnablePlayer[ID])
+            if (_playerState.GetIsPlayerEnableOrNotByIndex(ID))
             {
                 CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), _playerCanSee[ID]);
             }
