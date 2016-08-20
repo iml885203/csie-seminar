@@ -45,6 +45,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\GoldHunterXSea\Scripts\GHSChangeState.cs" />
+     <Compile Include="Assets\GoldHunterXSea\Scripts\GHSMain.cs" />
+     <Compile Include="Assets\GoldHunterXSea\Scripts\GHSMapData.cs" />
+     <Compile Include="Assets\GoldHunterXSea\Scripts\GHSPlayerState.cs" />
+     <Compile Include="Assets\GoldHunterXSea\Scripts\GHSimgproc.cs" />
      <Compile Include="Assets\GreenScreen\Scripts\CoordinateMapperManager.cs" />
      <Compile Include="Assets\GreenScreen\Scripts\CoordinateMapperView.cs" />
      <Compile Include="Assets\KinectView\Scripts\BodySourceManager.cs" />
@@ -57,12 +62,50 @@
      <Compile Include="Assets\KinectView\Scripts\InfraredSourceManager.cs" />
      <Compile Include="Assets\KinectView\Scripts\InfraredSourceView.cs" />
      <Compile Include="Assets\KinectView\Scripts\MultiSourceManager.cs" />
+     <Compile Include="Assets\OpenCVForUnity\Samples\CamShiftSample\CamShiftSample.cs" />
+     <Compile Include="Assets\OpenCVForUnity\Samples\ComicFilterSample\ComicFilterSample.cs" />
+     <Compile Include="Assets\OpenCVForUnity\Samples\ConvexHullSample\ConvexHullSample.cs" />
+     <Compile Include="Assets\OpenCVForUnity\Samples\DetectFaceSample\DetectFaceSample.cs" />
+     <Compile Include="Assets\OpenCVForUnity\Samples\DrawingSample\DrawingSample.cs" />
+     <Compile Include="Assets\OpenCVForUnity\Samples\FaceRecognizerSample\FaceRecognizerSample.cs" />
+     <Compile Include="Assets\OpenCVForUnity\Samples\Feature2DSample\Feature2DSample.cs" />
+     <Compile Include="Assets\OpenCVForUnity\Samples\HandPoseEstimationSample\ColorBlobDetector.cs" />
+     <Compile Include="Assets\OpenCVForUnity\Samples\HandPoseEstimationSample\HandPoseEstimationSample.cs" />
+     <Compile Include="Assets\OpenCVForUnity\Samples\HoughLinesPSample\HoughLinesPSample.cs" />
+     <Compile Include="Assets\OpenCVForUnity\Samples\OpenCVForUnitySample.cs" />
+     <Compile Include="Assets\OpenCVForUnity\Samples\OpticalFlowSample\OpticalFlowSample.cs" />
+     <Compile Include="Assets\OpenCVForUnity\Samples\ShowLicense.cs" />
+     <Compile Include="Assets\OpenCVForUnity\Samples\Texture2DToMatSample\Texture2DToMatSample.cs" />
+     <Compile Include="Assets\OpenCVForUnity\Samples\ThresholdSample\ThresholdSample.cs" />
+     <Compile Include="Assets\OpenCVForUnity\Samples\TouchController.cs" />
+     <Compile Include="Assets\OpenCVForUnity\Samples\WebCamTextureAsyncDetectFaceSample\WebCamTextureAsyncDetectFaceSample.cs" />
+     <Compile Include="Assets\OpenCVForUnity\Samples\WebCamTextureDetectFaceSample\WebCamTextureDetectFaceSample.cs" />
+     <Compile Include="Assets\OpenCVForUnity\Samples\WebCamTextureToMatSample\WebCamTextureToMatSample.cs" />
+     <Compile Include="Assets\OpenCVForUnity\Samples\WrapPerspectiveSample\WrapPerspectiveSample.cs" />
+     <Compile Include="Assets\Scripts\BaseObject.cs" />
      <Compile Include="Assets\Scripts\CameraCalibration.cs" />
      <Compile Include="Assets\Scripts\ColorObject.cs" />
+     <Compile Include="Assets\Scripts\DepthToMatManager.cs" />
+     <Compile Include="Assets\Scripts\DepthToMatView.cs" />
+     <Compile Include="Assets\Scripts\DiceRecognition.cs" />
      <Compile Include="Assets\Scripts\DrawBlock.cs" />
      <Compile Include="Assets\Scripts\Match.cs" />
      <Compile Include="Assets\Scripts\MatchView.cs" />
+     <Compile Include="Assets\Scripts\UI\sliderValueShow.cs" />
+     <Compile Include="Assets\Scripts\clickPositionTrans.cs" />
      <Compile Include="Assets\Scripts\control.cs" />
+     <Compile Include="Assets\Scripts\fullscreen.cs" />
+     <Compile Include="Assets\Scripts\gameDataType\mapBlock.cs" />
+     <Compile Include="Assets\Scripts\gameDataType\mapCoordinate.cs" />
+     <Compile Include="Assets\Scripts\mapColorAndDepth.cs" />
+     <Compile Include="Assets\Scripts\mapColorAndDepthView.cs" />
+     <Compile Include="Assets\Scripts\mazeGame\ChangeState.cs" />
+     <Compile Include="Assets\Scripts\mazeGame\mapData.cs" />
+     <Compile Include="Assets\Scripts\mazeGame\matchPointToOutputView.cs" />
+     <Compile Include="Assets\Scripts\mazeGame\mazeCoordinate.cs" />
+     <Compile Include="Assets\Scripts\mazeGame\outputViewPointToChildPoint.cs" />
+     <Compile Include="Assets\Scripts\mazeGame\treasure.cs" />
+     <Compile Include="Assets\Scripts\raytoPosition.cs" />
      <Compile Include="Assets\Scripts\sizeControl.cs" />
      <Compile Include="Assets\Scripts\updateTest.cs" />
      <Compile Include="Assets\org\opencv\DisposableObject.cs" />
@@ -164,6 +207,8 @@
      <Compile Include="Assets\org\opencv\videoio\VideoCapture.cs" />
      <Compile Include="Assets\org\opencv\videoio\Videoio.cs" />
      <Compile Include="Assets\org\opencv\xphoto\Xphoto.cs" />
+     <None Include="Assets\OpenCVForUnity\StreamingAssets\haarcascade_frontalface_alt.xml" />
+     <None Include="Assets\OpenCVForUnity\StreamingAssets\lbpcascade_frontalface.xml" />
      <None Include="Assets\GreenScreen\Materials\GreenScreenShader.shader" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
@@ -171,6 +216,10 @@
  <Reference Include="UnityEngine.Networking">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
  </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
+      <Project>{8348CE3F-8D16-D0F5-EF4F-3F0FC1EB6E3C}</Project>      <Name>Assembly-CSharp-firstpass</Name>    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
