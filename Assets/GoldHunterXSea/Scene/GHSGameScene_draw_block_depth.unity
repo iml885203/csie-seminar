@@ -1082,6 +1082,10 @@ Prefab:
       propertyPath: _minDepthDistance
       value: 500
       objectReference: {fileID: 0}
+    - target: {fileID: 147266, guid: e59d8c2847ac0c241a50ddb2ebd0501f, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e59d8c2847ac0c241a50ddb2ebd0501f, type: 2}
   m_IsPrefabParent: 0
@@ -2356,7 +2360,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   key: p
   cameraView:
-  - {fileID: 1832681547}
+  - {fileID: 675805426}
 --- !u!114 &1347043383
 MonoBehaviour:
   m_ObjectHideFlags: 0

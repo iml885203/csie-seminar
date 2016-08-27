@@ -258,7 +258,7 @@ public class Match : MonoBehaviour {
         RGB.copyTo(src);
 
         List<ColorObject> colorObjects = new List<ColorObject>();
-        Temp = new Mat();
+        Temp = new Mat(RGB.height(),RGB.width(), CvType.CV_8UC3);
        // threshold.copyTo(temp);
         Mat hierarchy = new Mat();
         List<Point> ConsistP = new List<Point>();
