@@ -53,7 +53,7 @@ public class GHSMain : MonoBehaviour {
     private int _round;
     private int _whoRound;
     //角色啟用
-    private GHSPlayerState _playerState = new GHSPlayerState();
+    public GHSPlayerState _playerState = new GHSPlayerState();
     //觸發角色移動
     private bool _moved;
     private float _movedTimer;
@@ -90,14 +90,15 @@ public class GHSMain : MonoBehaviour {
     //初始化
     void Start()
     {
-        _playerState.SetPlayerEnableByIndex(0);
-        _playerState.SetPlayerEnableByIndex(1);
-        _playerState.SetPlayerDisableByIndex(2);
-        _playerState.SetPlayerEnableByIndex(3);
+        _playerState.SetPlayerEnableOrNotByIndex(0, true);
+        _playerState.SetPlayerEnableOrNotByIndex(1, true);
+        _playerState.SetPlayerEnableOrNotByIndex(2, false);
+        _playerState.SetPlayerEnableOrNotByIndex(3, true);
+        _playerState.InitializeRealPlayer();
         StartBlock = new mapBlock[ScreenHeightBlock, ScreenWidthBlock];           //設定初始地圖陣列大小
         //初始旗標狀態
         _isDraw = false;
-        _isDebug = true;
+        _isDebug = false;
         _isCheatMode = false;
         _isReSet = false;
         //設定地圖像素大小
@@ -136,7 +137,8 @@ public class GHSMain : MonoBehaviour {
         //設定回合&誰先遊戲&還沒有人贏
         _winerFlag = -1;
         _round = 0;
-        _whoRound = 0;
+        _whoRound = _playerState.GetRealPlayerCornerByIndex(_round % _playerState.GetEnablePlayerCount());
+        this.FlageMove();
         //設定玩家顏色
         _playerColor[0] = new Scalar(255, 0, 0);
         _playerColor[1] = new Scalar(0, 0, 255);
@@ -167,6 +169,7 @@ public class GHSMain : MonoBehaviour {
          _flicker = true;
          _flickerTimer = 0f;
          _flickerTriggerTime = 1;
+        //raytoPosition asdf = gameObject.GetComponent<raytoPosition>();
     }
 
     //重啟遊戲
@@ -373,7 +376,6 @@ public class GHSMain : MonoBehaviour {
             {
                 _treasure.SetActive(_isDraw && _mapData.isExistCanMoveArea(_mapData.getTreadsurePos(i)) || _isCheatMode);
             }
-                
 
             //畫眼睛道具
             for (int i = 0; i < _mapData.getSightPos().Count; i++)
@@ -387,6 +389,7 @@ public class GHSMain : MonoBehaviour {
                // _bomb[i].SetActive(_isDraw && _mapData.isExistCanMoveArea(_mapData.getBombPos(i)) ||_isCheatMode);
                 if (_isCheatMode)_bomb[i].SetActive(true);
             }
+
             //畫玩家
             if (_isDebug)
             {
@@ -398,6 +401,7 @@ public class GHSMain : MonoBehaviour {
                     }
                 }
             }
+
             //轉換地圖mat至顯示結果
             Utils.matToTexture2D(_mapMat, _tex);
             gameObject.GetComponent<Renderer>().material.mainTexture = _tex;
@@ -446,8 +450,7 @@ public class GHSMain : MonoBehaviour {
                     }
                 }
             }
-
-            _whoRound = _round;
+            
             this.RefreshOneCanMoveArea(_whoRound);
             for(int enablePlayer = 0; enablePlayer < 4; enablePlayer++)
             {
@@ -465,14 +468,15 @@ public class GHSMain : MonoBehaviour {
             {
                 //可以的話,設定玩家到新座標
                 _mapData.setPlayerPos(_whoRound, new Point(triggerPoint.x, triggerPoint.y));
-                
-                do
-                    _round = (_round + 1) % 4;
-                while (!_playerState.GetIsPlayerEnableOrNotByIndex(_round % 4));
-                    
-                _roundText.text = "Round：" + ((_round/2)+1);
+
+                _round++;
+                _whoRound = _playerState.GetRealPlayerCornerByIndex(_round % _playerState.GetEnablePlayerCount());
+                _roundText.text = "Round：" + _round;
+
+                Debug.Log("_whoRound = " + _whoRound);
                 this.FlageMove();
                 this.RefreshCanMoveArea();
+
                 //Debug.Log("This point can be move!" + "X = " + triggerPoint.x + ",Y = " + triggerPoint.y);
             }
             else
@@ -561,7 +565,7 @@ public class GHSMain : MonoBehaviour {
     {
         Point[] P = new Point[2];
         P = PosToBlock((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y));
-        Imgproc.circle(_mapMat, new Point(_mapWidth - ((P[0].x + P[1].x) / 2), _mapHeight - ((P[0].y + P[1].y) / 2)), (int)((P[1].x - P[0].x) / 3), _playerColor[ID],_playerThickness);
+        Imgproc.circle(_mapMat, new Point(_mapWidth - ((P[0].x + P[1].x) / 2), _mapHeight - ((P[0].y + P[1].y) / 2)), (int)((P[1].x - P[0].x) / 3), _playerColor[ID], _playerThickness);
     }
 
     //畫寶藏(關)
@@ -746,9 +750,26 @@ public class GHSMain : MonoBehaviour {
     //換場輪替的旗幟轉換
     public void FlageMove()
     {
+        int playerIndex = _round % _playerState.GetEnablePlayerCount();
+        int corner = _playerState.GetRealPlayerCornerByIndex(playerIndex);
         //旗標座標移動
-        if (_round % 2 == 1) _flages.transform.Translate(900, 0, 0);
-        else _flages.transform.Translate(-900, 0, 0);
+        switch (_whoRound)
+        {
+            case 0:
+                _flages.transform.localPosition = new Vector3(70, 0, 0);
+                break;
+            case 1:
+                _flages.transform.localPosition = new Vector3(600, 0, 0);
+                break;
+            case 2:
+                _flages.transform.localPosition = new Vector3(600, -200, 0);
+                break;
+            case 3:
+                _flages.transform.localPosition = new Vector3(70, -200, 0);
+                break;
+            default:
+                break;
+        }
     }
 
     //閃爍效果
@@ -776,7 +797,7 @@ public class GHSMain : MonoBehaviour {
     }
 
     //碰到道具的圖片放大效果
-    public void BlowUp(RawImage inObject,float time)
+    public void BlowUp(RawImage inObject, float time)
     {
         float Rect = time / _boomTriggerTime;
         float Enlarge = 3;

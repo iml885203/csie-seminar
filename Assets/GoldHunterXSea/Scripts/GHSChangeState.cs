@@ -1,52 +1,46 @@
 ﻿using UnityEngine;
 using System.Collections;
+using OpenCVForUnity;
 using UnityEngine.UI;
 
 public class GHSChangeState : MonoBehaviour {
 
     public GHSPlayerState _playerState;
-    public GameObject[] mazeGameObject;
     public GameObject[] gameTip;
-    public GameObject[] playerState;
+    public GameObject[] playerStateObject;
     public GameObject[] playerCoordinate;
     public Text gameStateButtonText;
     public GameObject gameStartGround;
 
-    public GHSChangeState()
+    void Start()
     {
-
+        GHSPlayerState _playerState = gameObject.GetComponent<GHSPlayerState>();
     }
 
     public void bouttonClick()
     {
-        //for (int i = 0; i < mazeGameObject.Length; i++)
-        //{
-        //    if (mazeGameObject[i] == null) continue;
-        //    mazeGameObject[i].SetActive(!mazeGameObject[i].activeSelf);
-        //}
-
+        //遊戲提示顯示
         for (int i = 0; i < gameTip.Length; i++)
         {
-            Debug.Log("gameTip i = " + i);
             if (gameTip[i] == null) continue;
-            gameTip[i].SetActive(!gameTip[i].activeSelf);
+            gameTip[i].SetActive(!gameTip[i].activeSelf );
         }
-
-        for (int i = 0; i < playerState.Length; i++)
+         
+        //玩家狀態顯示
+        for (int i = 0; i < playerStateObject.Length; i++)
         {
-            //Debug.Log("playerState i = " + i);
-            //Debug.Log("_playerState.GetIsPlayerEnableOrNotByIndex(i)" + _playerState.GetIsPlayerEnableOrNotByIndex(i));
-            if (playerState[i] == null ) continue;
-            playerState[i].SetActive(!playerState[i].activeSelf);
+            if (playerStateObject[i] == null || !_playerState.GetIsPlayerEnableOrNotByIndex(i)) continue;
+            playerStateObject[i].SetActive(!playerStateObject[i].activeSelf);
         }
 
+        //玩家座標顯示
         for (int i = 0; i < playerCoordinate.Length; i++)
         {
-
-            if (playerCoordinate[i] == null) continue;
+            if (playerCoordinate[i] == null || !_playerState.GetIsPlayerEnableOrNotByIndex(i)) continue;
             playerCoordinate[i].SetActive(!playerCoordinate[i].activeSelf);
         }
 
+        //轉換按鈕文字start, back menu轉換
         if (gameStateButtonText.text == "Start")
         {
             gameStateButtonText.text = "Back Menu";
@@ -58,4 +52,6 @@ public class GHSChangeState : MonoBehaviour {
             gameStartGround.SetActive(true);
         }
     }
+
+    
 }

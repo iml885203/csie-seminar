@@ -61,6 +61,9 @@ public class DrawBlock : MonoBehaviour {
     //設定深度偵測距離(mm)
     public int _minDepthDistance = 500;
     public int _maxDepthDistance = 1000;
+    //同步影像
+    private bool _SyncFlag;
+    private Mat _blockImageBuffer;
 
     public Mat GetBlockMat()
     {
@@ -92,7 +95,7 @@ public class DrawBlock : MonoBehaviour {
         _sourceMat = new Mat(_inputHeight, _inputWidth, CvType.CV_8UC3);
         _sourceMat_backup = new Mat(_inputHeight, _inputWidth, CvType.CV_8UC3);
         _sourceMatDepth = new Mat(_inputHeight, _inputWidth, CvType.CV_8UC1);
-
+        _blockImageBuffer = new Mat(_inputHeight, _inputWidth, CvType.CV_8UC1);
         //創造mat儲存比對用mat(原始比對圖形為未改變比例)
         _blockImage = new Mat(_inputHeight, _inputWidth, CvType.CV_8UC3);
         _souceOut = new Texture2D(_inputWidth, _inputHeight);
@@ -103,7 +106,8 @@ public class DrawBlock : MonoBehaviour {
         _blockDepthImage = new Mat();
 
         isInput = false;
-        
+        //設定同步旗標
+        _SyncFlag = false;
     }
 	
 	// Update is called once per frame
@@ -282,8 +286,10 @@ public class DrawBlock : MonoBehaviour {
 
         //做一個新的depthMat存放切割後的depthMat
         Mat subDepthMat = new Mat();
-        subDepthMat = _sourceMatDepth.submat(_minY, _maxY, _minX, _maxX);
-
+        if(_SyncFlag)
+            subDepthMat = _sourceMatDepth.submat((_sourceMatDepth.height() - _maxY), (_sourceMatDepth.height() - _minY), _minX, _maxX);
+        else
+            subDepthMat = _blockImageBuffer.submat((_sourceMatDepth.height() - _maxY), (_sourceMatDepth.height() - _minY), _minX, _maxX);
         //反轉化面
         Point src_center = new Point(subDepthMat.cols() / 2.0, subDepthMat.rows() / 2.0);
         Mat rot_mat = Imgproc.getRotationMatrix2D(src_center, 180, 1.0);
@@ -327,7 +333,7 @@ public class DrawBlock : MonoBehaviour {
         for (int depthIndex = 0; depthIndex < _depthData.Length; depthIndex++)
         {
             Point colorPoint = _map.DepthIndexToColorPoint(depthIndex);
-            if (colorPoint.x > minX && colorPoint.x < maxX && colorPoint.y > minY && colorPoint.y < maxY)
+            if (colorPoint.x > minX && colorPoint.x < maxX && colorPoint.y > (_sourceMatDepth.height() - maxY) && colorPoint.y < (_sourceMatDepth.height() - minY))
             {
                 _depthDataSubColorPoint.Add(colorPoint);
                 _depthDataSub.Add(_depthData[depthIndex]);
@@ -342,7 +348,7 @@ public class DrawBlock : MonoBehaviour {
         for (int i = 0; i < _depthDataSub.Count; i++)
         {
             double avg;
-            if (_depthDataSub[i] > _maxDepthDistance) //大於最大距離不顯示
+            if (_depthDataSub[i] > _maxDepthDistance || _depthDataSub[i] < _minDepthDistance) //大於最大距離不顯示
             {
                 avg = 0;
             }
@@ -355,6 +361,14 @@ public class DrawBlock : MonoBehaviour {
             double[] color = new double[1] { avg };
             procMat.put((int)_depthDataSubColorPoint[i].y, (int)_depthDataSubColorPoint[i].x, color);
         }
-        procMat.copyTo(_sourceMatDepth);
+        if (_SyncFlag)
+        {
+            procMat.copyTo(_blockImageBuffer);
+            _SyncFlag = false;
+        }
+        else{
+            procMat.copyTo(_sourceMatDepth);
+            _SyncFlag = true;
+        }
     }
 }
