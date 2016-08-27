@@ -2,36 +2,33 @@
 using System.Collections.Generic;
 using OpenCVForUnity;
 using UnityEngine.UI;
+using System.Threading;
 
 public class DrawBlock : MonoBehaviour {
 
     public RawImage _inoutImg;
     public RawImage _blockImg;
     public RawImage _blockDepthImg;
-    private Mat _screenMat;
-    public Mat _sourceMat;
+    private Mat _sourceMat;
     private Mat _sourceMat_backup;
-    public Mat _sourceMatDepth;
+    private Mat _sourceMatDepth;
 
     //結果圖片
-    private Mat _matchImage;
-    private Mat _matchDepthImage;
+    private Mat _blockImage;
+    private Mat _blockDepthImage;
     public int MatchWidth { get; private set; }
     public int MatchHeight { get; private set; }
-    public int MatchDepthWidth { get; private set; }
-    public int MatchDepthHeight { get; private set; }
     //儲存點擊位置
-    Point _pointOne = new Point();
-    Point _pointTwo = new Point();
+    private Point _pointOne = new Point();
+    private Point _pointTwo = new Point();
+    private int _minX = 0, _maxX = 0, _minY = 0, _maxY = 0;
 
     //設定螢幕與輸入cam的影像大小
-    int _currentWidth;
-    int _currentHeight;
-    public int _inputWidth;
-    public int _inputHeight;
-    public int _inputDepthWidth ;
-    public int _inputDepthHeight;
-    public ushort[] _depthData;
+    private int _currentWidth;
+    private int _currentHeight;
+    private int _inputWidth;
+    private int _inputHeight;
+    private ushort[] _depthData;
 
     //滑鼠是否點擊
     private bool mouseclick = false;
@@ -45,15 +42,13 @@ public class DrawBlock : MonoBehaviour {
 
     //output to texture
     Texture2D _souceOut;
-    Texture2D _matchDepthOut100;
-    Texture2D _matchOut100;
+    Texture2D _blockDepthTexture;
+    Texture2D _blockTexture;
 
     //screen size to source size
     private clickPositionTrans _positionTrans;
 
-    private double _rateWidthRGBDepth = 1;
-    private double _rateHeightRGBDepth = 1;
-
+    //暫停畫面switch變數
     private bool isInput;
 
     //mapManager
@@ -63,22 +58,23 @@ public class DrawBlock : MonoBehaviour {
     List<ushort> _depthDataSub = new List<ushort>();
     List<Point> _depthDataSubColorPoint = new List<Point>();
 
+    //設定深度偵測距離(mm)
+    public int _minDepthDistance = 500;
+    public int _maxDepthDistance = 1000;
+
     public Mat GetBlockMat()
     {
-        return _matchImage;
+        return _blockImage;
     }
     public Mat GetBlockDepthMat()
     {
-        return _matchDepthImage;
+        return _blockDepthImage;
     }
     // Use this for initialization
     void Start () {
-        //this.gameObject.transform.localScale = new Vector3(Screen.width, Screen.height);
         //cam設定與啟用
         MatchWidth = 0;
         MatchHeight = 0;
-        MatchDepthWidth = 0;
-        MatchDepthHeight = 0;
 
         //取得螢幕與輸入cam的影像大小
         _inputWidth = ColorSourceManager.ColorWidth;
@@ -86,39 +82,30 @@ public class DrawBlock : MonoBehaviour {
         Debug.Log(_inputWidth);
         _depthData = DepthSourceManager.GetData();
         Debug.Log(_depthData.Length);
-        //_inputDepthWidth = DepthToMatManager.getWidth();
-        //_inputDepthHeight = DepthToMatManager.getheight();
-        //取得RGB和depth的倍數關係
-        //_rateWidthRGBDepth = (double)_inputWidth / (double)_inputDepthWidth;
-        //_rateHeightRGBDepth = (double)_inputHeight / (double)_inputDepthHeight;
+
+        //螢幕大小與來源比例初始化
         _currentWidth = Screen.width;
         _currentHeight = Screen.height;
-        //螢幕大小與來源比例初始化
         _positionTrans = new clickPositionTrans(_currentWidth, _currentHeight, _inputWidth, _inputHeight);
         
-        //text size
-        _currentWidth = _inputWidth;
-        _currentHeight = _inputHeight;
-        //創造mat儲存影像
+        //創造mat儲存輸出影像
         _sourceMat = new Mat(_inputHeight, _inputWidth, CvType.CV_8UC3);
         _sourceMat_backup = new Mat(_inputHeight, _inputWidth, CvType.CV_8UC3);
-        //_sourceMatDepth = new Mat(_inputDepthHeight, _inputDepthWidth, CvType.CV_8UC1);
+        _sourceMatDepth = new Mat(_inputHeight, _inputWidth, CvType.CV_8UC1);
 
         //創造mat儲存比對用mat(原始比對圖形為未改變比例)
-        _matchImage = new Mat(_inputHeight, _inputWidth, CvType.CV_8UC3);
-        //_matchDepthImage = new Mat(_inputDepthHeight, _inputDepthWidth, CvType.CV_8UC1);
+        _blockImage = new Mat(_inputHeight, _inputWidth, CvType.CV_8UC3);
         _souceOut = new Texture2D(_inputWidth, _inputHeight);
-        _matchOut100 = new Texture2D(100, 100);
-        _matchDepthOut100 = new Texture2D(100, 100);
+        _blockTexture = new Texture2D(100, 100);
+        _blockDepthTexture = new Texture2D(100, 100);
 
         isInput = false;
+        
     }
 	
 	// Update is called once per frame
 	void Update () {
-
-        //將輸入轉成mat方便openCV使用
-        //Utils.webCamTextureToMat(_webcam, _nMat);
+        //讓選框狀態時暫停影像
         if (Input.GetKeyUp(KeyCode.Z))
         {
             isInput = !isInput;
@@ -132,16 +119,16 @@ public class DrawBlock : MonoBehaviour {
         {
             _sourceMat_backup.copyTo(_sourceMat);
         }
-        
-        //_sourceMatDepth = DepthToMatManager.getDepthMat();
-        //將輸入的影像轉換成螢幕大小
-        //Imgproc.resize(_sourceMat, _screenMat, _screenMat.size());
-        if(mouseclick)TestPointmove();
 
-        if (!mouseclick && MatchHeight != 0 && MatchWidth != 0) {
-            TestPointUp();
+        //滑鼠點擊判斷
+        if (mouseclick)
+        {
+            pointMove();
         }
-        //畫框框
+        else if (!mouseclick && MatchHeight != 0 && MatchWidth != 0) {
+            runDrawBlock();
+        }
+        //畫選取框框
         Imgproc.rectangle(_sourceMat, _pointOne, _pointTwo, _color, 4);
 
         //創造2D影像(空的)
@@ -156,7 +143,7 @@ public class DrawBlock : MonoBehaviour {
         _inoutImg.texture = _souceOut;        
 	}
 
-    public void TestPointDown()//滑鼠點擊
+    public void pointDown()//滑鼠點擊
     {
         //取得滑鼠在螢幕上點擊的位置
         float x = Input.mousePosition.x;
@@ -173,48 +160,50 @@ public class DrawBlock : MonoBehaviour {
             //存入list
             _pointOne = _positionTrans.TransToScreen2Pos(new Point(x, y));
             _pointTwo = _positionTrans.TransToScreen2Pos(new Point(x, y));
-
-
             Debug.Log(Input.mousePosition.x.ToString() + " " + Input.mousePosition.y.ToString());
             mouseclick = true;
         }
         
     }
 
-    public void TestPointUp()//滑鼠放開
+    public void pointUp()//滑鼠放開
     {
         //設定滑鼠點擊
         mouseclick = false;
-        // Imgproc.rectangle(_mat, _pointOne[i], _pointTwo[i], _color, 3);
-
-
-        int minX = 0, maxX = 1000, minY = 0, maxY = 1000;
+        //儲存選取區塊座標
         if (_pointTwo.x >= _pointOne.x)
         {
-            maxX = (int)_pointTwo.x;
-            minX = (int)_pointOne.x;
+            _maxX = (int)_pointTwo.x;
+            _minX = (int)_pointOne.x;
         }
         else if (_pointTwo.x < _pointOne.x)
         {
-            maxX = (int)_pointOne.x;
-            minX = (int)_pointTwo.x;
+            _maxX = (int)_pointOne.x;
+            _minX = (int)_pointTwo.x;
         }
         if (_pointTwo.y >= _pointOne.y)
         {
-            maxY = (int)_pointTwo.y;
-            minY = (int)_pointOne.y;
+            _maxY = (int)_pointTwo.y;
+            _minY = (int)_pointOne.y;
         }
         else if (_pointTwo.y < _pointOne.y)
         {
-            maxY = (int)_pointOne.y;
-            minY = (int)_pointTwo.y;
+            _maxY = (int)_pointOne.y;
+            _minY = (int)_pointTwo.y;
         }
-        updateColorTexture(minX, minY, maxX, maxY);
-        updateDepthTexture(minX, minY, maxX, maxY);
-        
+
+        MatchWidth = _maxX - _minX;
+        MatchHeight = _maxY - _minY;
     }
 
-    public void TestPointmove()//滑鼠放開
+    public void runDrawBlock()//區塊影像處理
+    {
+        updateColorTexture();
+        updateDepthTexture();
+
+    }
+
+    public void pointMove()//滑鼠移動
     {
         //取得滑鼠在螢幕放開的位置
         float x = Input.mousePosition.x;
@@ -228,57 +217,53 @@ public class DrawBlock : MonoBehaviour {
     // =====================
     // color資料影像處理 ===
     // =====================
-    private void updateColorTexture(int minX, int minY, int maxX, int maxY)
+    private void updateColorTexture()
     {
-        MatchWidth = maxX - minX;
-        MatchHeight = maxY - minY;
-        //MatchDepthWidth = (int)((double)(maxX - minX) / _rateWidthRGBDepth);
-        //MatchDepthHeight = (int)((double)(maxY - minY) / _rateHeightRGBDepth);
-        _matchImage = new Mat(MatchWidth, MatchHeight, CvType.CV_8UC3);
+        _blockImage = new Mat();
 
         //抓取sub depth data
-        Debug.Log(minX + ", " + minY);
-        Debug.Log(maxX + ", " + maxY);
+        Debug.Log(_minX + ", " + _minY);
+        Debug.Log(_maxX + ", " + _maxY);
 
         //做一個新的Mat存放切割後的Mat
         Mat subMat = new Mat();
-        subMat = _sourceMat.submat(minY, maxY, minX, maxX);
-        subMat.copyTo(_matchImage);
+        subMat = _sourceMat.submat(_minY, _maxY, _minX, _maxX);
+        subMat.copyTo(_blockImage);
 
         //反轉化面
-        Point src_center = new Point(_matchImage.cols() / 2.0, _matchImage.rows() / 2.0);
+        Point src_center = new Point(_blockImage.cols() / 2.0, _blockImage.rows() / 2.0);
         Mat rot_mat = Imgproc.getRotationMatrix2D(src_center, 180, 1.0);
-        Imgproc.warpAffine(_matchImage, _matchImage, rot_mat, _matchImage.size());
+        Imgproc.warpAffine(_blockImage, _blockImage, rot_mat, _blockImage.size());
 
-        //比對圖形輸出
-        Mat _OutMatchMat = new Mat(100, 100, CvType.CV_8UC3);
-        Imgproc.resize(_matchImage, _OutMatchMat, _OutMatchMat.size());
+        //區塊畫面壓縮輸出
+        Mat outMat = new Mat(100, 100, CvType.CV_8UC3);
+        Imgproc.resize(_blockImage, outMat, outMat.size());
 
         //擷取輸出
-        Utils.matToTexture2D(_OutMatchMat, _matchOut100);
-        _blockImg.texture = _matchOut100;
+        Utils.matToTexture2D(outMat, _blockTexture);
+        _blockImg.texture = _blockTexture;
     }
 
     // =====================
     // depth資料影像處理 ===
     // =====================
 
-    private void updateDepthTexture(int minX, int minY, int maxX, int maxY)
+    private void updateDepthTexture()
     {
-        MatchWidth = maxX - minX;
-        MatchHeight = maxY - minY;
-        _matchDepthImage = new Mat(MatchDepthWidth, MatchDepthHeight, CvType.CV_8UC1);
-
-        // 獲得depth資料與座標
-        getDepthData(minX, minY, maxX, maxY);
-
-        // 新建與_sourceMat一樣大的mat，並畫出選取區的depth畫面
-        Mat newDepthSource = new Mat(_sourceMat.height(), _sourceMat.width(), CvType.CV_8UC1);
-        drawDepthSourceMat(newDepthSource);
+        _blockDepthImage = new Mat();
+        
+        // 畫出選取區的depth畫面
+        Thread thread = new Thread(drawDepthSourceMat);
+        thread.Start();
 
         //做一個新的depthMat存放切割後的depthMat
         Mat subDepthMat = new Mat();
-        subDepthMat = newDepthSource.submat(minY, maxY, minX, maxX);
+        subDepthMat = _sourceMatDepth.submat(_minY, _maxY, _minX, _maxX);
+
+        //反轉化面
+        Point src_center = new Point(subDepthMat.cols() / 2.0, subDepthMat.rows() / 2.0);
+        Mat rot_mat = Imgproc.getRotationMatrix2D(src_center, 180, 1.0);
+        Imgproc.warpAffine(subDepthMat, subDepthMat, rot_mat, _blockImage.size());
 
         // 膨脹收縮 處理depth影像
         Mat depthMatchImagePorcess = new Mat();
@@ -288,9 +273,9 @@ public class DrawBlock : MonoBehaviour {
 
         Imgproc.dilate(depthMatchImagePorcess, depthMatchImagePorcess, dilateElement);
         Imgproc.erode(depthMatchImagePorcess, depthMatchImagePorcess, erodeElement);
-        Imgproc.erode(depthMatchImagePorcess, depthMatchImagePorcess, erodeElement);
+        //Imgproc.erode(depthMatchImagePorcess, depthMatchImagePorcess, erodeElement);
 
-        depthMatchImagePorcess.copyTo(_matchDepthImage);
+        depthMatchImagePorcess.copyTo(_blockDepthImage);
 
         // canny 取出輪廓
         //Imgproc.blur(matchImagePorcess, matchImagePorcess, new Size(3, 3));
@@ -308,16 +293,16 @@ public class DrawBlock : MonoBehaviour {
         //    Imgproc.drawContours(_matchImage, contours, i, new Scalar(255, 255, 255), 2);
         //}
 
-        //比對圖形輸出(深度)
-        Mat outMatchDepthMat = new Mat(100, 100, CvType.CV_8UC1);
-        Imgproc.resize(_matchDepthImage, outMatchDepthMat, outMatchDepthMat.size());
+        //圖形壓縮輸出(深度)
+        Mat outDepthMat = new Mat(100, 100, CvType.CV_8UC1);
+        Imgproc.resize(_blockDepthImage, outDepthMat, outDepthMat.size());
 
         //擷取輸出(顯示深度的切割結果)
-        Utils.matToTexture2D(outMatchDepthMat, _matchDepthOut100);
-        _blockDepthImg.texture = _matchDepthOut100;
+        Utils.matToTexture2D(outDepthMat, _blockDepthTexture);
+        _blockDepthImg.texture = _blockDepthTexture;
     }
 
-    private void getDepthData(int minX, int minY, int maxX, int maxY)
+    private void getDepthData(int minX, int minY, int maxX, int maxY)//透過color影像使用內建map class抓取區塊深度資料
     {
         _depthDataSub.Clear();
         _depthDataSubColorPoint.Clear();
@@ -332,23 +317,28 @@ public class DrawBlock : MonoBehaviour {
         }
     }
 
-    private void drawDepthSourceMat(Mat newDepthSource)
+    private void drawDepthSourceMat()//畫出depth影像
     {
+        // 獲得depth資料與座標
+        getDepthData(_minX, _minY, _maxX, _maxY);
+
+        Mat procMat = new Mat(_sourceMatDepth.height(), _sourceMatDepth.width(), CvType.CV_8UC1);
         for (int i = 0; i < _depthDataSub.Count; i++)
         {
             double avg;
-            if (_depthDataSub[i] > 1000) //大於100公分不顯示
+            if (_depthDataSub[i] > _maxDepthDistance) //大於最大距離不顯示
             {
                 avg = 0;
             }
             else
             {
-                avg = 255 - ((double)(_depthDataSub[i] - 500) / 500 * 255); //顯示50公分到100公分深度顏色
+                avg = 255 - ((double)(_depthDataSub[i] - _minDepthDistance) / (_maxDepthDistance - _minDepthDistance) * 255); //顯示範圍內深度顏色
                 //avg = 255; //binary
             }
 
             double[] color = new double[1] { avg };
-            newDepthSource.put((int)_depthDataSubColorPoint[i].y, (int)_depthDataSubColorPoint[i].x, color);
+            procMat.put((int)_depthDataSubColorPoint[i].y, (int)_depthDataSubColorPoint[i].x, color);
         }
+        procMat.copyTo(_sourceMatDepth);
     }
 }

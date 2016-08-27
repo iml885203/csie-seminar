@@ -9,8 +9,9 @@ GameObject:
   m_Component:
   - 4: {fileID: 447020}
   - 114: {fileID: 11402026}
-  - 114: {fileID: 11425920}
   - 114: {fileID: 11419496}
+  - 114: {fileID: 11470056}
+  - 114: {fileID: 11476514}
   m_Layer: 0
   m_Name: DrawBlockManager
   m_TagString: Untagged
@@ -41,17 +42,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef9ffd23d75ba1f4b97f312f2fc34b0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inoutImg: {fileID: 0}
-  _blockImg: {fileID: 0}
-  _blockDepthImg: {fileID: 0}
-  _inputWidth: 0
-  _inputHeight: 0
-  _inputDepthWidth: 0
-  _inputDepthHeight: 0
-  _depthData: 
-  ColorSourceManager: {fileID: 0}
-  DepthSourceManager: {fileID: 11425920}
+  _inoutImg: {fileID: 11410922, guid: 1efe225067759234cb4c38b6c070b627, type: 2}
+  _blockImg: {fileID: 11406968, guid: 1efe225067759234cb4c38b6c070b627, type: 2}
+  _blockDepthImg: {fileID: 11494828, guid: 1efe225067759234cb4c38b6c070b627, type: 2}
+  ColorSourceManager: {fileID: 11470056}
+  DepthSourceManager: {fileID: 11476514}
   _map: {fileID: 11419496}
+  _minDepthDistance: 500
+  _maxDepthDistance: 1000
 --- !u!114 &11419496
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -63,9 +61,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8e37f6e5cb43374b863a54cd84abae8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _DepthSourceManager: {fileID: 0}
-  _ColorSourceManager: {fileID: 0}
---- !u!114 &11425920
+  _DepthSourceManager: {fileID: 11476514}
+  _ColorSourceManager: {fileID: 11470056}
+--- !u!114 &11470056
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 147266}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92ab5bea6110edb4081e490c0982748d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &11476514
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
