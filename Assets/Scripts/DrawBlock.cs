@@ -102,6 +102,9 @@ public class DrawBlock : MonoBehaviour {
         _blockTexture = new Texture2D(100, 100);
         _blockDepthTexture = new Texture2D(100, 100);
 
+        _blockImage = new Mat();
+        _blockDepthImage = new Mat();
+
         isInput = false;
         //設定同步旗標
         _SyncFlag = false;
@@ -141,7 +144,6 @@ public class DrawBlock : MonoBehaviour {
             _souceOut = new Texture2D(_inputWidth, _inputHeight);
         }
         //將mat轉換回2D影像
-        
         Utils.matToTexture2D(_sourceMat, _souceOut);
         //放入輸出rawImage
         _inoutImg.texture = _souceOut;        
@@ -202,9 +204,35 @@ public class DrawBlock : MonoBehaviour {
 
     public void runDrawBlock()//區塊影像處理
     {
-        updateColorTexture();
-        updateDepthTexture();
+        //updateColorTexture();
+        Thread thread_color = new Thread(updateColorTexture);
+        thread_color.Start();
+        
 
+        
+        //updateDepthTexture();
+        Thread thread = new Thread(updateDepthTexture);
+        thread.Start();
+
+        showToTexture();
+    }
+
+    private void showToTexture()
+    {
+        //區塊畫面壓縮輸出
+        Mat outMat = new Mat(100, 100, CvType.CV_8UC3);
+        Imgproc.resize(_blockImage, outMat, outMat.size());
+
+        //擷取輸出
+        Utils.matToTexture2D(outMat, _blockTexture);
+        _blockImg.texture = _blockTexture;
+        //圖形壓縮輸出(深度)
+        Mat outDepthMat = new Mat(100, 100, CvType.CV_8UC1);
+        Imgproc.resize(_blockDepthImage, outDepthMat, outDepthMat.size());
+
+        //擷取輸出(顯示深度的切割結果)
+        Utils.matToTexture2D(outDepthMat, _blockDepthTexture);
+        _blockDepthImg.texture = _blockDepthTexture;
     }
 
     public void pointMove()//滑鼠移動
@@ -223,11 +251,11 @@ public class DrawBlock : MonoBehaviour {
     // =====================
     private void updateColorTexture()
     {
-        _blockImage = new Mat();
+        
 
         //抓取sub depth data
-        Debug.Log(_minX + ", " + _minY);
-        Debug.Log(_maxX + ", " + _maxY);
+        //Debug.Log(_minX + ", " + _minY);
+        //Debug.Log(_maxX + ", " + _maxY);
 
         //做一個新的Mat存放切割後的Mat
         Mat subMat = new Mat();
@@ -239,13 +267,7 @@ public class DrawBlock : MonoBehaviour {
         Mat rot_mat = Imgproc.getRotationMatrix2D(src_center, 180, 1.0);
         Imgproc.warpAffine(_blockImage, _blockImage, rot_mat, _blockImage.size());
 
-        //區塊畫面壓縮輸出
-        Mat outMat = new Mat(100, 100, CvType.CV_8UC3);
-        Imgproc.resize(_blockImage, outMat, outMat.size());
-
-        //擷取輸出
-        Utils.matToTexture2D(outMat, _blockTexture);
-        _blockImg.texture = _blockTexture;
+        
     }
 
     // =====================
@@ -254,11 +276,13 @@ public class DrawBlock : MonoBehaviour {
 
     private void updateDepthTexture()
     {
-        _blockDepthImage = new Mat();
-        
+        // 獲得depth資料與座標
+        getDepthData(_minX, _minY, _maxX, _maxY);
+
         // 畫出選取區的depth畫面
-        Thread thread = new Thread(drawDepthSourceMat);
-        thread.Start();
+        //Thread thread = new Thread(drawDepthSourceMat);
+        //thread.Start();
+        drawDepthSourceMat();
 
         //做一個新的depthMat存放切割後的depthMat
         Mat subDepthMat = new Mat();
@@ -299,13 +323,7 @@ public class DrawBlock : MonoBehaviour {
         //    Imgproc.drawContours(_matchImage, contours, i, new Scalar(255, 255, 255), 2);
         //}
 
-        //圖形壓縮輸出(深度)
-        Mat outDepthMat = new Mat(100, 100, CvType.CV_8UC1);
-        Imgproc.resize(_blockDepthImage, outDepthMat, outDepthMat.size());
-
-        //擷取輸出(顯示深度的切割結果)
-        Utils.matToTexture2D(outDepthMat, _blockDepthTexture);
-        _blockDepthImg.texture = _blockDepthTexture;
+        
     }
 
     private void getDepthData(int minX, int minY, int maxX, int maxY)//透過color影像使用內建map class抓取區塊深度資料
@@ -325,8 +343,6 @@ public class DrawBlock : MonoBehaviour {
 
     private void drawDepthSourceMat()//畫出depth影像
     {
-        // 獲得depth資料與座標
-        getDepthData(_minX, _minY, _maxX, _maxY);
 
         Mat procMat = new Mat(_sourceMatDepth.height(), _sourceMatDepth.width(), CvType.CV_8UC1);
         for (int i = 0; i < _depthDataSub.Count; i++)
