@@ -38,8 +38,8 @@ public class Match : MonoBehaviour {
     //是否可以儲存感測到的物件
     private bool isSave = new bool();
     //拉霸 distRate
-    public Slider RateDist;
-    public Slider KeyPointMinCount; 
+    //public Slider RateDist;
+    //public Slider KeyPointMinCount; 
 
     public Mat src;
     public OpenCVForUnity.Rect R0;
@@ -108,11 +108,11 @@ public class Match : MonoBehaviour {
        // trackFilteredObject(red, thresholdMat, hsvMat, BlackMat);
 
         //方法二 用顏色抓物件
-      // Imgproc.cvtColor(_NewTowMat, hsvMat, Imgproc.COLOR_RGB2HSV);
-      //  getContours(_NewTowMat, BlackMat);
+       Imgproc.cvtColor(_NewTowMat, hsvMat, Imgproc.COLOR_RGB2HSV);
+        getContours(_NewTowMat, BlackMat);
         //方法三 用特徵點抓物件
-        descriptorsORB(_NewTowMat, BlackMat, "queen");
-        descriptorsORB(BlackMat, BlackMat, "lena");
+        //descriptorsORB(_NewTowMat, BlackMat, "queen");
+        //descriptorsORB(BlackMat, BlackMat, "lena");
 
         Mat resizeMat = new Mat(_matchHeight, _matchWidth, CvType.CV_8UC3);
         Imgproc.resize(BlackMat, resizeMat, resizeMat.size());
@@ -371,7 +371,7 @@ public class Match : MonoBehaviour {
             Debug.Log((isSave) ? "isSave Set True" : "isSave Set false");
         }
     }
-    public bool descriptorsORB(Mat RGB, Mat cameraFeed,string targetName)//找出特徵的顏色方法三
+    public bool descriptorsORB(Mat RGB, Mat cameraFeed,string targetName)//找出特徵的顏色方法三(可運行但效率不佳放棄)
     {
         if (RGB == null)
         {
@@ -435,11 +435,11 @@ public class Match : MonoBehaviour {
         
         for (int i = 0; i < matches.rows(); i++)
         {
-            if (arrayDmatch[i].distance < RateDist.value * min_dist)
-            {
-                //Debug.Log("match " + i + ": " + arrayDmatch[i].distance);
-                matchesGoodList.Add(arrayDmatch[i]);
-            }
+            //if (arrayDmatch[i].distance < RateDist.value * min_dist)
+            //{
+            //    //Debug.Log("match " + i + ": " + arrayDmatch[i].distance);
+            //    matchesGoodList.Add(arrayDmatch[i]);
+            //}
         }
         MatOfDMatch matchesGood = new MatOfDMatch();
         matchesGood.fromList(matchesGoodList);
@@ -458,14 +458,14 @@ public class Match : MonoBehaviour {
 
 
 
-        if (matchesGoodList.Count > KeyPointMinCount.value)
-        {
-            Debug.Log("GoodPoint is not enough to Identify");
-            SrcMat.copyTo(cameraFeed);
-            SrcMat.release();
-            Imgproc.putText(cameraFeed, "X-E", new Point(10, 50), 0, 1, new Scalar(255, 255, 255),2);
-            return false;
-        }
+        //if (matchesGoodList.Count > KeyPointMinCount.value)
+        //{
+        //    Debug.Log("GoodPoint is not enough to Identify");
+        //    SrcMat.copyTo(cameraFeed);
+        //    SrcMat.release();
+        //    Imgproc.putText(cameraFeed, "X-E", new Point(10, 50), 0, 1, new Scalar(255, 255, 255),2);
+        //    return false;
+        //}
         Debug.Log("MatchCount"+matchesGoodList.Count);
         for (int i = 0; i < matchesGoodList.Count; i++)
         {
