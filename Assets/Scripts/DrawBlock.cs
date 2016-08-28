@@ -84,7 +84,7 @@ public class DrawBlock : MonoBehaviour {
         _inputHeight = ColorSourceManager.ColorHeight;
         Debug.Log(_inputWidth);
         _depthData = DepthSourceManager.GetData();
-        Debug.Log(_depthData.Length);
+        //Debug.Log(_depthData.Length);
 
         //螢幕大小與來源比例初始化
         _currentWidth = Screen.width;
@@ -226,8 +226,8 @@ public class DrawBlock : MonoBehaviour {
         _blockImage = new Mat();
 
         //抓取sub depth data
-        Debug.Log(_minX + ", " + _minY);
-        Debug.Log(_maxX + ", " + _maxY);
+       // Debug.Log(_minX + ", " + _minY);
+        //Debug.Log(_maxX + ", " + _maxY);
 
         //做一個新的Mat存放切割後的Mat
         Mat subMat = new Mat();
