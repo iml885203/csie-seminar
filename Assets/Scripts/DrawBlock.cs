@@ -254,7 +254,8 @@ public class DrawBlock : MonoBehaviour {
     private void updateDepthTexture()
     {
         _blockDepthImage = new Mat();
-        
+        // 獲得depth資料與座標
+        getDepthData(_minX, _minY, _maxX, _maxY);
         // 畫出選取區的depth畫面
         Thread thread = new Thread(drawDepthSourceMat);
         thread.IsBackground = true;
@@ -326,8 +327,6 @@ public class DrawBlock : MonoBehaviour {
 
     private void drawDepthSourceMat()//畫出depth影像
     {
-        // 獲得depth資料與座標
-        getDepthData(_minX, _minY, _maxX, _maxY);
 
         Mat procMat = new Mat(_sourceMatDepth.height(), _sourceMatDepth.width(), CvType.CV_8UC1);
         for (int i = 0; i < _depthDataSub.Count; i++)

@@ -130,7 +130,7 @@ public class Match : MonoBehaviour {
 
                 if (R0.height > 10 && R0.width > 10)
                 {
-                    Imgproc.drawContours(BlackMat, contours, index, new Scalar(255, 255, 255));
+                    Imgproc.drawContours(BlackMat, contours, index, new Scalar(255, 255, 255),10);
                 }
             }
         }
