@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class GHSMain : MonoBehaviour {
 
+    //音樂資料
+    public GHSEffectSoundControl _effectSoundControl;
+
     //地圖資料
     public GHSMapData _mapData;                  //地圖全部資料
     public Mat _mapMat;                         //畫地圖的mat
@@ -326,13 +329,13 @@ public class GHSMain : MonoBehaviour {
             this.Flicker();
             
             //搜尋兩個玩家可走區塊
-            for (int ID = 0; ID < 4; ID++)
-            {
-                if (_playerState.GetIsPlayerEnableOrNotByIndex(ID))
-                {
-                    CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), _playerCanSee[ID]);
-                }
-            }
+            //for (int ID = 0; ID < 4; ID++)
+            //{
+            //    if (_playerState.GetIsPlayerEnableOrNotByIndex(ID))
+            //    {
+            //        CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), _playerCanSee[ID]);
+            //    }
+            //}
 
             //確認有沒有玩家碰到道具
             for (int ID = 0; ID < 4; ID++)
@@ -352,6 +355,7 @@ public class GHSMain : MonoBehaviour {
                         //視野        
                         _playerCanSee[ID]++;
                         _moveState.text = "Get Sight";
+                        _effectSoundControl.PlayEffectSound("GetItem");
                     }
                     if (this.GetBombOrNot(ID))
                     {
@@ -493,7 +497,7 @@ public class GHSMain : MonoBehaviour {
             {
                 if (_playerState.GetIsPlayerEnableOrNotByIndex(enablePlayer))
                 {
-                    this.RefreshOneCanMoveArea(enablePlayer);
+                    this.RefreshOneCanMoveArea(_whoRound);
                 }
             }
 
