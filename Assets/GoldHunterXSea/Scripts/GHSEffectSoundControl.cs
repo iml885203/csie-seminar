@@ -68,8 +68,8 @@ public class GHSEffectSoundControl : MonoBehaviour
         }
 
         effectSoundObj.GetComponent<AudioSource>().Play();
-        AudioRecover(effectSoundObj);
-        //Destroy(effectSoundObj);
+        StartCoroutine("AudioRecover", effectSoundObj);
+        
     }
 
     IEnumerator AudioRecover(GameObject recoverAudioObj)

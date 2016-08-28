@@ -31,7 +31,7 @@ public class GHSBackGroundSoundControl : MonoBehaviour
         _playing.volume = _volumeSlider.value * (float)0.01;
     }
 
-    public void bouttonClick()
+    public void buttonClick()
     {
         if(gameStateButtonText.text == "Start")
         {
