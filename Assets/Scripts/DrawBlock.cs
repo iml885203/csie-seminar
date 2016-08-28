@@ -123,7 +123,6 @@ public class DrawBlock : MonoBehaviour {
         {
             _sourceMat_backup.copyTo(_sourceMat);
         }
-
         //滑鼠點擊判斷
         if (mouseclick)
         {
@@ -258,6 +257,7 @@ public class DrawBlock : MonoBehaviour {
         
         // 畫出選取區的depth畫面
         Thread thread = new Thread(drawDepthSourceMat);
+        thread.IsBackground = true;
         thread.Start();
 
         //做一個新的depthMat存放切割後的depthMat
@@ -265,15 +265,16 @@ public class DrawBlock : MonoBehaviour {
         if(_SyncFlag)
             subDepthMat = _sourceMatDepth.submat((_sourceMatDepth.height() - _maxY), (_sourceMatDepth.height() - _minY), _minX, _maxX);
         else
-            subDepthMat = _blockImageBuffer.submat((_sourceMatDepth.height() - _maxY), (_sourceMatDepth.height() - _minY), _minX, _maxX);
+            subDepthMat = _blockImageBuffer.submat((_blockImageBuffer.height() - _maxY), (_blockImageBuffer.height() - _minY), _minX, _maxX);
         //反轉化面
+        Mat TempWarpMat = new Mat();
         Point src_center = new Point(subDepthMat.cols() / 2.0, subDepthMat.rows() / 2.0);
         Mat rot_mat = Imgproc.getRotationMatrix2D(src_center, 180, 1.0);
-        Imgproc.warpAffine(subDepthMat, subDepthMat, rot_mat, _blockImage.size());
+        Imgproc.warpAffine(subDepthMat, TempWarpMat, rot_mat, _blockImage.size());
 
         // 膨脹收縮 處理depth影像
         Mat depthMatchImagePorcess = new Mat();
-        subDepthMat.copyTo(depthMatchImagePorcess);
+        TempWarpMat.copyTo(depthMatchImagePorcess);
         Mat erodeElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(7, 7));
         Mat dilateElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(5, 5));
 
