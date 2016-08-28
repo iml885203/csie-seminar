@@ -73,43 +73,70 @@ public class Match : MonoBehaviour {
 
         SetIsSave();
 
-        Mat _NewTowMat = new Mat(_drawBlock.MatchHeight, _drawBlock.MatchWidth, CvType.CV_8UC3);
-        
-        _NewTowMat = _drawBlock.GetBlockMat();
+        Mat _ClolrMat = new Mat(_drawBlock.MatchHeight, _drawBlock.MatchWidth, CvType.CV_8UC3);
+        Mat _DepthMat = new Mat(_drawBlock.MatchHeight, _drawBlock.MatchWidth, CvType.CV_8UC1);
+
+        _ClolrMat = _drawBlock.GetBlockMat();
+        _DepthMat = _drawBlock.GetBlockDepthMat();
         // ==========================
         // set public Width Height ==
         // ==========================
         Width = _drawBlock.MatchWidth;
         Height = _drawBlock.MatchHeight;
 
-        Mat BlackMat = new Mat(_drawBlock.MatchHeight, _drawBlock.MatchWidth, CvType.CV_8UC3);
+        Mat BlackMat = new Mat(Height, Width, CvType.CV_8UC3);
+        Mat BlackDepthMat = new Mat(Height, Width, CvType.CV_8UC1);
+
         hsvMat = new Mat();
         thresholdMat = new Mat();
-       // _NewDepthMat = DepthManager.GetData();
-       // BlackMat.setTo(new Scalar(10, 10, 10));
+        // _NewDepthMat = DepthManager.GetData();
+        // BlackMat.setTo(new Scalar(10, 10, 10));
         //_NewTowMat = getFeature(resizeMat, 196, 136, 214, 154, 94, 34);
         //morphOps(_NewTowMat);
         //getMaxMin(_NewTowMat);
         //
 
 
-      
+
         //找綠色
-       // Core.inRange(hsvMat, green.getHSVmin(), green.getHSVmax(), thresholdMat);
-       // morphOps(thresholdMat);
-       // trackFilteredObject(green, thresholdMat, hsvMat, BlackMat);
-       // // 找yellow色
-       // Core.inRange(hsvMat, yellow.getHSVmin(), yellow.getHSVmax(), thresholdMat);
-       // morphOps(thresholdMat);
-       // trackFilteredObject(yellow, thresholdMat, hsvMat, BlackMat);
-       //// 找red
-       // Core.inRange(hsvMat, red.getHSVmin(), red.getHSVmax(), thresholdMat);
-       // morphOps(thresholdMat);
-       // trackFilteredObject(red, thresholdMat, hsvMat, BlackMat);
+        // Core.inRange(hsvMat, green.getHSVmin(), green.getHSVmax(), thresholdMat);
+        // morphOps(thresholdMat);
+        // trackFilteredObject(green, thresholdMat, hsvMat, BlackMat);
+        // // 找yellow色
+        // Core.inRange(hsvMat, yellow.getHSVmin(), yellow.getHSVmax(), thresholdMat);
+        // morphOps(thresholdMat);
+        // trackFilteredObject(yellow, thresholdMat, hsvMat, BlackMat);
+        //// 找red
+        // Core.inRange(hsvMat, red.getHSVmin(), red.getHSVmax(), thresholdMat);
+        // morphOps(thresholdMat);
+        // trackFilteredObject(red, thresholdMat, hsvMat, BlackMat);
 
         //方法二 用顏色抓物件
-       Imgproc.cvtColor(_NewTowMat, hsvMat, Imgproc.COLOR_RGB2HSV);
-        getContours(_NewTowMat, BlackMat);
+        // Imgproc.cvtColor(_ClolrMat, hsvMat, Imgproc.COLOR_RGB2HSV);
+        // getContours(_ClolrMat, BlackMat);
+
+        //深度測試
+        Mat hierarchy = new Mat();
+        List<MatOfPoint> contours = new List<MatOfPoint>();
+        Imgproc.Canny(_DepthMat, BlackMat, 50, 150);
+        Imgproc.findContours(BlackMat, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);//Imgproc.RETR_EXTERNAL那邊0-3都可以
+        int numObjects = hierarchy.rows();
+        if (numObjects > 0)
+        {
+            for (int index = 0; index < numObjects; index++)
+            {
+
+                R0 = Imgproc.boundingRect(contours[index]);
+
+                if (R0.height > 10 && R0.width > 10)
+                {
+                    Imgproc.drawContours(BlackMat, contours, index, new Scalar(255, 255, 255));
+                }
+            }
+        }
+        //getContours(_DepthMat, BlackMat);
+        
+        
         //方法三 用特徵點抓物件
         //descriptorsORB(_NewTowMat, BlackMat, "queen");
         //descriptorsORB(BlackMat, BlackMat, "lena");
@@ -267,9 +294,7 @@ public class Match : MonoBehaviour {
         Imgproc.blur(src, src, new Size(3, 3));
         Imgproc.Canny(src, Temp, 50, 150);
         morphOps(Temp);
-        //cameraFeed = RGB;
-        //RGB.copyTo(cameraFeed);
-        //Debug.Log("Test");
+
         Imgproc.findContours(Temp, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);//Imgproc.RETR_EXTERNAL那邊0-3都可以
         
         int numObjects = contours.Count;
@@ -291,13 +316,6 @@ public class Match : MonoBehaviour {
                     ConsistP.Add(new Point(R0.x, R0.y));
                     ConsistP.Add(new Point(R0.x + R0.width, R0.y + R0.height));
                     clickRGB.Add(clickcolor(src, R0));
-                    //骰子
-                    //int diceCount = _dice.matchDice(src, R0, Temp);
-                    //diceCount = (diceCount - 2) / 2;
-                    //Debug.Log("dice count = " + diceCount);
-                    //Mat bestLabel = new Mat();
-                    //OpenCVForUnity.Core.kmeans(temp, 6, bestLabel, new TermCriteria(3,10, 1.0),1,OpenCVForUnity.Core.KMEANS_RANDOM_CENTERS);
-                    //bestLabel.copyTo(temp);
                 }
             }
 

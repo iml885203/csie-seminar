@@ -1049,7 +1049,7 @@ Prefab:
     - target: {fileID: 11402026, guid: e59d8c2847ac0c241a50ddb2ebd0501f, type: 2}
       propertyPath: ColorSourceManager
       value: 
-      objectReference: {fileID: 1454816802}
+      objectReference: {fileID: 1454816804}
     - target: {fileID: 11402026, guid: e59d8c2847ac0c241a50ddb2ebd0501f, type: 2}
       propertyPath: _inoutImg
       value: 
@@ -1061,15 +1061,15 @@ Prefab:
     - target: {fileID: 11419496, guid: e59d8c2847ac0c241a50ddb2ebd0501f, type: 2}
       propertyPath: _DepthSourceManager
       value: 
-      objectReference: {fileID: 1454816801}
+      objectReference: {fileID: 1454816803}
     - target: {fileID: 11419496, guid: e59d8c2847ac0c241a50ddb2ebd0501f, type: 2}
       propertyPath: _ColorSourceManager
       value: 
-      objectReference: {fileID: 1454816802}
+      objectReference: {fileID: 1454816804}
     - target: {fileID: 11402026, guid: e59d8c2847ac0c241a50ddb2ebd0501f, type: 2}
       propertyPath: DepthSourceManager
       value: 
-      objectReference: {fileID: 1454816801}
+      objectReference: {fileID: 1454816803}
     - target: {fileID: 11402026, guid: e59d8c2847ac0c241a50ddb2ebd0501f, type: 2}
       propertyPath: _blockDepthImg
       value: 
@@ -1823,7 +1823,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1027090790
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2659,32 +2659,18 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1431329214}
---- !u!1 &1454816799 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 147266, guid: e59d8c2847ac0c241a50ddb2ebd0501f, type: 2}
+--- !u!114 &1454816803 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 11476514, guid: e59d8c2847ac0c241a50ddb2ebd0501f,
+    type: 2}
   m_PrefabInternal: {fileID: 584696918}
---- !u!114 &1454816801
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1454816799}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1cd019cdd7a54604b9ae8091d242d8a4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1454816802
+--- !u!114 &1454816804 stripped
 MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1454816799}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
+  m_PrefabParentObject: {fileID: 11470056, guid: e59d8c2847ac0c241a50ddb2ebd0501f,
+    type: 2}
+  m_PrefabInternal: {fileID: 584696918}
   m_Script: {fileID: 11500000, guid: 92ab5bea6110edb4081e490c0982748d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1483662014
 Prefab:
   m_ObjectHideFlags: 0
