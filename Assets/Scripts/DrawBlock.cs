@@ -65,6 +65,9 @@ public class DrawBlock : MonoBehaviour {
     private bool _SyncFlag;
     private Mat _blockImageBuffer;
 
+    //thread
+    Thread _thread;
+
     public Mat GetBlockMat()
     {
         return _blockImage;
@@ -105,6 +108,8 @@ public class DrawBlock : MonoBehaviour {
         isInput = false;
         //設定同步旗標
         _SyncFlag = false;
+        //thread
+        _thread = new Thread(drawDepthSourceMat);
     }
 	
 	// Update is called once per frame
@@ -257,9 +262,10 @@ public class DrawBlock : MonoBehaviour {
         // 獲得depth資料與座標
         getDepthData(_minX, _minY, _maxX, _maxY);
         // 畫出選取區的depth畫面
-        Thread thread = new Thread(drawDepthSourceMat);
-        thread.IsBackground = true;
-        thread.Start();
+        _thread = new Thread(drawDepthSourceMat);
+        _thread.Start();
+        _thread.Join();
+        _thread.Abort();
 
         //做一個新的depthMat存放切割後的depthMat
         Mat subDepthMat = new Mat();
@@ -354,5 +360,6 @@ public class DrawBlock : MonoBehaviour {
             procMat.copyTo(_sourceMatDepth);
             _SyncFlag = true;
         }
+        procMat.release();
     }
 }
