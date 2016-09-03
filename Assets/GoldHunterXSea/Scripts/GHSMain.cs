@@ -109,6 +109,13 @@ public class GHSMain : MonoBehaviour {
         _mapHeight = transform.localScale.y;
 
         //初始化棋盤格子
+        for (int i = 0; i < ScreenHeightBlock; i++)
+        {
+            for (int j = 0; j < ScreenWidthBlock; j++)
+            {
+                StartBlock[i, j] = new mapBlock();
+            }
+        }
         InitBlock();                                                                   //初始化地圖
         _mapMat = new Mat((int)_mapHeight, (int)_mapWidth, CvType.CV_8UC3);
         _mapMat.setTo(_FogOfWarColor);                                              //設定戰爭迷霧
@@ -713,7 +720,7 @@ public class GHSMain : MonoBehaviour {
         {
             for (int j = 0; j <ScreenWidthBlock ; j++)
             {
-                StartBlock[i, j] = new mapBlock();
+                //StartBlock[i, j] = new mapBlock();
                 StartBlock[i, j].minPos = new Point((double)(_mapWidth * (j / (double)ScreenWidthBlock)), (double)(_mapHeight * (i / (double)ScreenHeightBlock)));
                 StartBlock[i, j].maxPos = new Point((double)(_mapWidth * ((j + 1) / (double)ScreenWidthBlock)), (double)(_mapHeight * ((i + 1) / (double)ScreenHeightBlock)));
             }
