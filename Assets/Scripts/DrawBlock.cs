@@ -250,6 +250,9 @@ public class DrawBlock : MonoBehaviour {
         //擷取輸出
         Utils.matToTexture2D(outMat, _blockTexture);
         _blockImg.texture = _blockTexture;
+
+        subMat.release();
+        outMat.release();
     }
 
     // =====================
@@ -284,7 +287,7 @@ public class DrawBlock : MonoBehaviour {
         TempWarpMat.copyTo(depthMatchImagePorcess);
         Mat erodeElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(7, 7));
         Mat dilateElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(5, 5));
-
+        
         Imgproc.dilate(depthMatchImagePorcess, depthMatchImagePorcess, dilateElement);
         Imgproc.erode(depthMatchImagePorcess, depthMatchImagePorcess, erodeElement);
         //Imgproc.erode(depthMatchImagePorcess, depthMatchImagePorcess, erodeElement);
@@ -314,6 +317,11 @@ public class DrawBlock : MonoBehaviour {
         //擷取輸出(顯示深度的切割結果)
         Utils.matToTexture2D(outDepthMat, _blockDepthTexture);
         _blockDepthImg.texture = _blockDepthTexture;
+
+        subDepthMat.release();
+        TempWarpMat.release();
+        depthMatchImagePorcess.release();
+        outDepthMat.release();
     }
 
     private void getDepthData(int minX, int minY, int maxX, int maxY)//透過color影像使用內建map class抓取區塊深度資料
