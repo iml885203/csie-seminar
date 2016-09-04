@@ -100,9 +100,9 @@ public class GHSMain : MonoBehaviour {
         _playerState.InitializeRealPlayer();
         StartBlock = new mapBlock[ScreenHeightBlock, ScreenWidthBlock];           //設定初始地圖陣列大小
         //初始旗標狀態
-        _isDraw = false;
-        _isDebug = false;
-        _isCheatMode = false;
+        _isDraw = true;
+        _isDebug = true;
+        _isCheatMode = true;
         _isReSet = false;
         //設定地圖像素大小
         _mapWidth = transform.localScale.x;
