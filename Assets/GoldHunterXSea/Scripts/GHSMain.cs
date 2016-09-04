@@ -11,7 +11,7 @@ public class GHSMain : MonoBehaviour {
     //地圖資料
     public GHSMapData _mapData;                  //地圖全部資料
     public Mat _mapMat;                         //畫地圖的mat
-    public Texture2D _tex;                      //顯示的結果texture2D
+    private Texture2D _tex;                      //顯示的結果texture2D
     //遊戲狀況文字顯示
     public Text _roundText;
     public Text[] _coordinatePlayer;
@@ -124,9 +124,9 @@ public class GHSMain : MonoBehaviour {
         //玩家位置創建空間
         _pointPlayer = new Point[4];
         _pointPlayer[0] = new Point(0, 0);
-        _pointPlayer[1] = new Point(15, 0);
-        _pointPlayer[2] = new Point(15, 8);
-        _pointPlayer[3] = new Point(0, 8);
+        _pointPlayer[1] = new Point(ScreenWidthBlock - 1, 0);
+        _pointPlayer[2] = new Point(ScreenWidthBlock - 1, ScreenHeightBlock - 1);
+        _pointPlayer[3] = new Point(0, ScreenHeightBlock - 1);
 
         //設定玩家初始位置
         for(int ID = 0; ID < 4; ID++)
@@ -185,6 +185,9 @@ public class GHSMain : MonoBehaviour {
     //重啟遊戲
     public void Restart()
     {
+        //
+        //舊的 尚未更改
+        //
         _rayPosData.Reset();
         _mapMat.setTo(_FogOfWarColor);
         //清除資訊
@@ -368,9 +371,9 @@ public class GHSMain : MonoBehaviour {
                     {
                         //爆炸
                         if (ID == 0) _mapData.setPlayerPos(ID, new Point(0, 0));
-                        if (ID == 1) _mapData.setPlayerPos(ID, new Point(15, 8));
-                        if (ID == 2) _mapData.setPlayerPos(ID, new Point(15, 0));
-                        if (ID == 3) _mapData.setPlayerPos(ID, new Point(0, 8));
+                        if (ID == 1) _mapData.setPlayerPos(ID, new Point(ScreenWidthBlock - 1, 0));
+                        if (ID == 2) _mapData.setPlayerPos(ID, new Point(ScreenWidthBlock - 1, ScreenHeightBlock - 1));
+                        if (ID == 3) _mapData.setPlayerPos(ID, new Point(0, ScreenHeightBlock - 1));
                     }
                 }
             }
@@ -718,7 +721,7 @@ public class GHSMain : MonoBehaviour {
         //新增開始區塊範圍
         for (int i = 0; i < ScreenHeightBlock; i++)
         {
-            for (int j = 0; j <ScreenWidthBlock ; j++)
+            for (int j = 0; j < ScreenWidthBlock ; j++)
             {
                 //StartBlock[i, j] = new mapBlock();
                 StartBlock[i, j].minPos = new Point((double)(_mapWidth * (j / (double)ScreenWidthBlock)), (double)(_mapHeight * (i / (double)ScreenHeightBlock)));
