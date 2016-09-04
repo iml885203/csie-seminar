@@ -4,7 +4,8 @@ using OpenCVForUnity;
 using UnityEngine.UI;
 
 public class GHSMain : MonoBehaviour {
-
+    //遊戲開始
+    public bool GameStart = false;
     //音樂資料
     public GHSEffectSoundControl _effectSoundControl;
 
@@ -179,7 +180,8 @@ public class GHSMain : MonoBehaviour {
          _flicker = true;
          _flickerTimer = 0f;
          _flickerTriggerTime = 1;
-        //raytoPosition asdf = gameObject.GetComponent<raytoPosition>();
+        //UI初始化
+        _moveState.text = "";
     }
 
     //重啟遊戲
@@ -271,6 +273,8 @@ public class GHSMain : MonoBehaviour {
     //Update
     void Update()
     {
+        if (!GameStart) return;
+
         this.SetIsSaveAndisDebug();
         //重制按鈕
         if (_isReSet)
@@ -431,41 +435,25 @@ public class GHSMain : MonoBehaviour {
     //滑鼠點擊事件
     private void ClickMouseUpEvent()
     {
-        bool isMouse = false;
-        if (Input.GetMouseButtonUp(0))
-            isMouse = true;
-            
-        if (_moved || isMouse)
+        if (_moved || Input.GetMouseButtonUp(0) && _rayPosData.IsClickToSomethimg)
         {
             Point triggerPoint = new Point();
             for (int i = 0; i < 9; i++)
             {
                 for (int j = 0; j < 16; j++)
                 {
-                    if (isMouse)
+                    //trigger到指定格子
+                    if (StartBlock[i, j].Check(_rayPosData.getPos().x, _rayPosData.getPos().y))
                     {
-                        //trigger到指定格子
-                        if (StartBlock[i, j].Check(_rayPosData.getPos().x, _rayPosData.getPos().y))
-                        {
-                            //Debug.Log("PosX:" + j + "PosX:" + i);
-                            triggerPoint.x = j;
-                            triggerPoint.y = i;
-                        }
-                    }
-                    else
-                    {
-                        //維持原本格子
-                        if (StartBlock[i, j].Check(_pointPlayer[_whoRound].x, _pointPlayer[_whoRound].y))
-                        {
-                            //Debug.Log("PosX:" + j + "PosX:" + i);
-                            triggerPoint.x = j;
-                            triggerPoint.y = i;
-                        }
+                        //Debug.Log("PosX:" + j + "PosX:" + i);
+                        triggerPoint.x = j;
+                        triggerPoint.y = i;
                     }
                 }
             }
             
             this.RefreshOneCanMoveArea(_whoRound);
+            // canGo Area中移除有玩家的地方
             for(int enablePlayer = 0; enablePlayer < 4; enablePlayer++)
             {
                 if (_playerState.GetIsPlayerEnableOrNotByIndex(enablePlayer))
@@ -490,12 +478,12 @@ public class GHSMain : MonoBehaviour {
                 Debug.Log("_whoRound = " + _whoRound);
                 this.FlageMove();
                 this.RefreshCanMoveArea();
-
+                _moveState.text = "";
                 //Debug.Log("This point can be move!" + "X = " + triggerPoint.x + ",Y = " + triggerPoint.y);
             }
             else
             {
-                _moveState.text = "can't  move!" + "X = " + triggerPoint.x + ",Y = " + triggerPoint.y;
+                _moveState.text = "無法移動到此座標(" + triggerPoint.x + ", " + triggerPoint.y + ")";
                 Point[] mistakeBlock = this.PosToBlock((int)triggerPoint.x,(int)triggerPoint.y);
                 Imgproc.line(_mapMat, new Point(_mapWidth - mistakeBlock[0].x, _mapHeight - mistakeBlock[0].y), new Point(_mapWidth - mistakeBlock[1].x, _mapHeight - mistakeBlock[1].y), new Scalar(255, 0, 0));
                 Imgproc.line(_mapMat, new Point(_mapWidth - mistakeBlock[1].x, _mapHeight - mistakeBlock[0].y), new Point(_mapWidth - mistakeBlock[0].x, _mapHeight - mistakeBlock[1].y), new Scalar(255, 0, 0));
@@ -580,17 +568,6 @@ public class GHSMain : MonoBehaviour {
         Point[] P = new Point[2];
         P = PosToBlock((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y));
         Imgproc.circle(_mapMat, new Point(_mapWidth - ((P[0].x + P[1].x) / 2), _mapHeight - ((P[0].y + P[1].y) / 2)), (int)((P[1].x - P[0].x) / 3), _playerColor[ID], _playerThickness);
-    }
-
-    //畫寶藏(關)
-    private void DrawTreadsure()
-    {
-        for(int treadsureIndex = 0;treadsureIndex < _mapData.getTreadsurePos().Count; treadsureIndex++)
-        {
-            Point[] treadsurePoint = new Point[2];
-            treadsurePoint = PosToBlock((int)(_mapData.getTreadsurePos()[treadsureIndex].x), (int)(_mapData.getTreadsurePos()[treadsureIndex].y));
-            Imgproc.circle(_mapMat, new Point(_mapWidth - ((treadsurePoint[0].x + treadsurePoint[1].x) / 2), _mapHeight - ((treadsurePoint[0].y + treadsurePoint[1].y) / 2)), (int)((treadsurePoint[1].x - treadsurePoint[0].x) / 3), _treadsureColor,-1);
-        }
     }
 
     //回傳是否得到寶藏 得到->true 沒得到->false
@@ -697,19 +674,19 @@ public class GHSMain : MonoBehaviour {
 
         //Debug.Log("Draw x = " + x + "y = " + y + "Pos_X" + P[0].x+ "Pos_Y" + P[0].y);
         //畫牆壁
-        if ((_mapData.getWall(x, y) & 8) == 8)//UP
+        if ((_mapData.getWall(x, y) & 8) == 8 || true)//UP
         {
             Imgproc.line(_mapMat, new Point(_mapWidth - P[0].x, _mapHeight - P[0].y), new Point(_mapWidth - P[1].x, _mapHeight - P[0].y), _mapWellColor, _mapWellThickness);
         }
-        if ((_mapData.getWall(x, y) & 4) == 4)//R
+        if ((_mapData.getWall(x, y) & 4) == 4 || true)//R
         {
             Imgproc.line(_mapMat, new Point(_mapWidth - P[1].x, _mapHeight - P[0].y), new Point(_mapWidth - P[1].x, _mapHeight - P[1].y), _mapWellColor, _mapWellThickness);
         }
-        if ((_mapData.getWall(x, y) & 2) == 2)//D
+        if ((_mapData.getWall(x, y) & 2) == 2 || true)//D
         {
             Imgproc.line(_mapMat, new Point(_mapWidth - P[0].x, _mapHeight - P[1].y), new Point(_mapWidth - P[1].x, _mapHeight - P[1].y), _mapWellColor, _mapWellThickness);
         }
-        if ((_mapData.getWall(x, y) & 1) == 1)//L
+        if ((_mapData.getWall(x, y) & 1) == 1 || true)//L
         {
             Imgproc.line(_mapMat, new Point(_mapWidth - P[0].x, _mapHeight - P[0].y), new Point(_mapWidth - P[0].x, _mapHeight - P[1].y), _mapWellColor, _mapWellThickness);
         }

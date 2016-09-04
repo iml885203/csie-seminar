@@ -242,5 +242,7 @@ public class GHSButtonEvent : MonoBehaviour
             if (playerCoordinate[i] == null || !_playerState.GetIsPlayerEnableOrNotByIndex(i)) continue;
             playerCoordinate[i].SetActive(!playerCoordinate[i].activeSelf);
         }
+
+        this.gameObject.GetComponent<GHSMain>().GameStart = true;
     }
 }

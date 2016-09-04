@@ -9,6 +9,7 @@ public class raytoPosition : MonoBehaviour
     public double posX { get; private set; }
     public double posY { get; private set; }
     public Point posXY;
+    public bool IsClickToSomethimg = false;
     // Use this for initialization
     void Start()
     {
@@ -21,8 +22,7 @@ public class raytoPosition : MonoBehaviour
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit, 1000))
+        if (this.IsClickToSomethimg = Physics.Raycast(ray, out hit, 1000))
         {
             //transform.position = new Vector3(hit.point.x, hit.point.y, hit.point.z);
             double coordinateX = hit.point.x - transform.position.x;
