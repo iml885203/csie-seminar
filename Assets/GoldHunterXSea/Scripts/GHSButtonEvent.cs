@@ -13,8 +13,10 @@ public class GHSButtonEvent : MonoBehaviour
     public GameObject[] playerStateObject;
     public GameObject[] playerCoordinate;
 
-    //遊戲開始畫面
-    public GameObject gameStartGround;
+    //遊戲背景圖片
+    public GameObject _menuBackGroundImage;
+    public GameObject _listProducerBackGroundImage;
+    public GameObject _settingBackGroundImage;
 
     //頁面按鈕
     public Button[] _inMenuButton;
@@ -38,7 +40,6 @@ public class GHSButtonEvent : MonoBehaviour
 
     //製作人顯示字幕及背景
     public Text[] _textListProducer;
-    public GameObject _backGround;
 
     void Start()
     {
@@ -51,14 +52,15 @@ public class GHSButtonEvent : MonoBehaviour
         //在字幕離開
         if (_exitFlage && _resetFlage)
         {
-            _backGround.SetActive(false);
+            _listProducerBackGroundImage.SetActive(false);
+            _settingBackGroundImage.SetActive(true);
 
             for (int index = 0; index < _inSettingButton.Length; index++)
             {
                 _inSettingButton[index].gameObject.SetActive(true);
             }
 
-            RectTransform backGroundRectTransform = _backGround.GetComponent<RectTransform>();
+            RectTransform backGroundRectTransform = _listProducerBackGroundImage.GetComponent<RectTransform>();
             _textListProducer[0].transform.position = new Vector3(backGroundRectTransform.rect.x, backGroundRectTransform.rect.y - backGroundRectTransform.rect.height, 0);
             _textListProducer[1].transform.position = new Vector3(backGroundRectTransform.rect.x, _textListProducer[0].transform.position.y - backGroundRectTransform.rect.height, 0);
             _textListProducer[2].transform.position = new Vector3(backGroundRectTransform.rect.x, _textListProducer[1].transform.position.y - backGroundRectTransform.rect.height, 0);
@@ -94,9 +96,22 @@ public class GHSButtonEvent : MonoBehaviour
             _inListProducerButton[index].gameObject.SetActive(false);
         }
 
+        //soundSlider的拉條顯示
+        for (int index = 0; index < _inSettingSoundSlider.Length; index++)
+        {
+            _inSettingSoundSlider[index].gameObject.SetActive(true);
+        }
+
+        //soundSliderText的拉條文字顯示
+        for (int index = 0; index < _inSettingSoundText.Length; index++)
+        {
+            _inSettingSoundText[index].gameObject.SetActive(true);
+        }
+
         _gameStateSettingToGameRunButtonText.text = "開始遊戲";
 
-        gameStartGround.SetActive(true);
+        _settingBackGroundImage.SetActive(true);
+        _menuBackGroundImage.SetActive(false);
     }
 
     //從設定畫面到遊戲執行按鈕事件(setting -> gameRun)
@@ -126,9 +141,21 @@ public class GHSButtonEvent : MonoBehaviour
             _inListProducerButton[index].gameObject.SetActive(false);
         }
 
+        //soundSlider的拉條消失
+        for (int index = 0; index < _inSettingSoundSlider.Length; index++)
+        {
+            _inSettingSoundSlider[index].gameObject.SetActive(false);
+        }
+
+        //soundSliderText的拉條文字消失
+        for (int index = 0; index < _inSettingSoundText.Length; index++)
+        {
+            _inSettingSoundText[index].gameObject.SetActive(false);
+        }
+
         _gameStateGameRunToSettingButtonText.text = "設定";
 
-        gameStartGround.SetActive(false);
+        _settingBackGroundImage.SetActive(false);
         ViewActiveEnable();
     }
 
@@ -159,9 +186,21 @@ public class GHSButtonEvent : MonoBehaviour
             _inListProducerButton[index].gameObject.SetActive(false);
         }
 
+        //soundSlider的拉條顯示
+        for (int index = 0; index < _inSettingSoundSlider.Length; index++)
+        {
+            _inSettingSoundSlider[index].gameObject.SetActive(true);
+        }
+
+        //soundSliderText的拉條文字顯示
+        for (int index = 0; index < _inSettingSoundText.Length; index++)
+        {
+            _inSettingSoundText[index].gameObject.SetActive(true);
+        }
+
         _gameStateSettingToGameRunButtonText.text = "繼續遊戲";
 
-        gameStartGround.SetActive(true);
+        _settingBackGroundImage.SetActive(true);
     }
 
     //從設定畫面到開始畫面按鈕事件(setting -> menu)
@@ -191,16 +230,35 @@ public class GHSButtonEvent : MonoBehaviour
             _inListProducerButton[index].gameObject.SetActive(false);
         }
 
+        //listProducer的按鈕消失
+        for (int index = 0; index < _inListProducerButton.Length; index++)
+        {
+            _inListProducerButton[index].gameObject.SetActive(false);
+        }
+
+        //soundSlider的拉條消失
+        for (int index = 0; index < _inSettingSoundSlider.Length; index++)
+        {
+            _inSettingSoundSlider[index].gameObject.SetActive(false);
+        }
+
+        //soundSliderText的拉條文字消失
+        for (int index = 0; index < _inSettingSoundText.Length; index++)
+        {
+            _inSettingSoundText[index].gameObject.SetActive(false);
+        }
+
         _gameStateMenuToSettingButtonText.text = "進入設定並開始遊戲";
 
-        gameStartGround.SetActive(true);
+        _settingBackGroundImage.SetActive(false);
+        _menuBackGroundImage.SetActive(true);
     }
 
     //按下製作人按鈕事件
     public void GameStateListProducerButtonClick()
     {
         _exitFlage = false;
-        _backGround.SetActive(true);
+        _listProducerBackGroundImage.SetActive(true);
 
         //listProducer的按鈕顯示
         for (int index = 0; index < _inListProducerButton.Length; index++)
@@ -212,6 +270,9 @@ public class GHSButtonEvent : MonoBehaviour
         {
             _inSettingButton[index].gameObject.SetActive(false);
         }
+
+        _settingBackGroundImage.SetActive(false);
+        _listProducerBackGroundImage.SetActive(true);
     }
 
     //按下回設定事件(在按下製作人後出現的按鈕)
@@ -230,6 +291,26 @@ public class GHSButtonEvent : MonoBehaviour
         {
             _inListProducerButton[index].gameObject.SetActive(false);
         }
+        //listProducer的按鈕消失
+        for (int index = 0; index < _inListProducerButton.Length; index++)
+        {
+            _inListProducerButton[index].gameObject.SetActive(false);
+        }
+
+        //soundSlider的拉條顯示
+        for (int index = 0; index < _inSettingSoundSlider.Length; index++)
+        {
+            _inSettingSoundSlider[index].gameObject.SetActive(true);
+        }
+
+        //soundSliderText的拉條文字顯示
+        for (int index = 0; index < _inSettingSoundText.Length; index++)
+        {
+            _inSettingSoundText[index].gameObject.SetActive(true);
+        }
+
+        _settingBackGroundImage.SetActive(true);
+        _listProducerBackGroundImage.SetActive(false);
     }
 
     //字幕移動
