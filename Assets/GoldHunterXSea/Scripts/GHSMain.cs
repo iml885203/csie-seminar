@@ -182,6 +182,8 @@ public class GHSMain : MonoBehaviour {
          _flickerTriggerTime = 1;
         //UI初始化
         _moveState.text = "";
+
+        this.RefreshOneCanMoveArea(_whoRound);
     }
 
     //重啟遊戲
@@ -273,7 +275,11 @@ public class GHSMain : MonoBehaviour {
     //Update
     void Update()
     {
-        if (!GameStart) return;
+        if (!GameStart)
+        {
+            DrawReadyGame();
+            return;
+        }
 
         this.SetIsSaveAndisDebug();
         //重制按鈕
@@ -438,9 +444,9 @@ public class GHSMain : MonoBehaviour {
         if (_moved || Input.GetMouseButtonUp(0) && _rayPosData.IsClickToSomethimg)
         {
             Point triggerPoint = new Point();
-            for (int i = 0; i < 9; i++)
+            for (int i = 0; i < ScreenHeightBlock; i++)
             {
-                for (int j = 0; j < 16; j++)
+                for (int j = 0; j < ScreenWidthBlock; j++)
                 {
                     //trigger到指定格子
                     if (StartBlock[i, j].Check(_rayPosData.getPos().x, _rayPosData.getPos().y))
@@ -449,16 +455,6 @@ public class GHSMain : MonoBehaviour {
                         triggerPoint.x = j;
                         triggerPoint.y = i;
                     }
-                }
-            }
-            
-            this.RefreshOneCanMoveArea(_whoRound);
-            // canGo Area中移除有玩家的地方
-            for(int enablePlayer = 0; enablePlayer < 4; enablePlayer++)
-            {
-                if (_playerState.GetIsPlayerEnableOrNotByIndex(enablePlayer))
-                {
-                    this._mapData.RemovePlayerAreaByIndex(enablePlayer);
                 }
             }
 
@@ -477,7 +473,6 @@ public class GHSMain : MonoBehaviour {
 
                 Debug.Log("_whoRound = " + _whoRound);
                 this.FlageMove();
-                this.RefreshCanMoveArea();
                 _moveState.text = "";
                 //Debug.Log("This point can be move!" + "X = " + triggerPoint.x + ",Y = " + triggerPoint.y);
             }
@@ -491,13 +486,7 @@ public class GHSMain : MonoBehaviour {
             }
 
             //重新跑過各玩家可以走的地方
-            for(int enablePlayer = 0; enablePlayer < 4; enablePlayer++)
-            {
-                if (_playerState.GetIsPlayerEnableOrNotByIndex(enablePlayer))
-                {
-                    this.RefreshOneCanMoveArea(_whoRound);
-                }
-            }
+            this.RefreshOneCanMoveArea(_whoRound);
 
             //Debug.Log("WR" + _whoRound + "R " + _round + "NUM " + _mapData.getPlayerCount());
             //Debug.Log("ID = 0" + "X = " + _mapData.getPlayerPos(0).x + "Y = " + _mapData.getPlayerPos(0).y);
@@ -507,23 +496,11 @@ public class GHSMain : MonoBehaviour {
     }
 
     //刷新canMoveArea(包含清除及重新搜尋)
-    public void RefreshCanMoveArea()
-    {
-        _mapData.ClearCanMoveArea();
-        for (int ID = 0; ID < 4; ID++)
-        {
-            if (_playerState.GetIsPlayerEnableOrNotByIndex(ID))
-            {
-                CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), _playerCanSee[ID]);
-            }
-        }
-    }
-
-    //刷新canMoveArea(包含清除及重新搜尋)
     public void RefreshOneCanMoveArea(int ID)
     {
         _mapData.ClearCanMoveArea();
-        CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), _playerCanSee[ID]);
+        //CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y), _playerCanSee[ID]);
+        GHS_CanGo((int)(_mapData.getPlayerPos(ID).x), (int)(_mapData.getPlayerPos(ID).y));
     }
 
     //搜尋可以走的區塊並加入資料
@@ -560,6 +537,85 @@ public class GHSMain : MonoBehaviour {
             }
         }
         return;
+    }
+
+    //搜尋可以走的區塊並加入資料
+    public void GHS_CanGo(int x, int y)//原始座標x,y剩餘次數
+    {
+        CanGoDirection(x, y, 0); //上
+        CanGoDirection(x, y, 1); //右
+        CanGoDirection(x, y, 2); //下
+        CanGoDirection(x, y, 3); //左
+    }
+
+    //直線方向判斷可走區域
+    private void CanGoDirection(int x, int y, int dir)// dir : 0=上 1=右 2=下 3=左
+    {
+        int goSteps = 0;
+        while (true)
+        {
+            goSteps++;
+            int goX = x, goY = y;
+            if (dir == 0)
+                goY -= goSteps;
+            else if (dir == 1)
+                goX += goSteps;
+            else if (dir == 2)
+                goY += goSteps;
+            else if (dir == 3)
+                goX -= goSteps;
+
+            int isRrdieect = CheckRedirectCanGo(goX, goY);
+            if (isRrdieect != -1)
+            {
+                _mapData.setCanMoveArea(new Point(goX, goY));
+                this.CanGoDirection(goX, goY, isRrdieect);
+                break;
+            }
+            if (CheckBlockCanGo(goX, goY))
+            {
+                _mapData.setCanMoveArea(new Point(goX, goY));
+                continue;
+            }
+            break;
+        }
+    }
+
+    // 判斷CanGo障礙物
+    private bool CheckBlockCanGo(int x, int y)
+    {
+        //在地圖範圍外
+        if (x < 0 || y < 0 || x > ScreenWidthBlock - 1 || y > ScreenHeightBlock - 1)
+            return false;
+        //碰到玩家
+        for (int enablePlayer = 0; enablePlayer < 4; enablePlayer++)
+        {
+            if (_playerState.GetIsPlayerEnableOrNotByIndex(enablePlayer))
+            {
+                Point playerPos = this._mapData.getPlayerPos(enablePlayer);
+                if (playerPos.x == x && playerPos.y == y)
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    // 判斷CanGo洋流
+    private int CheckRedirectCanGo(int x, int y)
+    {
+        //碰到玩家
+        for (int enablePlayer = 0; enablePlayer < 4; enablePlayer++)
+        {
+            if (_playerState.GetIsPlayerEnableOrNotByIndex(enablePlayer))
+            {
+                Point playerPos = this._mapData.getPlayerPos(enablePlayer);
+                if (playerPos.x == x && playerPos.y == y)
+                    return 0;
+            }
+        }
+
+        return -1;
     }
 
     //畫玩家的圓形
@@ -795,5 +851,12 @@ public class GHSMain : MonoBehaviour {
         Rect *= Enlarge;
         if (Rect > (Enlarge / 2)) inObject.transform.localScale = new Vector3(Enlarge - Rect, Enlarge - Rect, 0);
         else  inObject.transform.localScale = new Vector3(Rect, Rect, 0);
+    }
+
+    private void DrawReadyGame()
+    {
+        _mapMat.setTo(_FogOfWarColor);
+        Utils.matToTexture2D(_mapMat, _tex);
+        gameObject.GetComponent<Renderer>().material.mainTexture = _tex;
     }
 }
