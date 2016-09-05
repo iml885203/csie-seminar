@@ -275,7 +275,11 @@ public class GHSMain : MonoBehaviour {
     //Update
     void Update()
     {
-        if (!GameStart) return;
+        if (!GameStart)
+        {
+            DrawReadyGame();
+            return;
+        }
 
         this.SetIsSaveAndisDebug();
         //重制按鈕
@@ -847,5 +851,12 @@ public class GHSMain : MonoBehaviour {
         Rect *= Enlarge;
         if (Rect > (Enlarge / 2)) inObject.transform.localScale = new Vector3(Enlarge - Rect, Enlarge - Rect, 0);
         else  inObject.transform.localScale = new Vector3(Rect, Rect, 0);
+    }
+
+    private void DrawReadyGame()
+    {
+        _mapMat.setTo(_FogOfWarColor);
+        Utils.matToTexture2D(_mapMat, _tex);
+        gameObject.GetComponent<Renderer>().material.mainTexture = _tex;
     }
 }
