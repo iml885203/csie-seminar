@@ -352,8 +352,8 @@ public class DrawBlock : MonoBehaviour {
             }
             else
             {
-                avg = 255 - ((double)(_depthDataSub[i] - _minDepthDistance) / (_maxDepthDistance - _minDepthDistance) * 255); //顯示範圍內深度顏色
-                //avg = 255; //binary
+               // avg = 255 - ((double)(_depthDataSub[i] - _minDepthDistance) / (_maxDepthDistance - _minDepthDistance) * 255); //顯示範圍內深度顏色
+                avg = 255; //binary
             }
 
             double[] color = new double[1] { avg };

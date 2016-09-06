@@ -1076,11 +1076,11 @@ Prefab:
       objectReference: {fileID: 1625453709}
     - target: {fileID: 11402026, guid: e59d8c2847ac0c241a50ddb2ebd0501f, type: 2}
       propertyPath: _maxDepthDistance
-      value: 1000
+      value: 860
       objectReference: {fileID: 0}
     - target: {fileID: 11402026, guid: e59d8c2847ac0c241a50ddb2ebd0501f, type: 2}
       propertyPath: _minDepthDistance
-      value: 500
+      value: 825
       objectReference: {fileID: 0}
     - target: {fileID: 147266, guid: e59d8c2847ac0c241a50ddb2ebd0501f, type: 2}
       propertyPath: m_IsActive
@@ -3183,7 +3183,7 @@ RectTransform:
   m_LocalRotation: {x: 1, y: 0.00000016292068, z: 0.00000016292068, w: 2.654315e-14}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 180}
   m_Children: []
   m_Father: {fileID: 407868128}
   m_RootOrder: 6
@@ -3669,7 +3669,7 @@ RectTransform:
   m_LocalRotation: {x: 1, y: 0.00000016292068, z: 0.00000016292068, w: 2.654315e-14}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 180}
   m_Children: []
   m_Father: {fileID: 407868128}
   m_RootOrder: 5

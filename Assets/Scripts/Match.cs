@@ -69,17 +69,18 @@ public class Match : MonoBehaviour {
         //設定是否儲存特徵物體
         SetIsSave();
         //宣告存放深度與色彩影像
-        Mat _ClolrMat = new Mat(Height, Width, CvType.CV_8UC3);
-        Mat _DepthMat = new Mat(Height, Width, CvType.CV_8UC1);
+        Mat _ClolrMat = new Mat();
+        Mat _DepthMat = new Mat();
         //取得影像資訊
         _ClolrMat = _drawBlock.GetBlockMat();
         _DepthMat = _drawBlock.GetBlockDepthMat();
 
         //宣告結果影像
-        Mat BlackMat = new Mat(Height, Width, CvType.CV_8UC3);
-        Mat BlackDepthMat = new Mat(Height, Width, CvType.CV_8UC1);
+        Mat BlackMat = new Mat();
+        Mat BlackDepthMat = new Mat();
 
-        getDepthContours(_DepthMat, BlackMat);
+
+        getDepthContours(_DepthMat, BlackDepthMat);
          //getContours(_DepthMat, BlackMat);
 
 
@@ -90,13 +91,17 @@ public class Match : MonoBehaviour {
 
          //將結果影像轉換影像格式與大小設定
          Mat resizeMat = new Mat(_matchHeight, _matchWidth, CvType.CV_8UC3);
-        Imgproc.resize(BlackMat, resizeMat, resizeMat.size());
+        Imgproc.resize(BlackDepthMat, resizeMat, resizeMat.size());
         Utils.matToTexture2D(resizeMat, _matchTexture);
         _matchTexture.Apply();
 
-        BlackMat.release();
-        BlackDepthMat.release();
-        BlackMat.release();
+
+
+        _ClolrMat.Dispose();
+        _DepthMat.Dispose();
+        BlackMat.Dispose();
+        resizeMat.Dispose();
+        BlackDepthMat.Dispose();
     }
     //深度影像處理
    public  bool getDepthContours(Mat _DepthMat,Mat BlackMat)
@@ -107,14 +112,20 @@ public class Match : MonoBehaviour {
             Debug.Log("_DepthMat Mat is Null");
             return false;
         }
+        Mat SrcMat = new Mat();
+        _DepthMat.copyTo(SrcMat);
         //設定Canny參數
         int threshold = 50;
         //宣告存放偵測結果資料
+        Mat result = new Mat(_DepthMat.height(), _DepthMat.width(),CvType.CV_8UC3);
+        result.setTo(new Scalar(0, 0, 0));
         Mat hierarchy = new Mat();
         List<MatOfPoint> contours = new List<MatOfPoint>();
         Mat cannyMat = new Mat();
+        List<MatOfPoint2f> Hull = new List<MatOfPoint2f>();
+
         //做Canny輪廓化
-        Imgproc.Canny(_DepthMat, cannyMat, threshold, threshold * 3);
+        Imgproc.Canny(SrcMat, cannyMat, threshold, threshold * 3);
         //找輪廓並編號
         Imgproc.findContours(cannyMat, contours, hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
         //取得輪廓數量
@@ -122,26 +133,64 @@ public class Match : MonoBehaviour {
         //跑迴圈確認輪廓
         if (numObjects > 0)
         {
-            Debug.Log("numObjects = " + numObjects);
             for (int index = 0; index < numObjects; index++)
             {
-                //取得深度結果物體位置
                 DepthRect = Imgproc.boundingRect(contours[index]);
-                if (DepthRect.height > 40 && DepthRect.width > 40)
-                {
-                    //畫出輪廓結果
-                    Imgproc.drawContours(BlackMat, contours, index, new Scalar(255, 255, 255), 5);
-                    Point midPoint = new Point(DepthRect.x + (DepthRect.width / 2), DepthRect.y + (DepthRect.height / 2));
-                    //Imgproc.line(BlackMat, midPoint, midPoint, new Scalar(255), 10);
-                    Imgproc.putText(BlackMat, "O", midPoint, 1, 1, new Scalar(255, 0, 0), 20);
 
+                if (DepthRect.height > 50 && DepthRect.width > 50 && DepthRect.area() > 1000)
+                {
+                    //宣告放置點資料
+                    MatOfInt hullInt = new MatOfInt();
+                    List<Point> hullPointList = new List<Point>();
+                    MatOfPoint hullPointMat = new MatOfPoint();
+                    List<MatOfPoint> hullPoints = new List<MatOfPoint>();
+                    MatOfInt4 defects = new MatOfInt4();
+                    //篩選點資料
+
+                    MatOfPoint2f Temp2f = new MatOfPoint2f();
+                    //Convert contours(i) from MatOfPoint to MatOfPoint2f
+                    contours[index].convertTo(Temp2f, CvType.CV_32FC2);
+                    //Processing on mMOP2f1 which is in type MatOfPoint2f
+                     Imgproc.approxPolyDP(Temp2f, Temp2f, 30, true);
+                    //Convert back to MatOfPoint and put the new values back into the contours list
+                    Temp2f.convertTo(contours[index], CvType.CV_32S);
+
+                    //计算轮廓围绕的凸形壳
+                    Imgproc.convexHull(contours[index], hullInt);
+                    List<Point> pointMatList = contours[index].toList();
+                    List<int> hullIntList = hullInt.toList();
+                    Debug.Log("hullInt" + hullInt.toList().Count);
+                    for (int j = 0; j < hullInt.toList().Count; j++)
+                    {
+                        hullPointList.Add(pointMatList[hullIntList[j]]);
+                        hullPointMat.fromList(hullPointList);
+                        hullPoints.Add(hullPointMat);
+                        //畫凸包
+                     //   Imgproc.drawContours(result, hullPoints, -1, new Scalar(0, 255, 0), 2);
+                     if (hullInt.toList().Count == 4)
+                            Imgproc.rectangle(result, new Point(DepthRect.x, DepthRect.y),new Point( DepthRect.x + DepthRect.width, DepthRect.y + DepthRect.height),new Scalar(0,0,255),5);
+                    }
+                    //清空記憶體
+                    defects.Dispose();
+                    hullPointList.Clear();
+                    hullPointMat.Dispose();
+                    hullInt.Dispose();
+                    hullPoints.Clear();
                 }
             }
         }
-        cannyMat.release();
-        hierarchy.release();
+       // Imgproc.cvtColor(result, result, Imgproc.COLOR_BGR2RGB);
+
+        result.copyTo(BlackMat);
+        result.Dispose();
+        cannyMat.Dispose();
+        hierarchy.Dispose();
+        contours.Clear();
+        Hull.Clear();
+        SrcMat.Dispose();
         return true;
     }
+
     //找出特徵的顏色方法二
     public void getContours(Mat RGB, Mat cameraFeed)
     {
