@@ -16,6 +16,7 @@ public class DrawBlock : MonoBehaviour {
     //結果圖片
     private Mat _blockImage;
     private Mat _blockDepthImage;
+    private Mat _blockDepthBackGroundImage;
     public int MatchWidth { get; private set; }
     public int MatchHeight { get; private set; }
     //儲存點擊位置
@@ -292,7 +293,20 @@ public class DrawBlock : MonoBehaviour {
         Imgproc.erode(depthMatchImagePorcess, depthMatchImagePorcess, erodeElement);
         //Imgproc.erode(depthMatchImagePorcess, depthMatchImagePorcess, erodeElement);
 
+        //設定背景深度 快捷鍵L
+        setDepthSourceBackGroundMat(depthMatchImagePorcess);
+
+        //平滑處理(之後嘗試看看)
+        //減去背景深度
+        Core.absdiff(depthMatchImagePorcess, _blockDepthBackGroundImage, depthMatchImagePorcess);
+        //傳出深度
         depthMatchImagePorcess.copyTo(_blockDepthImage);
+
+
+
+
+
+
 
         // canny 取出輪廓
         //Imgproc.blur(matchImagePorcess, matchImagePorcess, new Size(3, 3));
@@ -318,6 +332,7 @@ public class DrawBlock : MonoBehaviour {
         Utils.matToTexture2D(outDepthMat, _blockDepthTexture);
         _blockDepthImg.texture = _blockDepthTexture;
 
+       
         subDepthMat.release();
         TempWarpMat.release();
         depthMatchImagePorcess.release();
@@ -352,8 +367,8 @@ public class DrawBlock : MonoBehaviour {
             }
             else
             {
-               // avg = 255 - ((double)(_depthDataSub[i] - _minDepthDistance) / (_maxDepthDistance - _minDepthDistance) * 255); //顯示範圍內深度顏色
-                avg = 255; //binary
+                avg = 255 - ((double)(_depthDataSub[i] - _minDepthDistance) / (_maxDepthDistance - _minDepthDistance) * 255); //顯示範圍內深度顏色
+               // avg = 255; //binary
             }
 
             double[] color = new double[1] { avg };
@@ -369,5 +384,29 @@ public class DrawBlock : MonoBehaviour {
             _SyncFlag = true;
         }
         procMat.release();
+    }
+    private void setDepthSourceBackGroundMat(Mat BackGround)//取得背景Depth資訊
+    {
+        if (Input.GetKeyUp(KeyCode.K))
+        {
+            int MaxDepth = 0;
+            for (int i = 0; i < _depthDataSub.Count; i++)
+            {
+                if (_depthDataSub[i] > MaxDepth) MaxDepth = _depthDataSub[i];
+            }
+            _maxDepthDistance = MaxDepth + 100;
+            _minDepthDistance = MaxDepth - 300;
+        }
+        if (Input.GetKeyUp(KeyCode.L))
+        {
+            //創造背景深度Mat
+            _blockDepthBackGroundImage = new Mat();
+            BackGround.copyTo(_blockDepthBackGroundImage);
+        }
+        else if (_blockDepthBackGroundImage == null)
+        {
+            _blockDepthBackGroundImage = new Mat();
+            _blockDepthBackGroundImage.setTo(new Scalar(0, 0, 0));
+        }
     }
 }

@@ -40,12 +40,33 @@ public class Match : MonoBehaviour {
 
 
     public Mat src;
-    public OpenCVForUnity.Rect DepthRect;
+    //傳給遊戲的結果
+    private OpenCVForUnity.Rect _TestDepthRect;
+    private OpenCVForUnity.Rect _DepthRect;
+    private Vector3 _ObjectDepthVector3;
+    private Vector3 _ObjectDepthScale;
+    private float _ObjectDepthRotation;
     public Mat Temp;
 
     public Texture2D GetMatchTexture()
     {
         return _matchTexture;
+    }
+    public OpenCVForUnity.Rect GetDepthRect()
+    {
+        return _DepthRect;
+    }
+    public Vector3 GetDepthVector3()
+    {
+        return _ObjectDepthVector3;
+    }
+    public Vector3 GetDepthScale()
+    {
+        return _ObjectDepthScale;
+    }
+    public float GetDepthRotation()
+    {
+        return _ObjectDepthRotation;
     }
     // Use this for initialization
     void Start()
@@ -114,6 +135,9 @@ public class Match : MonoBehaviour {
         }
         Mat SrcMat = new Mat();
         _DepthMat.copyTo(SrcMat);
+        //二值化
+        Imgproc.threshold(SrcMat, SrcMat, 8, 255, Imgproc.THRESH_OTSU);
+        
         //設定Canny參數
         int threshold = 50;
         //宣告存放偵測結果資料
@@ -135,9 +159,9 @@ public class Match : MonoBehaviour {
         {
             for (int index = 0; index < numObjects; index++)
             {
-                DepthRect = Imgproc.boundingRect(contours[index]);
+                _TestDepthRect = Imgproc.boundingRect(contours[index]);
 
-                if (DepthRect.height > 50 && DepthRect.width > 50 && DepthRect.area() > 1000)
+                if (_TestDepthRect.height > 50 && _TestDepthRect.width > 50 && _TestDepthRect.area() > 1000)
                 {
                     //宣告放置點資料
                     MatOfInt hullInt = new MatOfInt();
@@ -168,7 +192,26 @@ public class Match : MonoBehaviour {
                         //畫凸包
                      //   Imgproc.drawContours(result, hullPoints, -1, new Scalar(0, 255, 0), 2);
                      if (hullInt.toList().Count == 4)
-                            Imgproc.rectangle(result, new Point(DepthRect.x, DepthRect.y),new Point( DepthRect.x + DepthRect.width, DepthRect.y + DepthRect.height),new Scalar(0,0,255),5);
+                        {
+
+                            _DepthRect = Imgproc.boundingRect(contours[index]);
+                            _ObjectDepthVector3 = new Vector3(_DepthRect.x +( _DepthRect.width)/2, _DepthRect.y + (_DepthRect.height / 2), -30);
+                            _ObjectDepthScale = new Vector3(_DepthRect.width, _DepthRect.height, 10);
+                            for(int i = 0; i<4; i++)
+                            {
+                                Debug.Log("[" + i + "]  X = " + pointMatList[i].x + "Y " + pointMatList[i].y);
+                            }
+                            float upX = (float)(pointMatList[0].x + pointMatList[1].x )/ 2;
+                            float upY = (float)(pointMatList[0].y + pointMatList[1].y) / 2;
+                            float downX = (float)(pointMatList[2].x + pointMatList[3].x) / 2;
+                            float downY = (float)(pointMatList[2].y + pointMatList[3].y) / 2;
+                            float Dx = upX - downX;
+                            float Dy = upY - downY;
+                            float DRoation = (float)Math.Atan2(Dy, Dx);
+                            _ObjectDepthRotation = (float)((double)DRoation / (double)Math.PI * (double)180.0f);
+                            Imgproc.drawContours(result, hullPoints, -1, new Scalar(0, 255, 0), 2);
+                        }
+                        //Imgproc.rectangle(result, new Point(_DepthRect.x, _DepthRect.y),new Point( _DepthRect.x + _DepthRect.width, _DepthRect.y + _DepthRect.height),new Scalar(0,0,255),5);
                     }
                     //清空記憶體
                     defects.Dispose();
