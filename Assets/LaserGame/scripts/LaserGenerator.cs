@@ -32,7 +32,7 @@ public class LaserGenerator : MonoBehaviour {
         {
             _timer = 0f;
             GameObject clone = (GameObject)Instantiate(LaserBall, this.transform.position, this.transform.rotation);
-            clone.transform.parent = this.transform;
+            clone.transform.SetParent(this.transform);
             foreach (Transform child in transform)
             {
                 if (child.tag == "laserBall")
@@ -73,7 +73,8 @@ public class LaserGenerator : MonoBehaviour {
         {
             for(int i = lastIndex + 1; i < _laserLines.Count; i++)
             {
-                _laserLines[i].GetComponent<LineRenderer>().SetPositions(new Vector3[] { transform.position, transform.position});
+                Destroy(_laserLines[i]);
+                _laserLines.RemoveAt(i);
             }
         }
     }
