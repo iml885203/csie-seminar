@@ -45,11 +45,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\GoldHunterXSea\Scripts\GHSChangeState.cs" />
+     <Compile Include="Assets\GoldHunterXSea\Scripts\GHSBackGroundSoundControl.cs" />
+     <Compile Include="Assets\GoldHunterXSea\Scripts\GHSButtonEvent.cs" />
+     <Compile Include="Assets\GoldHunterXSea\Scripts\GHSEffectSoundControl.cs" />
      <Compile Include="Assets\GoldHunterXSea\Scripts\GHSMain.cs" />
      <Compile Include="Assets\GoldHunterXSea\Scripts\GHSMapData.cs" />
      <Compile Include="Assets\GoldHunterXSea\Scripts\GHSPlayerState.cs" />
-     <Compile Include="Assets\GoldHunterXSea\Scripts\GHSimgproc.cs" />
+     <Compile Include="Assets\GoldHunterXSea\Scripts\uselessClass\GHSChangeState.cs" />
+     <Compile Include="Assets\GoldHunterXSea\Scripts\uselessClass\GHSListProducer.cs" />
      <Compile Include="Assets\GreenScreen\Scripts\CoordinateMapperManager.cs" />
      <Compile Include="Assets\GreenScreen\Scripts\CoordinateMapperView.cs" />
      <Compile Include="Assets\KinectView\Scripts\BodySourceManager.cs" />
@@ -62,6 +65,8 @@
      <Compile Include="Assets\KinectView\Scripts\InfraredSourceManager.cs" />
      <Compile Include="Assets\KinectView\Scripts\InfraredSourceView.cs" />
      <Compile Include="Assets\KinectView\Scripts\MultiSourceManager.cs" />
+     <Compile Include="Assets\LaserGame\scripts\LaserBall.cs" />
+     <Compile Include="Assets\LaserGame\scripts\LaserGenerator.cs" />
      <Compile Include="Assets\OpenCVForUnity\Samples\CamShiftSample\CamShiftSample.cs" />
      <Compile Include="Assets\OpenCVForUnity\Samples\ComicFilterSample\ComicFilterSample.cs" />
      <Compile Include="Assets\OpenCVForUnity\Samples\ConvexHullSample\ConvexHullSample.cs" />
@@ -210,6 +215,7 @@
      <None Include="Assets\OpenCVForUnity\StreamingAssets\haarcascade_frontalface_alt.xml" />
      <None Include="Assets\OpenCVForUnity\StreamingAssets\lbpcascade_frontalface.xml" />
      <None Include="Assets\GreenScreen\Materials\GreenScreenShader.shader" />
+     <None Include="Assets\GoldHunterXSea\Sound\message.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
