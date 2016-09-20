@@ -30,6 +30,12 @@ public class LaserBall : MonoBehaviour {
             _reflectCount++;
             _generator.SetLaserLinesPos(_reflectCount - 1, 1, nowPosition);
             _generator.SetLaserLinesPos(_reflectCount, 0, nowPosition);
+            Debug.Log("_reflectCount = " + _reflectCount + ", nowPosition = " + nowPosition + "."); 
+        }
+        else if(other.gameObject.tag == "dispersionObject")
+        {
+            GameObject cloneBall = (GameObject)Instantiate(this.gameObject, this.transform.position, this.transform.rotation);
+            cloneBall.transform.SetParent(this.transform.parent);
         }
     }
 }
