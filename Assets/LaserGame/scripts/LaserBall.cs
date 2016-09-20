@@ -30,12 +30,39 @@ public class LaserBall : MonoBehaviour {
             _reflectCount++;
             _generator.SetLaserLinesPos(_reflectCount - 1, 1, nowPosition);
             _generator.SetLaserLinesPos(_reflectCount, 0, nowPosition);
-            Debug.Log("_reflectCount = " + _reflectCount + ", nowPosition = " + nowPosition + "."); 
+            //Debug.Log("_reflectCount = " + _reflectCount + ", nowPosition = " + nowPosition + "."); 
         }
         else if(other.gameObject.tag == "dispersionObject")
         {
-            GameObject cloneBall = (GameObject)Instantiate(this.gameObject, this.transform.position, this.transform.rotation);
-            cloneBall.transform.SetParent(this.transform.parent);
+            //Vector3 movementCurrentDirection = transform.TransformDirection(1, 1, 0);
+            //Vector3 reflectionDirection = Vector3.Reflect(movementCurrentDirection, nowPosition);
+
+            //Vector3 randomReflectDirection = Quaternion.Euler(0, 0, Random.Range(-80, 80)) * reflectionDirection;
+            //movementCurrentDirection = randomReflectDirection;
+            //Debug.Log("movementCurrentDirection = " + movementCurrentDirection);
+
+            Rigidbody myRigidbody = GetComponent<Rigidbody>();
+            Vector3 test = new Vector3(19, 6, 0);
+            Debug.Log("myRigidbody.velocity = " + myRigidbody.velocity);
+            myRigidbody.velocity = test;
+            //Vector3 velocity = myRigidbody.velocity;
+            //myRigidbody.velocity = Vector3.zero;
+            //StartCoroutine(Example());
+            //myRigidbody.velocity = velocity;
+
+            //Debug.Log("before = " + this.gameObject.transform.rotation);
+            //GameObject cloneBall = (GameObject)Instantiate(this.gameObject, this.transform.position, this.transform.rotation);
+
+            //this.gameObject.transform.rotation = Quaternion.AngleAxis(20, Vector3.up);
+            //Debug.Log("after = " + this.gameObject.transform.rotation);
+            //cloneBall.transform.SetParent(this.transform.parent);
         }
+    }
+
+    IEnumerator Example()
+    {
+        print(Time.time);
+        yield return new WaitForSeconds(5);
+        print(Time.time);
     }
 }
