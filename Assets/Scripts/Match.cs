@@ -37,7 +37,9 @@ public class Match : MonoBehaviour {
     private int _clolrRange = 15;
     //是否可以儲存感測到的物件
     private bool isSave = new bool();
-
+    //輪廓數量
+    private int _ContoursCount;
+    private int _ObjectCount;
 
     public Mat src;
     //傳給遊戲的結果
@@ -68,6 +70,10 @@ public class Match : MonoBehaviour {
     {
         return _ObjectDepthRotation;
     }
+    public int GetObjectCount()
+    {
+        return _ContoursCount;
+    }
     // Use this for initialization
     void Start()
     {
@@ -75,7 +81,7 @@ public class Match : MonoBehaviour {
         _matchHeight = 450;
 
         _matchTexture = new Texture2D(_matchWidth, _matchHeight);
-
+        _ContoursCount = 0;
         isSave = false;
     }
 	// Update is called once per frame
@@ -119,7 +125,7 @@ public class Match : MonoBehaviour {
 
 
         _ClolrMat.Dispose();
-        _DepthMat.Dispose();
+       if(_DepthMat != null) _DepthMat.Dispose();
         BlackMat.Dispose();
         resizeMat.Dispose();
         BlackDepthMat.Dispose();
@@ -136,7 +142,7 @@ public class Match : MonoBehaviour {
         Mat SrcMat = new Mat();
         _DepthMat.copyTo(SrcMat);
         //二值化
-        Imgproc.threshold(SrcMat, SrcMat, 8, 255, Imgproc.THRESH_OTSU);
+        Imgproc.threshold(SrcMat, SrcMat, 50, 255, Imgproc.THRESH_OTSU);
         
         //設定Canny參數
         int threshold = 50;
@@ -153,11 +159,12 @@ public class Match : MonoBehaviour {
         //找輪廓並編號
         Imgproc.findContours(cannyMat, contours, hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
         //取得輪廓數量
-        int numObjects = contours.Count;
+        _ContoursCount = contours.Count;
         //跑迴圈確認輪廓
-        if (numObjects > 0)
+        if (_ContoursCount > 0)
         {
-            for (int index = 0; index < numObjects; index++)
+            _ObjectCount = 0;
+            for (int index = 0; index < _ContoursCount; index++)
             {
                 _TestDepthRect = Imgproc.boundingRect(contours[index]);
 
@@ -183,47 +190,43 @@ public class Match : MonoBehaviour {
                     Imgproc.convexHull(contours[index], hullInt);
                     List<Point> pointMatList = contours[index].toList();
                     List<int> hullIntList = hullInt.toList();
-                    Debug.Log("hullInt" + hullInt.toList().Count);
                     for (int j = 0; j < hullInt.toList().Count; j++)
                     {
                         hullPointList.Add(pointMatList[hullIntList[j]]);
                         hullPointMat.fromList(hullPointList);
                         hullPoints.Add(hullPointMat);
-                        //畫凸包
-                     //   Imgproc.drawContours(result, hullPoints, -1, new Scalar(0, 255, 0), 2);
-                     if (hullInt.toList().Count == 4)
+                    }
+                    //畫凸包
+                    //   Imgproc.drawContours(result, hullPoints, -1, new Scalar(0, 255, 0), 2);
+                    if (hullInt.toList().Count == 4)
+                    {
+                        pointMatList = arrangedPoint(pointMatList);
+                        float RectWidth = calculateWidth(pointMatList);
+                        float RectHeight = calculateHeight(pointMatList);
+                        if (RectWidth > 3 && RectHeight > 3 && pointsTooClose(pointMatList))
                         {
-
                             _DepthRect = Imgproc.boundingRect(contours[index]);
-                            _ObjectDepthVector3 = new Vector3(_DepthRect.x +( _DepthRect.width)/2, _DepthRect.y + (_DepthRect.height / 2), -30);
-                            _ObjectDepthScale = new Vector3(_DepthRect.width, _DepthRect.height, 10);
-                            for(int i = 0; i<4; i++)
-                            {
-                                Debug.Log("[" + i + "]  X = " + pointMatList[i].x + "Y " + pointMatList[i].y);
-                            }
-                            float upX = (float)(pointMatList[0].x + pointMatList[1].x )/ 2;
-                            float upY = (float)(pointMatList[0].y + pointMatList[1].y) / 2;
-                            float downX = (float)(pointMatList[2].x + pointMatList[3].x) / 2;
-                            float downY = (float)(pointMatList[2].y + pointMatList[3].y) / 2;
-                            float Dx = upX - downX;
-                            float Dy = upY - downY;
-                            float DRoation = (float)Math.Atan2(Dy, Dx);
-                            _ObjectDepthRotation = (float)((double)DRoation / (double)Math.PI * (double)180.0f);
+                            _ObjectDepthVector3 = new Vector3(_DepthRect.x + (RectWidth) / 2, _DepthRect.y + (RectHeight / 2), -30);
+                            _ObjectDepthScale = new Vector3(RectWidth, RectHeight, 10);
+
+                            _ObjectDepthRotation = calculateSlope(pointMatList);
+
                             Imgproc.drawContours(result, hullPoints, -1, new Scalar(0, 255, 0), 2);
                         }
-                        //Imgproc.rectangle(result, new Point(_DepthRect.x, _DepthRect.y),new Point( _DepthRect.x + _DepthRect.width, _DepthRect.y + _DepthRect.height),new Scalar(0,0,255),5);
-                    }
+                    }            
+                    _ObjectCount++;
                     //清空記憶體
                     defects.Dispose();
                     hullPointList.Clear();
                     hullPointMat.Dispose();
                     hullInt.Dispose();
                     hullPoints.Clear();
+                  
                 }
             }
         }
-       // Imgproc.cvtColor(result, result, Imgproc.COLOR_BGR2RGB);
-
+        // Imgproc.cvtColor(result, result, Imgproc.COLOR_BGR2RGB);
+        Debug.Log("CountObject = " + _ObjectCount);
         result.copyTo(BlackMat);
         result.Dispose();
         cannyMat.Dispose();
@@ -233,7 +236,82 @@ public class Match : MonoBehaviour {
         SrcMat.Dispose();
         return true;
     }
+    public bool pointsTooClose(List<Point> point)
+    {
+        float Dx = 0;
+        float Dy = 0;
+        for (int i = 0; i < 4; i++)
+        {
+            if(i == 3)
+            {
+                 Dx = (float)Math.Abs(point[i].x - point[0].x);
+                 Dy = (float)Math.Abs(point[i].y - point[0].y);
+            }
+            else
+            {
+                 Dx = (float)Math.Abs(point[i].x - point[i + 1].x);
+                 Dy = (float)Math.Abs(point[i].y - point[i + 1].y);
+            }
+            float distance = (float)Math.Sqrt(Dx * Dx + Dy * Dy);
+            if (distance < 8)
+                return false;
+        }
+        return true;
+    }
+    //重新排列4個點的順序
+    public List<Point> arrangedPoint(List<Point> point)
+    {
+        List<Point> newPoint = new List<Point>();
+        float avgY =(float) (point[0].y + point[1].y + point[2].y + point[3].y) / 4;
+        for(int i = 0; i < 4; i++)
+        {
+            if(point[i].y<=avgY)
+                newPoint.Add(point[i]);
+        }
+        for (int i = 0; i < 4; i++)
+        {
+            if (point[i].y > avgY)
+                newPoint.Add(point[i]);
+        }
+        return newPoint;
+    }
+    //求出方形寬度
+    public float calculateWidth(List<Point> point)
+    {
+        float Width=0;
+        float Dx = (float)Math.Abs(point[0].x - point[1].x);
+        float Dy = (float)Math.Abs(point[0].y - point[1].y);
+        Width = (float)Math.Sqrt(Dx * Dx + Dy * Dy);
+        return Width;
+    }
+    //求方形高度
+    public float calculateHeight(List<Point> point)
+    {
+        float Height=0;
+        float upX = (float)(point[0].x + point[1].x) / 2;
+        float upY = (float)(point[0].y + point[1].y) / 2;
+        float downX = (float)(point[2].x + point[3].x) / 2;
+        float downY = (float)(point[2].y + point[3].y) / 2;
 
+        float Dx = (float)Math.Abs(upX - downX);
+        float Dy = (float)Math.Abs(upY - downY);
+        Height = (float)Math.Sqrt(Dx * Dx + Dy * Dy);
+        return Height;
+    }
+    //計算傾斜角度
+    public float calculateSlope(List<Point> point)
+    {
+        float DRoation = 0;
+
+        float upX = (float)(point[0].x + point[1].x) / 2;
+        float upY = (float)(point[0].y + point[1].y) / 2;
+        float downX = (float)(point[2].x + point[3].x) / 2;
+        float downY = (float)(point[2].y + point[3].y) / 2;
+        float Dx = upX - downX;
+        float Dy = upY - downY;
+        DRoation = (float)(Math.Atan2(Dy, Dx) / Math.PI);
+        return DRoation;
+    }
     //找出特徵的顏色方法二
     public void getContours(Mat RGB, Mat cameraFeed)
     {

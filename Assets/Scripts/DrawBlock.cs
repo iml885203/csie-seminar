@@ -299,13 +299,9 @@ public class DrawBlock : MonoBehaviour {
         //平滑處理(之後嘗試看看)
         //減去背景深度
         Core.absdiff(depthMatchImagePorcess, _blockDepthBackGroundImage, depthMatchImagePorcess);
+
         //傳出深度
         depthMatchImagePorcess.copyTo(_blockDepthImage);
-
-
-
-
-
 
 
         // canny 取出輪廓
@@ -367,7 +363,7 @@ public class DrawBlock : MonoBehaviour {
             }
             else
             {
-                avg = 255 - ((double)(_depthDataSub[i] - _minDepthDistance) / (_maxDepthDistance - _minDepthDistance) * 255); //顯示範圍內深度顏色
+               avg = 255 - ((double)(_depthDataSub[i] - _minDepthDistance) / (_maxDepthDistance - _minDepthDistance) * 255); //顯示範圍內深度顏色
                // avg = 255; //binary
             }
 
@@ -394,8 +390,8 @@ public class DrawBlock : MonoBehaviour {
             {
                 if (_depthDataSub[i] > MaxDepth) MaxDepth = _depthDataSub[i];
             }
-            _maxDepthDistance = MaxDepth + 100;
-            _minDepthDistance = MaxDepth - 300;
+            _maxDepthDistance = MaxDepth;
+            _minDepthDistance = MaxDepth - 150;
         }
         if (Input.GetKeyUp(KeyCode.L))
         {
