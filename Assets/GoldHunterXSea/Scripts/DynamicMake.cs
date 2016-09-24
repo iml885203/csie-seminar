@@ -17,8 +17,6 @@ public class DynamicMake : MonoBehaviour
     private int ObjectCount;
     private clickPositionTrans _posTrans;
 
-    public Slider RotateSlider;
-
     private void OnGUI()
     {
         
@@ -38,14 +36,14 @@ public class DynamicMake : MonoBehaviour
             childGameObject = Instantiate(copyGameObject);//複製copyGameObject物件(連同該物件身上的腳本一起複製)
             childGameObject.transform.parent = superGameObject.transform;//放到superGameObject物件內
             RectTransform childGameObjectRect = childGameObject.GetComponent<RectTransform>();
-            RectTransform superGameObjectRect = superGameObject.GetComponent<RectTransform>();
+            
             //座標系統統一(左下0,0)
             childGameObjectRect.anchorMin = new Vector2(0, 0);
             childGameObjectRect.anchorMax = new Vector2(0, 0);
             childGameObjectRect.pivot = new Vector2(.5f, .5f);
             //座標轉換
             //Debug.Log("轉換座標" + _drawBlock.MatchWidth + "," + _drawBlock.MatchHeight + "  " + superGameObjectRect.rect.width + "," + superGameObjectRect.rect.height);
-            //_posTrans = new clickPositionTrans(_drawBlock.MatchWidth, _drawBlock.MatchHeight, superGameObjectRect.rect.width, superGameObjectRect.rect.height);
+            
             //Point transPos = _posTrans.TransToScreen2Pos(new Point(_DataMatch.GetDepthVector3().x, _DataMatch.GetDepthVector3().y));
             ////Debug.Log("轉換:" + transPos);
             //childGameObjectRect.anchoredPosition = new Vector2((float)transPos.x, (float)transPos.y);
@@ -64,7 +62,7 @@ public class DynamicMake : MonoBehaviour
             //Debug.Log(_DataMatch.GetDepthScale());
             //Debug.Log(_DataMatch.GetDepthRotation());
 
-            UpdatePos(superGameObject.transform.GetChild(0).gameObject,50);
+            UpdatePos(superGameObject.transform.GetChild(0).gameObject, .05f);
         }
         if (GUILayout.Button("動態移除物件") == true)
         {
@@ -72,29 +70,30 @@ public class DynamicMake : MonoBehaviour
             DeleteObject();
         }
     }
-    public void UpdatePos(GameObject Object,int speed)
+    public void UpdatePos(GameObject Object,float speed)
     {
-        Debug.Log("runrunrun");
-        //RectTransform childGameObjectRect = Object.GetComponent<RectTransform>();
-        ////Debug.Log("X" + _DataMatch.GetDepthRect().x + "Y" + _DataMatch.GetDepthRect().y);
-        //Point transPos = _posTrans.TransToScreen2Pos(new Point(_DataMatch.GetDepthVector3().x, _DataMatch.GetDepthVector3().y));
-        ////Debug.Log("轉換:" + transPos);
-        //childGameObjectRect.anchoredPosition = new Vector2((float)transPos.x, (float)transPos.y);
-        //childGameObjectRect.localPosition = new Vector3(childGameObjectRect.localPosition.x, childGameObjectRect.localPosition.y, 0);
-
-        //Debug.Log("X" + _DataMatch.GetDepthVector3().x + "Y" + _DataMatch.GetDepthVector3().y);
-        //Point transScale = _posTrans.TransToScreen2Pos(new Point(_DataMatch.GetDepthScale().x, _DataMatch.GetDepthScale().y));
-        //childGameObject.transform.localScale = new Vector3((float)transScale.x, (float)transScale.y, 50);
-        //Object.transform.rotation = new Quaternion(0, 0, (float)((_DataMatch.GetDepthRotation() + RotateSlider.value)), 1);
-        //RotateSlider.GetComponentInChildren<Text>().text = RotateSlider.value.ToString();
-        //Debug.Log(_DataMatch.GetDepthRotation() + ".." + Object.transform.rotation);
         MatchObject matchObject = _DataMatch._matchObjectList[0];
+
+        RectTransform childGameObjectRect = Object.GetComponent<RectTransform>();
+        RectTransform superGameObjectRect = superGameObject.GetComponent<RectTransform>();
+        _posTrans = new clickPositionTrans(_drawBlock.MatchWidth, _drawBlock.MatchHeight, superGameObjectRect.rect.width, superGameObjectRect.rect.height);
         //Debug.Log("X" + _DataMatch.GetDepthRect().x + "Y" + _DataMatch.GetDepthRect().y);
-        Vector3 goalPos = new Vector3(matchObject._pos.x / _Width * 1024 + 150, matchObject._pos.y / _Height * 800 + 25, -5);
-        Vector3 goalScale = new Vector3(matchObject._scale.x / _Width * 1024, matchObject._scale.y / _Height * 800, 50);
-        Object.transform.localPosition += (goalPos - Object.transform.localPosition)/ speed;
-        Object.transform.localScale += (goalScale - Object.transform.localScale) / speed;
-        Object.transform.rotation = new Quaternion(0, 0, (float)((matchObject._rotation + 0.5)), 1);
+        Point transPos = _posTrans.TransToScreen2Pos(new Point(matchObject._pos.x, matchObject._pos.y));
+        //Debug.Log("轉換:" + transPos);
+        childGameObjectRect.anchoredPosition = Vector3.Lerp(childGameObjectRect.anchoredPosition, new Vector2((float)transPos.x, (float)transPos.y), speed);
+        childGameObjectRect.localPosition = new Vector3(childGameObjectRect.localPosition.x, childGameObjectRect.localPosition.y, 0);
+
+        Point transScale = _posTrans.TransToScreen2Pos(new Point(matchObject._scale.x, matchObject._scale.y));
+        childGameObject.transform.localScale = new Vector3((float)transScale.x, (float)transScale.y, 50);
+        Object.transform.rotation = new Quaternion(0, 0, (float)((matchObject._rotation + .5f)), 1);
+
+
+        //Debug.Log("X" + _DataMatch.GetDepthRect().x + "Y" + _DataMatch.GetDepthRect().y);
+        //Vector3 goalPos = new Vector3(matchObject._pos.x / _Width * 1024 + 150, matchObject._pos.y / _Height * 800 + 25, -5);
+        //Vector3 goalScale = new Vector3(matchObject._scale.x / _Width * 1024, matchObject._scale.y / _Height * 800, 50);
+        //Object.transform.localPosition += (goalPos - Object.transform.localPosition)/ speed;
+        //Object.transform.localScale += (goalScale - Object.transform.localScale) / speed;
+        //Object.transform.rotation = new Quaternion(0, 0, (float)((matchObject._rotation + 0.5)), 1);
         return;
     }
     public void CreateObject()
