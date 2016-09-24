@@ -6,6 +6,9 @@ TagManager:
   tags:
   - wall
   - reflectionObject
+  - laserBall
+  - UI_Test
+  - Hand
   layers:
   - Default
   - TransparentFX
