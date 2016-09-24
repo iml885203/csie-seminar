@@ -145,9 +145,7 @@ public class Match : MonoBehaviour {
                 }
             }
         }
-        Debug.Log("TTTT" + tempObjectList.Count);
-        _matchObjectList = new List<MatchObject>(tempObjectList);
-        Debug.Log("FFFF" + _matchObjectList.Count);
+        if(tempObjectList.Count >0) _matchObjectList = new List<MatchObject>(tempObjectList);
 
         // Imgproc.cvtColor(result, result, Imgproc.COLOR_BGR2RGB);
         result.copyTo(BlackMat);
@@ -214,7 +212,6 @@ public class Match : MonoBehaviour {
         float RectHeight = calculateHeight(pointMatList);
         if (RectWidth > 3 && RectHeight > 3 && pointsTooClose(pointMatList))
         {
-            //_matchObjectList.RemoveAt(index);
             _DepthRect = Imgproc.boundingRect(contours[index]);
             MatchObject matchObject = new MatchObject();
             matchObject._pos = calculateCenter(pointMatList);
