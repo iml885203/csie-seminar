@@ -15,7 +15,7 @@ public class HandControll : MonoBehaviour {
     public float _ErrorRange;
 
     private float _clickTimer = 0f;
-    private float _clickTriggerTime = 1f;
+    public float _clickTriggerTime = 1f;
 
     private processBar _processBar;
     // Use this for initialization
@@ -83,7 +83,7 @@ public class HandControll : MonoBehaviour {
         Debug.Log(other.gameObject.tag);
         if (other.gameObject.tag == "UI_Test")
         {
-            gameObject.transform.localScale = new Vector3(50, 50, 30);
+            //gameObject.transform.localScale = new Vector3(50, 50, 30);
             _clickTimer = 0f;
             _processBar.setProcessPer(0f);
         }
