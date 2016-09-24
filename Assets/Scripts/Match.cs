@@ -126,6 +126,8 @@ public class Match : MonoBehaviour {
         Mat hierarchy = new Mat();
         List<MatOfPoint> contours = new List<MatOfPoint>();
         Mat cannyMat = new Mat();
+        //宣告存放MatchObject的List
+        List<MatchObject> tempObjectList = new List<MatchObject>();
         //做Canny輪廓化
         Imgproc.Canny(SrcMat, cannyMat, threshold, threshold * 3);
         //找輪廓並編號
@@ -137,12 +139,16 @@ public class Match : MonoBehaviour {
         {
             for (int index = 0; index < _ContoursCount; index++)
             {
-                if(!analysisContours(index, contours, result))
+                if(!analysisContours(index, contours, result, tempObjectList))
                 {
                     //Debug.Log("analysisContours fail");
                 }
             }
         }
+        Debug.Log("TTTT" + tempObjectList.Count);
+        _matchObjectList = new List<MatchObject>(tempObjectList);
+        Debug.Log("FFFF" + _matchObjectList.Count);
+
         // Imgproc.cvtColor(result, result, Imgproc.COLOR_BGR2RGB);
         result.copyTo(BlackMat);
         result.Dispose();
@@ -153,7 +159,7 @@ public class Match : MonoBehaviour {
         return true;
     }
     //辨識輪廓
-    private bool analysisContours(int index,List<MatOfPoint> contours,Mat result)
+    private bool analysisContours(int index,List<MatOfPoint> contours,Mat result,List<MatchObject> matchObject)
     {
         _TestDepthRect = Imgproc.boundingRect(contours[index]);
         if (_TestDepthRect.height > 50 && _TestDepthRect.width > 50 && _TestDepthRect.area() > 1000)
@@ -185,7 +191,7 @@ public class Match : MonoBehaviour {
             }
             if (hullInt.toList().Count == 4)
             {
-                if(!setMatchObject(index, pointMatList, contours, hullPoints, result))
+                if(!setMatchObject(index, pointMatList, contours, hullPoints, result, matchObject))
                 {
                     //Debug.Log("setMatchObject fail");
                 }
@@ -201,14 +207,13 @@ public class Match : MonoBehaviour {
         return false;
     }
     //設定偵測物體參數
-    private bool setMatchObject(int index,List<Point> pointMatList, List<MatOfPoint> contours, List<MatOfPoint> hullPoints,Mat result)
+    private bool setMatchObject(int index,List<Point> pointMatList, List<MatOfPoint> contours, List<MatOfPoint> hullPoints,Mat result,List<MatchObject> matchObjectList)
     {
         pointMatList = arrangedPoint(pointMatList);
         float RectWidth = calculateWidth(pointMatList);
         float RectHeight = calculateHeight(pointMatList);
         if (RectWidth > 3 && RectHeight > 3 && pointsTooClose(pointMatList))
         {
-            _matchObjectList.Clear();
             //_matchObjectList.RemoveAt(index);
             _DepthRect = Imgproc.boundingRect(contours[index]);
             MatchObject matchObject = new MatchObject();
@@ -216,7 +221,7 @@ public class Match : MonoBehaviour {
             matchObject._scale = new Vector3(RectWidth, RectHeight, 10);
             matchObject._rotation = calculateSlope(pointMatList);
             Imgproc.drawContours(result, hullPoints, -1, new Scalar(0, 255, 0), 2);
-            _matchObjectList.Add(matchObject);
+            matchObjectList.Add(matchObject);
             return true;
         }
         return false;
