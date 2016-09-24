@@ -37,9 +37,6 @@ public class Match : MonoBehaviour {
     private int _clolrRange = 15;
     //是否可以儲存感測到的物件
     private bool isSave = new bool();
-    //輪廓數量
-    private int _ContoursCount;
-    private int _ObjectCount;
 
     public Mat src;
     //傳給遊戲的結果
@@ -58,18 +55,12 @@ public class Match : MonoBehaviour {
     {
         return _DepthRect;
     }
-    public int GetObjectCount()
-    {
-        return _ContoursCount;
-    }
     // Use this for initialization
     void Start()
     {
         _matchWidth = 800;
         _matchHeight = 450;
-
         _matchTexture = new Texture2D(_matchWidth, _matchHeight);
-        _ContoursCount = 0;
         isSave = false;
         _matchObjectList = new List<MatchObject>();
     }
@@ -95,23 +86,18 @@ public class Match : MonoBehaviour {
         Mat BlackMat = new Mat();
         Mat BlackDepthMat = new Mat();
 
-
         getDepthContours(_DepthMat, BlackDepthMat);
          //getContours(_DepthMat, BlackMat);
-
 
          //方法三 用特徵點抓物件
          //descriptorsORB(_NewTowMat, BlackMat, "queen");
          //descriptorsORB(BlackMat, BlackMat, "lena");
-
 
          //將結果影像轉換影像格式與大小設定
          Mat resizeMat = new Mat(_matchHeight, _matchWidth, CvType.CV_8UC3);
         Imgproc.resize(BlackDepthMat, resizeMat, resizeMat.size());
         Utils.matToTexture2D(resizeMat, _matchTexture);
         _matchTexture.Apply();
-
-
 
         _ClolrMat.Dispose();
        if(_DepthMat != null) _DepthMat.Dispose();
@@ -122,109 +108,117 @@ public class Match : MonoBehaviour {
     //深度影像處理
    public  bool getDepthContours(Mat _DepthMat,Mat BlackMat)
     {
-        
         if (_DepthMat == null)
         {
             Debug.Log("_DepthMat Mat is Null");
             return false;
         }
+        //設定Canny參數
+        int threshold = 50;
+        //載入影像
         Mat SrcMat = new Mat();
         _DepthMat.copyTo(SrcMat);
         //二值化
         Imgproc.threshold(SrcMat, SrcMat, 50, 255, Imgproc.THRESH_OTSU);
-        
-        //設定Canny參數
-        int threshold = 50;
         //宣告存放偵測結果資料
         Mat result = new Mat(_DepthMat.height(), _DepthMat.width(),CvType.CV_8UC3);
         result.setTo(new Scalar(0, 0, 0));
         Mat hierarchy = new Mat();
         List<MatOfPoint> contours = new List<MatOfPoint>();
         Mat cannyMat = new Mat();
-        List<MatOfPoint2f> Hull = new List<MatOfPoint2f>();
-
         //做Canny輪廓化
         Imgproc.Canny(SrcMat, cannyMat, threshold, threshold * 3);
         //找輪廓並編號
         Imgproc.findContours(cannyMat, contours, hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
         //取得輪廓數量
-        _ContoursCount = contours.Count;
+        int _ContoursCount = contours.Count;
         //跑迴圈確認輪廓
         if (_ContoursCount > 0)
         {
-            _ObjectCount = 0;
             for (int index = 0; index < _ContoursCount; index++)
             {
-                _TestDepthRect = Imgproc.boundingRect(contours[index]);
-
-                if (_TestDepthRect.height > 50 && _TestDepthRect.width > 50 && _TestDepthRect.area() > 1000)
+                if(!analysisContours(index, contours, result))
                 {
-                    //宣告放置點資料
-                    MatOfInt hullInt = new MatOfInt();
-                    List<Point> hullPointList = new List<Point>();
-                    MatOfPoint hullPointMat = new MatOfPoint();
-                    List<MatOfPoint> hullPoints = new List<MatOfPoint>();
-                    MatOfInt4 defects = new MatOfInt4();
-                    //篩選點資料
-
-                    MatOfPoint2f Temp2f = new MatOfPoint2f();
-                    //Convert contours(i) from MatOfPoint to MatOfPoint2f
-                    contours[index].convertTo(Temp2f, CvType.CV_32FC2);
-                    //Processing on mMOP2f1 which is in type MatOfPoint2f
-                     Imgproc.approxPolyDP(Temp2f, Temp2f, 30, true);
-                    //Convert back to MatOfPoint and put the new values back into the contours list
-                    Temp2f.convertTo(contours[index], CvType.CV_32S);
-
-                    //计算轮廓围绕的凸形壳
-                    Imgproc.convexHull(contours[index], hullInt);
-                    List<Point> pointMatList = contours[index].toList();
-                    List<int> hullIntList = hullInt.toList();
-                    for (int j = 0; j < hullInt.toList().Count; j++)
-                    {
-                        hullPointList.Add(pointMatList[hullIntList[j]]);
-                        hullPointMat.fromList(hullPointList);
-                        hullPoints.Add(hullPointMat);
-                    }
-                    //畫凸包
-                    //   Imgproc.drawContours(result, hullPoints, -1, new Scalar(0, 255, 0), 2);
-                    if (hullInt.toList().Count == 4)
-                    {
-                        _matchObjectList.Clear();
-                        pointMatList = arrangedPoint(pointMatList);
-                        float RectWidth = calculateWidth(pointMatList);
-                        float RectHeight = calculateHeight(pointMatList);
-                        if (RectWidth > 3 && RectHeight > 3 && pointsTooClose(pointMatList))
-                        {
-                            _DepthRect = Imgproc.boundingRect(contours[index]);
-                            MatchObject matchObject = new MatchObject();
-                            matchObject._pos = new Vector3(_DepthRect.x + (RectWidth) / 2, _DepthRect.y + (RectHeight / 2), -30);
-                            matchObject._scale = new Vector3(RectWidth, RectHeight, 10);
-                            matchObject._rotation = calculateSlope(pointMatList);
-                            Imgproc.drawContours(result, hullPoints, -1, new Scalar(0, 255, 0), 2);
-                            _matchObjectList.Add(matchObject);
-                        }
-                    }            
-                    _ObjectCount++;
-                    //清空記憶體
-                    defects.Dispose();
-                    hullPointList.Clear();
-                    hullPointMat.Dispose();
-                    hullInt.Dispose();
-                    hullPoints.Clear();
-                  
+                    //Debug.Log("analysisContours fail");
                 }
             }
         }
         // Imgproc.cvtColor(result, result, Imgproc.COLOR_BGR2RGB);
-        Debug.Log("CountObject = " + _ObjectCount);
         result.copyTo(BlackMat);
         result.Dispose();
         cannyMat.Dispose();
         hierarchy.Dispose();
         contours.Clear();
-        Hull.Clear();
         SrcMat.Dispose();
         return true;
+    }
+    //辨識輪廓
+    private bool analysisContours(int index,List<MatOfPoint> contours,Mat result)
+    {
+        _TestDepthRect = Imgproc.boundingRect(contours[index]);
+        if (_TestDepthRect.height > 50 && _TestDepthRect.width > 50 && _TestDepthRect.area() > 1000)
+        {
+            //宣告放置點資料
+            MatOfInt hullInt = new MatOfInt();
+            List<Point> hullPointList = new List<Point>();
+            MatOfPoint hullPointMat = new MatOfPoint();
+            List<MatOfPoint> hullPoints = new List<MatOfPoint>();
+            MatOfInt4 defects = new MatOfInt4();
+            //篩選點資料
+            MatOfPoint2f Temp2f = new MatOfPoint2f();
+            //Convert contours(i) from MatOfPoint to MatOfPoint2f
+            contours[index].convertTo(Temp2f, CvType.CV_32FC2);
+            //Processing on mMOP2f1 which is in type MatOfPoint2f
+            Imgproc.approxPolyDP(Temp2f, Temp2f, 30, true);
+            //Convert back to MatOfPoint and put the new values back into the contours list
+            Temp2f.convertTo(contours[index], CvType.CV_32S);
+
+            //计算轮廓围绕的凸形壳
+            Imgproc.convexHull(contours[index], hullInt);
+            List<Point> pointMatList = contours[index].toList();
+            List<int> hullIntList = hullInt.toList();
+            for (int j = 0; j < hullInt.toList().Count; j++)
+            {
+                hullPointList.Add(pointMatList[hullIntList[j]]);
+                hullPointMat.fromList(hullPointList);
+                hullPoints.Add(hullPointMat);
+            }
+            if (hullInt.toList().Count == 4)
+            {
+                if(!setMatchObject(index, pointMatList, contours, hullPoints, result))
+                {
+                    //Debug.Log("setMatchObject fail");
+                }
+            }
+            //清空記憶體
+            defects.Dispose();
+            hullPointList.Clear();
+            hullPointMat.Dispose();
+            hullInt.Dispose();
+            hullPoints.Clear();
+            return true;
+        }
+        return false;
+    }
+    //設定偵測物體參數
+    private bool setMatchObject(int index,List<Point> pointMatList, List<MatOfPoint> contours, List<MatOfPoint> hullPoints,Mat result)
+    {
+        pointMatList = arrangedPoint(pointMatList);
+        float RectWidth = calculateWidth(pointMatList);
+        float RectHeight = calculateHeight(pointMatList);
+        if (RectWidth > 3 && RectHeight > 3 && pointsTooClose(pointMatList))
+        {
+            _matchObjectList.Clear();
+            _DepthRect = Imgproc.boundingRect(contours[index]);
+            MatchObject matchObject = new MatchObject();
+            matchObject._pos = new Vector3(_DepthRect.x + (RectWidth) / 2, _DepthRect.y + (RectHeight / 2), -30);
+            matchObject._scale = new Vector3(RectWidth, RectHeight, 10);
+            matchObject._rotation = calculateSlope(pointMatList);
+            Imgproc.drawContours(result, hullPoints, -1, new Scalar(0, 255, 0), 2);
+            _matchObjectList.Add(matchObject);
+            return true;
+        }
+        return false;
     }
 
     //判斷點之間是否太接近形成錯誤的多邊形

@@ -75,7 +75,7 @@ public class DynamicMake : MonoBehaviour
         // ==========================
         // set public ObjectCount ==
         // ==========================
-        ObjectCount = _DataMatch.GetObjectCount();
+        ObjectCount = _DataMatch._matchObjectList.Count;
 
         childGameObject = Instantiate(copyGameObject);//複製copyGameObject物件(連同該物件身上的腳本一起複製)
         childGameObject.transform.parent = superGameObject.transform;//放到superGameObject物件內
