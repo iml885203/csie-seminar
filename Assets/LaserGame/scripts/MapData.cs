@@ -20,44 +20,44 @@ public class MapData : MonoBehaviour
 
     void Start()
     {
-        System.IO.StreamReader fileData = new System.IO.StreamReader("objectData.txt", System.Text.Encoding.Default);
+        //System.IO.StreamReader fileData = new System.IO.StreamReader("objectData.txt", System.Text.Encoding.Default);
 
-        GameObject productGameObject = new GameObject();
-        for(int kindIndex = 0; kindIndex < 4; kindIndex++)
-        {
-            SwitchGameObject(fileData.ReadLine(), ref productGameObject);
-            int indexCount = Convert.ToInt16(fileData.ReadLine());
-            fileData.ReadLine();
-            for (int index = 0; index < indexCount; index++)
-            {
-                GameObject cloneObject = (GameObject)Instantiate(productGameObject,
-                    this.transform.FindChild("ReflectionObjects").position + new Vector3(Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine())),
-                    new Quaternion(Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine()), 0)
-                    );
-                cloneObject.transform.SetParent(this.transform.FindChild("ReflectionObjects"));
-
-                //GameObject cloneObject = (GameObject)Instantiate(productGameObject,
-                //    this.transform.FindChild("ReflectionObjects").position + new Vector3(Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine())),
-                //    new Quaternion(1,1,1,0)
-                //    );
-
-
-                fileData.ReadLine();
-            }
-        }
-        //int index = 0;
-        //int mealListCount = Convert.ToInt32(fileData.ReadLine());
-        //for (index = 0; index < mealListCount; index++)//菜單讀檔
+        //GameObject productGameObject = new GameObject();
+        //for(int kindIndex = 0; kindIndex < 4; kindIndex++)
         //{
-            //fileData.ReadLine();
-            //GameObject clone = (GameObject)Instantiate(_reflectionObject, 
-            //    this.transform.position + new Vector3(Convert.ToSingle(fileData.ReadLine()) , Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine())),
-            //    new Quaternion(Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine()), 0), 
-            //    this.transform);
-        //}
-        fileData.Close();
+        //    SwitchGameObject(fileData.ReadLine(), ref productGameObject);
+        //    int indexCount = Convert.ToInt16(fileData.ReadLine());
+        //    fileData.ReadLine();
+        //    for (int index = 0; index < indexCount; index++)
+        //    {
+        //        GameObject cloneObject = (GameObject)Instantiate(productGameObject,
+        //            this.transform.FindChild("ReflectionObjects").position + new Vector3(Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine())),
+        //            new Quaternion(Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine()), 0)
+        //            );
+        //        cloneObject.transform.SetParent(this.transform.FindChild("ReflectionObjects"));
 
-        //GameObject clone = (GameObject)Instantiate(ReflectionObjects, this.transform.position, this.transform.rotation, this.transform);
+        //        //GameObject cloneObject = (GameObject)Instantiate(productGameObject,
+        //        //    this.transform.FindChild("ReflectionObjects").position + new Vector3(Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine())),
+        //        //    new Quaternion(1,1,1,0)
+        //        //    );
+
+
+        //        fileData.ReadLine();
+        //    }
+        //}
+        ////int index = 0;
+        ////int mealListCount = Convert.ToInt32(fileData.ReadLine());
+        ////for (index = 0; index < mealListCount; index++)//菜單讀檔
+        ////{
+        //    //fileData.ReadLine();
+        //    //GameObject clone = (GameObject)Instantiate(_reflectionObject, 
+        //    //    this.transform.position + new Vector3(Convert.ToSingle(fileData.ReadLine()) , Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine())),
+        //    //    new Quaternion(Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine()), 0), 
+        //    //    this.transform);
+        ////}
+        //fileData.Close();
+
+        ////GameObject clone = (GameObject)Instantiate(ReflectionObjects, this.transform.position, this.transform.rotation, this.transform);
 
     }
 

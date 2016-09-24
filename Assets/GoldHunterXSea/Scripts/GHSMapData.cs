@@ -46,46 +46,46 @@ public class GHSMapData : MonoBehaviour {
         List<Point> _treadsurePos = new List<Point>();
         List<Point> _sightPos = new List<Point>();
         
-        System.IO.StreamReader fileData = new System.IO.StreamReader("objectData.txt", System.Text.Encoding.Default);
+        //System.IO.StreamReader fileData = new System.IO.StreamReader("objectData.txt", System.Text.Encoding.Default);
 
-        int kindAndNumber = Convert.ToInt16(fileData.ReadLine());
-        Debug.Log("kindAndNumber = " + kindAndNumber);
-        fileData.ReadLine();
+        //int kindAndNumber = Convert.ToInt16(fileData.ReadLine());
+        //Debug.Log("kindAndNumber = " + kindAndNumber);
+        //fileData.ReadLine();
 
-        int kindIndex = (kindAndNumber & 224) / 32;
-        Debug.Log("kindIndex = " + kindIndex);
+        //int kindIndex = (kindAndNumber & 224) / 32;
+        //Debug.Log("kindIndex = " + kindIndex);
 
-        GameObject productGameObject = new GameObject();
-        this.SwitchGameObject(kindIndex, ref productGameObject);
-        Debug.Log("productGameObject.name = " + productGameObject.name);
+        ////GameObject productGameObject = new GameObject();
+        ////this.SwitchGameObject(kindIndex, ref productGameObject);
+        ////Debug.Log("productGameObject.name = " + productGameObject.name);
 
         
 
-        int numberIndex = kindAndNumber & 15;
-        Debug.Log("numberIndex = " + numberIndex);
-        for (int index = 0; index < numberIndex; index++)
-        {
-            int dir = Convert.ToInt16(fileData.ReadLine());
-            int position = Convert.ToInt16(fileData.ReadLine());
+        //int numberIndex = kindAndNumber & 15;
+        //Debug.Log("numberIndex = " + numberIndex);
+        //for (int index = 0; index < numberIndex; index++)
+        //{
+        //    int dir = Convert.ToInt16(fileData.ReadLine());
+        //    int position = Convert.ToInt16(fileData.ReadLine());
 
-            float realDirection = this.TransferDirection(dir);
-            Debug.Log("realDirection = " + realDirection);
+        //    float realDirection = this.TransferDirection(dir);
+        //    Debug.Log("realDirection = " + realDirection);
 
-            int widthBlock = (position & 240) / 16;
-            int heightBlock = (position & 15);
-            Debug.Log("widthBlock = " + widthBlock);
-            Debug.Log("heightBlock = " + heightBlock);
+        //    int widthBlock = (position & 240) / 16;
+        //    int heightBlock = (position & 15);
+        //    Debug.Log("widthBlock = " + widthBlock);
+        //    Debug.Log("heightBlock = " + heightBlock);
 
-            GameObject cloneObject = (GameObject)Instantiate(productGameObject,
-                this.transform.FindChild("ReflectionObjects").position + new Vector3(Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine())),
-                new Quaternion(0, 0, realDirection, 0)
-                );
-            cloneObject.transform.SetParent(this.transform.FindChild("ReflectionObjects"));
+        //    //GameObject cloneObject = (GameObject)Instantiate(productGameObject,
+        //    //    this.transform.FindChild("ReflectionObjects").position + new Vector3(Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine())),
+        //    //    new Quaternion(0, 0, realDirection, 0)
+        //    //    );
+        //    //cloneObject.transform.SetParent(this.transform.FindChild("ReflectionObjects"));
                 
-            fileData.ReadLine();
-        }
+        //    fileData.ReadLine();
+        //}
 
-        fileData.Close();
+        //fileData.Close();
     }
 
     private float TransferDirection(int dir)
