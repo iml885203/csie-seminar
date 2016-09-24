@@ -41,14 +41,10 @@ public class DynamicMake : MonoBehaviour
             childGameObjectRect.anchorMin = new Vector2(0, 0);
             childGameObjectRect.anchorMax = new Vector2(0, 0);
             childGameObjectRect.pivot = new Vector2(.5f, .5f);
-            //座標轉換
-            //Debug.Log("轉換座標" + _drawBlock.MatchWidth + "," + _drawBlock.MatchHeight + "  " + superGameObjectRect.rect.width + "," + superGameObjectRect.rect.height);
-            
-            //Point transPos = _posTrans.TransToScreen2Pos(new Point(_DataMatch.GetDepthVector3().x, _DataMatch.GetDepthVector3().y));
-            ////Debug.Log("轉換:" + transPos);
-            //childGameObjectRect.anchoredPosition = new Vector2((float)transPos.x, (float)transPos.y);
-            //childGameObjectRect.localPosition = new Vector3(childGameObjectRect.localPosition.x, childGameObjectRect.localPosition.y, 0);
-
+            //初始化轉換座標class
+            RectTransform superGameObjectRect = superGameObject.GetComponent<RectTransform>();
+            _posTrans = new clickPositionTrans(_drawBlock.MatchWidth, _drawBlock.MatchHeight, superGameObjectRect.rect.width, superGameObjectRect.rect.height);
+            //初始化位置
             UpdatePos(childGameObject,1);
             //childGameObject.AddComponent<NullScript>();//動態增加名為"NullScript"的腳本到此物件身上
             //下面這一行的功能為將複製出來的子物件命名為CopyObject
@@ -56,12 +52,8 @@ public class DynamicMake : MonoBehaviour
             childGameObject.name = "CopyObject";
 
         }
-        if (superGameObject.transform.GetChildCount() > 0)
+        if (superGameObject.transform.childCount > 0)
         {
-            //Debug.Log(_DataMatch.GetDepthVector3());
-            //Debug.Log(_DataMatch.GetDepthScale());
-            //Debug.Log(_DataMatch.GetDepthRotation());
-
             UpdatePos(superGameObject.transform.GetChild(0).gameObject, .05f);
         }
         if (GUILayout.Button("動態移除物件") == true)
@@ -73,27 +65,16 @@ public class DynamicMake : MonoBehaviour
     public void UpdatePos(GameObject Object,float speed)
     {
         MatchObject matchObject = _DataMatch._matchObjectList[0];
-
         RectTransform childGameObjectRect = Object.GetComponent<RectTransform>();
-        RectTransform superGameObjectRect = superGameObject.GetComponent<RectTransform>();
-        _posTrans = new clickPositionTrans(_drawBlock.MatchWidth, _drawBlock.MatchHeight, superGameObjectRect.rect.width, superGameObjectRect.rect.height);
-        //Debug.Log("X" + _DataMatch.GetDepthRect().x + "Y" + _DataMatch.GetDepthRect().y);
+        //轉換對應座標並更新值
         Point transPos = _posTrans.TransToScreen2Pos(new Point(matchObject._pos.x, matchObject._pos.y));
-        //Debug.Log("轉換:" + transPos);
         childGameObjectRect.anchoredPosition = Vector3.Lerp(childGameObjectRect.anchoredPosition, new Vector2((float)transPos.x, (float)transPos.y), speed);
         childGameObjectRect.localPosition = new Vector3(childGameObjectRect.localPosition.x, childGameObjectRect.localPosition.y, 0);
-
+        //轉換對應大小並更新值
         Point transScale = _posTrans.TransToScreen2Pos(new Point(matchObject._scale.x, matchObject._scale.y));
         childGameObject.transform.localScale = Vector3.Lerp(childGameObject.transform.localScale, new Vector3((float)transScale.x, (float)transScale.y, 50), speed);
+        //更新旋轉角度
         Object.transform.rotation = new Quaternion(0, 0, (float)((matchObject._rotation + .5f)), 1);
-
-
-        //Debug.Log("X" + _DataMatch.GetDepthRect().x + "Y" + _DataMatch.GetDepthRect().y);
-        //Vector3 goalPos = new Vector3(matchObject._pos.x / _Width * 1024 + 150, matchObject._pos.y / _Height * 800 + 25, -5);
-        //Vector3 goalScale = new Vector3(matchObject._scale.x / _Width * 1024, matchObject._scale.y / _Height * 800, 50);
-        //Object.transform.localPosition += (goalPos - Object.transform.localPosition)/ speed;
-        //Object.transform.localScale += (goalScale - Object.transform.localScale) / speed;
-        //Object.transform.rotation = new Quaternion(0, 0, (float)((matchObject._rotation + 0.5)), 1);
         return;
     }
     public void CreateObject()
