@@ -370,7 +370,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 162748542}
   m_Layer: 0
-  m_Name: wall
+  m_Name: wallSystem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -622,7 +622,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 358755792}
   m_Layer: 0
-  m_Name: momo
+  m_Name: groupWall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -862,7 +862,7 @@ GameObject:
   - 4: {fileID: 413695104}
   - 114: {fileID: 413695103}
   m_Layer: 0
-  m_Name: DynamicMakeGameObject
+  m_Name: DynamicMakeWall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1529,7 +1529,7 @@ GameObject:
   - 65: {fileID: 760767215}
   - 23: {fileID: 760767214}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: sampleWall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
