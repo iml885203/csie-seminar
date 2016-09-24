@@ -3559,7 +3559,7 @@ Prefab:
     - target: {fileID: 11471278, guid: 5ec204714836dd74d95951ba775727c7, type: 2}
       propertyPath: cameraView.Array.data[0]
       value: 
-      objectReference: {fileID: 1272441474}
+      objectReference: {fileID: 0}
     - target: {fileID: 11471278, guid: 5ec204714836dd74d95951ba775727c7, type: 2}
       propertyPath: cameraView.Array.data[1]
       value: 

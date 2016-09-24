@@ -2,7 +2,7 @@
 using System.Collections;
 using OpenCVForUnity;
 
-public class clickPositionTrans : MonoBehaviour {
+public class clickPositionTrans {
     private double _screenWidth1;
     private double _screenHeight1;
     private double _screenWidth2;

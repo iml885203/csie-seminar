@@ -2,7 +2,7 @@
 using System.Collections;
 using OpenCVForUnity;
 
-public class mapBlock : MonoBehaviour {
+public class mapBlock {
 
     public Point minPos;
     public Point maxPos;
