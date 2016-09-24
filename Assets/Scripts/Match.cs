@@ -45,9 +45,9 @@ public class Match : MonoBehaviour {
     //傳給遊戲的結果
     private OpenCVForUnity.Rect _TestDepthRect;
     private OpenCVForUnity.Rect _DepthRect;
-    private Vector3 _ObjectDepthVector3;
-    private Vector3 _ObjectDepthScale;
-    private float _ObjectDepthRotation;
+    //偵測到的Object
+    public List<MatchObject> _matchObjectList { get; set; } 
+
     public Mat Temp;
 
     public Texture2D GetMatchTexture()
@@ -57,18 +57,6 @@ public class Match : MonoBehaviour {
     public OpenCVForUnity.Rect GetDepthRect()
     {
         return _DepthRect;
-    }
-    public Vector3 GetDepthVector3()
-    {
-        return _ObjectDepthVector3;
-    }
-    public Vector3 GetDepthScale()
-    {
-        return _ObjectDepthScale;
-    }
-    public float GetDepthRotation()
-    {
-        return _ObjectDepthRotation;
     }
     public int GetObjectCount()
     {
@@ -83,6 +71,7 @@ public class Match : MonoBehaviour {
         _matchTexture = new Texture2D(_matchWidth, _matchHeight);
         _ContoursCount = 0;
         isSave = false;
+        _matchObjectList = new List<MatchObject>();
     }
 	// Update is called once per frame
 	void Update () {
@@ -200,18 +189,19 @@ public class Match : MonoBehaviour {
                     //   Imgproc.drawContours(result, hullPoints, -1, new Scalar(0, 255, 0), 2);
                     if (hullInt.toList().Count == 4)
                     {
+                        _matchObjectList.Clear();
                         pointMatList = arrangedPoint(pointMatList);
                         float RectWidth = calculateWidth(pointMatList);
                         float RectHeight = calculateHeight(pointMatList);
                         if (RectWidth > 3 && RectHeight > 3 && pointsTooClose(pointMatList))
                         {
                             _DepthRect = Imgproc.boundingRect(contours[index]);
-                            _ObjectDepthVector3 = new Vector3(_DepthRect.x + (RectWidth) / 2, _DepthRect.y + (RectHeight / 2), -30);
-                            _ObjectDepthScale = new Vector3(RectWidth, RectHeight, 10);
-
-                            _ObjectDepthRotation = calculateSlope(pointMatList);
-
+                            MatchObject matchObject = new MatchObject();
+                            matchObject._pos = new Vector3(_DepthRect.x + (RectWidth) / 2, _DepthRect.y + (RectHeight / 2), -30);
+                            matchObject._scale = new Vector3(RectWidth, RectHeight, 10);
+                            matchObject._rotation = calculateSlope(pointMatList);
                             Imgproc.drawContours(result, hullPoints, -1, new Scalar(0, 255, 0), 2);
+                            _matchObjectList.Add(matchObject);
                         }
                     }            
                     _ObjectCount++;
@@ -236,6 +226,8 @@ public class Match : MonoBehaviour {
         SrcMat.Dispose();
         return true;
     }
+
+    //判斷點之間是否太接近形成錯誤的多邊形
     public bool pointsTooClose(List<Point> point)
     {
         float Dx = 0;
@@ -258,7 +250,8 @@ public class Match : MonoBehaviour {
         }
         return true;
     }
-    //重新排列4個點的順序
+
+    //重新排列4個點的順序(分上下兩組)
     public List<Point> arrangedPoint(List<Point> point)
     {
         List<Point> newPoint = new List<Point>();
@@ -275,6 +268,7 @@ public class Match : MonoBehaviour {
         }
         return newPoint;
     }
+
     //求出方形寬度
     public float calculateWidth(List<Point> point)
     {
@@ -284,6 +278,7 @@ public class Match : MonoBehaviour {
         Width = (float)Math.Sqrt(Dx * Dx + Dy * Dy);
         return Width;
     }
+
     //求方形高度
     public float calculateHeight(List<Point> point)
     {
@@ -292,17 +287,16 @@ public class Match : MonoBehaviour {
         float upY = (float)(point[0].y + point[1].y) / 2;
         float downX = (float)(point[2].x + point[3].x) / 2;
         float downY = (float)(point[2].y + point[3].y) / 2;
-
         float Dx = (float)Math.Abs(upX - downX);
         float Dy = (float)Math.Abs(upY - downY);
         Height = (float)Math.Sqrt(Dx * Dx + Dy * Dy);
         return Height;
     }
+
     //計算傾斜角度
     public float calculateSlope(List<Point> point)
     {
         float DRoation = 0;
-
         float upX = (float)(point[0].x + point[1].x) / 2;
         float upY = (float)(point[0].y + point[1].y) / 2;
         float downX = (float)(point[2].x + point[3].x) / 2;
@@ -312,6 +306,10 @@ public class Match : MonoBehaviour {
         DRoation = (float)(Math.Atan2(Dy, Dx) / Math.PI);
         return DRoation;
     }
+
+    //============================================================
+    //=================以下為沒有再使用的函式=====================
+    //============================================================
     //找出特徵的顏色方法二
     public void getContours(Mat RGB, Mat cameraFeed)
     {

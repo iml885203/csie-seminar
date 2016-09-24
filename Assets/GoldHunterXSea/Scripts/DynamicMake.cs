@@ -35,11 +35,7 @@ public class DynamicMake : MonoBehaviour
             childGameObject = Instantiate(copyGameObject);//複製copyGameObject物件(連同該物件身上的腳本一起複製)
             childGameObject.transform.parent = superGameObject.transform;//放到superGameObject物件內
 
-
-            Debug.Log("X" + _DataMatch.GetDepthRect().x + "Y" + _DataMatch.GetDepthRect().y);
-            childGameObject.transform.localPosition = new  Vector3(_DataMatch.GetDepthVector3().x/ _Width * 1024  + 150, _DataMatch.GetDepthVector3().y/ _Height * 800   + 25, -5);//複製出來的物件放置的座標為superGameObject物件內的原點
-            childGameObject.transform.localScale = new Vector3(_DataMatch.GetDepthScale().x / _Width * 1024, _DataMatch.GetDepthScale().y / _Height * 800, 50);
-            childGameObject.transform.rotation= new Quaternion(0, 0, _DataMatch.GetDepthRotation(),1);
+            UpdatePos(childGameObject,1);
             //childGameObject.AddComponent<NullScript>();//動態增加名為"NullScript"的腳本到此物件身上
             //下面這一行的功能為將複製出來的子物件命名為CopyObject
 
@@ -48,7 +44,7 @@ public class DynamicMake : MonoBehaviour
         }
         if (superGameObject.transform.GetChildCount() > 0)
         {
-            UpdatePos(superGameObject.transform.GetChild(0).gameObject);
+            UpdatePos(superGameObject.transform.GetChild(0).gameObject,50);
         }
         if (GUILayout.Button("動態移除物件") == true)
         {
@@ -56,14 +52,15 @@ public class DynamicMake : MonoBehaviour
             DeleteObject();
         }
     }
-    public void UpdatePos(GameObject Object)
+    public void UpdatePos(GameObject Object,int speed)
     {
+        MatchObject matchObject = _DataMatch._matchObjectList[0];
         //Debug.Log("X" + _DataMatch.GetDepthRect().x + "Y" + _DataMatch.GetDepthRect().y);
-        Vector3 goalPos = new Vector3(_DataMatch.GetDepthVector3().x / _Width * 1024 + 150, _DataMatch.GetDepthVector3().y / _Height * 800 + 25, -5);
-        Vector3 goalScale = new Vector3(_DataMatch.GetDepthScale().x / _Width * 1024, _DataMatch.GetDepthScale().y / _Height * 800, 50);
-        Object.transform.localPosition += (goalPos - Object.transform.localPosition)/50;
-        Object.transform.localScale += (goalScale - Object.transform.localScale) / 50;
-        Object.transform.rotation = new Quaternion(0, 0, (float)((_DataMatch.GetDepthRotation() +0.5)), 1);
+        Vector3 goalPos = new Vector3(matchObject._pos.x / _Width * 1024 + 150, matchObject._pos.y / _Height * 800 + 25, -5);
+        Vector3 goalScale = new Vector3(matchObject._scale.x / _Width * 1024, matchObject._scale.y / _Height * 800, 50);
+        Object.transform.localPosition += (goalPos - Object.transform.localPosition)/ speed;
+        Object.transform.localScale += (goalScale - Object.transform.localScale) / speed;
+        Object.transform.rotation = new Quaternion(0, 0, (float)((matchObject._rotation + 0.5)), 1);
         return;
     }
     public void CreateObject()
@@ -83,11 +80,7 @@ public class DynamicMake : MonoBehaviour
         childGameObject = Instantiate(copyGameObject);//複製copyGameObject物件(連同該物件身上的腳本一起複製)
         childGameObject.transform.parent = superGameObject.transform;//放到superGameObject物件內
 
-
-        Debug.Log("X" + _DataMatch.GetDepthRect().x + "Y" + _DataMatch.GetDepthRect().y);
-        childGameObject.transform.localPosition = new Vector3(_DataMatch.GetDepthVector3().x / _Width * 1024 + 150, _DataMatch.GetDepthVector3().y / _Height * 800 + 25, -5);//複製出來的物件放置的座標為superGameObject物件內的原點
-        childGameObject.transform.localScale = new Vector3(_DataMatch.GetDepthScale().x / _Width * 1024, _DataMatch.GetDepthScale().y / _Height * 800, 50);
-        childGameObject.transform.rotation = new Quaternion(0, 0, _DataMatch.GetDepthRotation(), 1);
+        UpdatePos(childGameObject,50);
         //childGameObject.AddComponent<NullScript>();//動態增加名為"NullScript"的腳本到此物件身上
         //下面這一行的功能為將複製出來的子物件命名為CopyObject
 
