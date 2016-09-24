@@ -31,8 +31,8 @@ public class GHSMain : MonoBehaviour {
     private const byte DOWN = 13;               //下可走1101
     private const byte LEFT = 14;               //左可走1110
     //設定地圖長寬格數
-    private const int ScreenWidthBlock = 16;    //寬的格數
-    private const int ScreenHeightBlock = 9;    //高的格數
+    private int ScreenWidthBlock;    //寬的格數
+    private int ScreenHeightBlock;    //高的格數
     //設定地圖實際像素大小
     private float _mapWidth;
     private float _mapHeight;
@@ -94,6 +94,9 @@ public class GHSMain : MonoBehaviour {
     //初始化
     void Start()
     {
+        ScreenHeightBlock = _mapData.ScreenHeightBlock;
+        ScreenWidthBlock = _mapData.ScreenWidthBlock;
+
         _playerState.SetPlayerEnableOrNotByIndex(0, true);
         _playerState.SetPlayerEnableOrNotByIndex(1, true);
         _playerState.SetPlayerEnableOrNotByIndex(2, false);
@@ -728,21 +731,23 @@ public class GHSMain : MonoBehaviour {
         Imgproc.rectangle(_mapMat, new Point(_mapWidth - P[0].x, _mapHeight - P[0].y), new Point(_mapWidth - P[1].x, _mapHeight - P[1].y), _canGoBlockColor,-1);
         Imgproc.rectangle(_mapMat, new Point(_mapWidth - P[0].x, _mapHeight - P[0].y), new Point(_mapWidth - P[1].x, _mapHeight - P[1].y), _blockLineColor, _mapBlockThickness);
 
+        bool isDrawWall = true;
+
         //Debug.Log("Draw x = " + x + "y = " + y + "Pos_X" + P[0].x+ "Pos_Y" + P[0].y);
         //畫牆壁
-        if ((_mapData.getWall(x, y) & 8) == 8 || true)//UP
+        if ((_mapData.getWall(x, y) & 8) == 8 || isDrawWall)//UP
         {
             Imgproc.line(_mapMat, new Point(_mapWidth - P[0].x, _mapHeight - P[0].y), new Point(_mapWidth - P[1].x, _mapHeight - P[0].y), _mapWellColor, _mapWellThickness);
         }
-        if ((_mapData.getWall(x, y) & 4) == 4 || true)//R
+        if ((_mapData.getWall(x, y) & 4) == 4 || isDrawWall)//R
         {
             Imgproc.line(_mapMat, new Point(_mapWidth - P[1].x, _mapHeight - P[0].y), new Point(_mapWidth - P[1].x, _mapHeight - P[1].y), _mapWellColor, _mapWellThickness);
         }
-        if ((_mapData.getWall(x, y) & 2) == 2 || true)//D
+        if ((_mapData.getWall(x, y) & 2) == 2 || isDrawWall)//D
         {
             Imgproc.line(_mapMat, new Point(_mapWidth - P[0].x, _mapHeight - P[1].y), new Point(_mapWidth - P[1].x, _mapHeight - P[1].y), _mapWellColor, _mapWellThickness);
         }
-        if ((_mapData.getWall(x, y) & 1) == 1 || true)//L
+        if ((_mapData.getWall(x, y) & 1) == 1 || isDrawWall)//L
         {
             Imgproc.line(_mapMat, new Point(_mapWidth - P[0].x, _mapHeight - P[0].y), new Point(_mapWidth - P[0].x, _mapHeight - P[1].y), _mapWellColor, _mapWellThickness);
         }
