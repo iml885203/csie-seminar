@@ -84,7 +84,7 @@ public class DynamicMake : MonoBehaviour
         childGameObjectRect.localPosition = new Vector3(childGameObjectRect.localPosition.x, childGameObjectRect.localPosition.y, 0);
 
         Point transScale = _posTrans.TransToScreen2Pos(new Point(matchObject._scale.x, matchObject._scale.y));
-        childGameObject.transform.localScale = new Vector3((float)transScale.x, (float)transScale.y, 50);
+        childGameObject.transform.localScale = Vector3.Lerp(childGameObject.transform.localScale, new Vector3((float)transScale.x, (float)transScale.y, 50), speed);
         Object.transform.rotation = new Quaternion(0, 0, (float)((matchObject._rotation + .5f)), 1);
 
 

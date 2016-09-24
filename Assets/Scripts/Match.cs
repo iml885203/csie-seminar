@@ -131,7 +131,7 @@ public class Match : MonoBehaviour {
         //做Canny輪廓化
         Imgproc.Canny(SrcMat, cannyMat, threshold, threshold * 3);
         //找輪廓並編號
-        Imgproc.findContours(cannyMat, contours, hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.findContours(cannyMat, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
         //取得輪廓數量
         int _ContoursCount = contours.Count;
         //跑迴圈確認輪廓
@@ -160,7 +160,7 @@ public class Match : MonoBehaviour {
     private bool analysisContours(int index,List<MatOfPoint> contours,Mat result,List<MatchObject> matchObject)
     {
         _TestDepthRect = Imgproc.boundingRect(contours[index]);
-        if (_TestDepthRect.height > 50 && _TestDepthRect.width > 50 && _TestDepthRect.area() > 1000)
+        if (_TestDepthRect.height > 5 && _TestDepthRect.width > 5 && _TestDepthRect.area() > 100)
         {
             //宣告放置點資料
             MatOfInt hullInt = new MatOfInt();
