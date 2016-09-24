@@ -240,23 +240,23 @@ public class Match : MonoBehaviour {
     //判斷點之間是否太接近形成錯誤的多邊形
     public bool pointsTooClose(List<Point> point)
     {
-        float Dx = 0;
-        float Dy = 0;
-        for (int i = 0; i < 4; i++)
+        float Dx1 = 0, Dx2 = 0;
+        float Dy1 = 0, Dy2 = 0;
+
+        Dx1 = (float)Math.Abs(point[2].x - point[0].x);
+        Dy1 = (float)Math.Abs(point[2].y - point[0].y);
+
+        Dx2 = (float)Math.Abs(point[3].x - point[1].x);
+        Dy2 = (float)Math.Abs(point[3].y - point[1].y);
+
+        float distanceA = (float)Math.Sqrt(Dx1 * Dx1 + Dy1 * Dy1);
+        float distanceB = (float)Math.Sqrt(Dx2 * Dx2 + Dy2 * Dy2);
+
+        float difference = Math.Abs(distanceA - distanceB) / distanceA;
+
+        if (difference > 0.5)
         {
-            if(i == 3)
-            {
-                 Dx = (float)Math.Abs(point[i].x - point[0].x);
-                 Dy = (float)Math.Abs(point[i].y - point[0].y);
-            }
-            else
-            {
-                 Dx = (float)Math.Abs(point[i].x - point[i + 1].x);
-                 Dy = (float)Math.Abs(point[i].y - point[i + 1].y);
-            }
-            float distance = (float)Math.Sqrt(Dx * Dx + Dy * Dy);
-            if (distance < 8)
-                return false;
+            return false;
         }
         return true;
     }
