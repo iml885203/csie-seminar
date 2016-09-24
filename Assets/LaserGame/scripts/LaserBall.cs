@@ -37,12 +37,12 @@ public class LaserBall : MonoBehaviour {
             //                            (this.gameObject.transform.position.y - _wind.transform.position.y),
             //                            0);
 
-            Vector3 windForce = new Vector3((_wind.transform.position.x - this.gameObject.transform.position.x) * 100,
-                                            (_wind.transform.position.y - this.gameObject.transform.position.y) * 100,
+            Vector3 windForce = new Vector3((_wind.transform.position.x - this.gameObject.transform.position.x) * 30000,
+                                            (_wind.transform.position.y - this.gameObject.transform.position.y) * 30000,
                                             0);
 
             //windForce = windForce.normalized;
-            //Debug.Log("windForce = " + windForce);
+            Debug.Log("windForce = " + windForce);
             this.GetComponent<ConstantForce>().force = windForce;
         }
         else
@@ -75,6 +75,20 @@ public class LaserBall : MonoBehaviour {
 
             _ballRigidbody.velocity = new Vector3((horizontaVector.x + beforeReflectVelocity.x) / 2, (horizontaVector.y + beforeReflectVelocity.y) / 2, 0);
         }
+
+        if (other.gameObject.tag == "windObject")
+        {
+            Vector3 windForce = new Vector3((_wind.transform.position.x - this.gameObject.transform.position.x) * 1000,
+                                            (_wind.transform.position.y - this.gameObject.transform.position.y) * 1000,
+                                            0);
+            Debug.Log("_wind.transform.position.x = " + _wind.transform.position.x + ", this.gameObject.transform.position.x = " + this.gameObject.transform.position.x);
+            Debug.Log("_wind.transform.position.y = " + _wind.transform.position.y + ", this.gameObject.transform.position.y = " + this.gameObject.transform.position.y);
+            
+            //windForce = windForce.normalized;
+            Debug.Log("windForce = " + windForce);
+            this.GetComponent<ConstantForce>().force = windForce;
+        }
+
     }
 
     void OnCollisionEnter(Collision other)

@@ -31,9 +31,17 @@ public class MapData : MonoBehaviour
             for (int index = 0; index < indexCount; index++)
             {
                 GameObject cloneObject = (GameObject)Instantiate(productGameObject,
-                    this.transform.position + new Vector3(Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine())),
-                    new Quaternion(Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine()), 0),
-                    this.transform);
+                    this.transform.FindChild("ReflectionObjects").position + new Vector3(Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine())),
+                    new Quaternion(Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine()), 0)
+                    );
+                cloneObject.transform.SetParent(this.transform.FindChild("ReflectionObjects"));
+
+                //GameObject cloneObject = (GameObject)Instantiate(productGameObject,
+                //    this.transform.FindChild("ReflectionObjects").position + new Vector3(Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine())),
+                //    new Quaternion(1,1,1,0)
+                //    );
+
+
                 fileData.ReadLine();
             }
         }
