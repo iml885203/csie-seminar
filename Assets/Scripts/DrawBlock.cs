@@ -300,6 +300,13 @@ public class DrawBlock : MonoBehaviour {
         //減去背景深度
         Core.absdiff(depthMatchImagePorcess, _blockDepthBackGroundImage, depthMatchImagePorcess);
 
+        //二值化
+        Imgproc.threshold(depthMatchImagePorcess, depthMatchImagePorcess, 50, 255, Imgproc.THRESH_OTSU);
+        //設定Canny參數
+        double threshold = 50.0;
+        //做Canny輪廓化
+        //Imgproc.Canny(depthMatchImagePorcess, depthMatchImagePorcess, threshold, threshold * 3);
+
         //傳出深度
         depthMatchImagePorcess.copyTo(_blockDepthImage);
 

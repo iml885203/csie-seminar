@@ -113,25 +113,22 @@ public class Match : MonoBehaviour {
             Debug.Log("_DepthMat Mat is Null");
             return false;
         }
-        //設定Canny參數
-        int threshold = 50;
+        
         //載入影像
         Mat SrcMat = new Mat();
         _DepthMat.copyTo(SrcMat);
-        //二值化
-        Imgproc.threshold(SrcMat, SrcMat, 50, 255, Imgproc.THRESH_OTSU);
+        
         //宣告存放偵測結果資料
         Mat result = new Mat(_DepthMat.height(), _DepthMat.width(),CvType.CV_8UC3);
         result.setTo(new Scalar(0, 0, 0));
         Mat hierarchy = new Mat();
         List<MatOfPoint> contours = new List<MatOfPoint>();
-        Mat cannyMat = new Mat();
+        
         //宣告存放MatchObject的List
         List<MatchObject> tempObjectList = new List<MatchObject>();
-        //做Canny輪廓化
-        Imgproc.Canny(SrcMat, cannyMat, threshold, threshold * 3);
+        
         //找輪廓並編號
-        Imgproc.findContours(cannyMat, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.findContours(SrcMat, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
         //取得輪廓數量
         int _ContoursCount = contours.Count;
         //跑迴圈確認輪廓
@@ -150,7 +147,6 @@ public class Match : MonoBehaviour {
         // Imgproc.cvtColor(result, result, Imgproc.COLOR_BGR2RGB);
         result.copyTo(BlackMat);
         result.Dispose();
-        cannyMat.Dispose();
         hierarchy.Dispose();
         contours.Clear();
         SrcMat.Dispose();

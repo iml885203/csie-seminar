@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class MatchObject : MonoBehaviour
+public class MatchObject
 {
     public Vector3 _pos { get; set; }
     public Vector2 _scale { get; set; }
