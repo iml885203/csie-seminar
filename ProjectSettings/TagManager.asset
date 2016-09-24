@@ -9,6 +9,7 @@ TagManager:
   - laserBall
   - UI_Test
   - Hand
+  - dispersionObject
   layers:
   - Default
   - TransparentFX

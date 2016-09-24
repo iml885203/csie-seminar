@@ -32,6 +32,7 @@ public class LaserGenerator : MonoBehaviour {
         {
             _timer = 0f;
             GameObject clone = (GameObject)Instantiate(LaserBall, this.transform.position, this.transform.rotation);
+            clone.transform.localScale = new Vector3((float)20, (float)20, (float)20);
             clone.transform.SetParent(this.transform);
             foreach (Transform child in transform)
             {
