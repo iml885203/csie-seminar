@@ -26,7 +26,7 @@ public class processBar : MonoBehaviour {
         //}
 	}
 
-    public void setProcessPer(float per)
+    public void setProcessPer(float per)//輸入百分比
     {
         _process.GetComponent<Image>().fillAmount = per / 100;
     }
