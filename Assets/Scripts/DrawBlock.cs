@@ -303,7 +303,7 @@ public class DrawBlock : MonoBehaviour {
         //二值化
         Imgproc.threshold(depthMatchImagePorcess, depthMatchImagePorcess, 50, 255, Imgproc.THRESH_OTSU);
         //設定Canny參數
-        double threshold = 50.0;
+        //double threshold = 50.0;
         //做Canny輪廓化
         //Imgproc.Canny(depthMatchImagePorcess, depthMatchImagePorcess, threshold, threshold * 3);
 
