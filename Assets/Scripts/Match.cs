@@ -209,9 +209,10 @@ public class Match : MonoBehaviour {
         if (RectWidth > 3 && RectHeight > 3 && pointsTooClose(pointMatList))
         {
             _matchObjectList.Clear();
+            //_matchObjectList.RemoveAt(index);
             _DepthRect = Imgproc.boundingRect(contours[index]);
             MatchObject matchObject = new MatchObject();
-            matchObject._pos = new Vector3(_DepthRect.x + (RectWidth) / 2, _DepthRect.y + (RectHeight / 2), -30);
+            matchObject._pos = calculateCenter(pointMatList);
             matchObject._scale = new Vector3(RectWidth, RectHeight, 10);
             matchObject._rotation = calculateSlope(pointMatList);
             Imgproc.drawContours(result, hullPoints, -1, new Scalar(0, 255, 0), 2);
@@ -220,7 +221,20 @@ public class Match : MonoBehaviour {
         }
         return false;
     }
-
+    //求物體中心點
+    public Vector3 calculateCenter(List<Point> point)
+    {
+        Vector3 totalPos = new Vector3(0,0,0); ;
+        for(int i = 0; i < 4; i++)
+        {
+            totalPos.x += (float)point[i].x;
+            totalPos.y += (float)point[i].y;
+        }
+        totalPos.x /= 4;
+        totalPos.y /= 4;
+        totalPos.z = -30;
+        return totalPos;
+    }
     //判斷點之間是否太接近形成錯誤的多邊形
     public bool pointsTooClose(List<Point> point)
     {
