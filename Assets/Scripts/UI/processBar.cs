@@ -14,15 +14,16 @@ public class processBar : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (Input.GetKeyUp(KeyCode.N))
-        {
-            textPer += 10f;
-            if (textPer > 100f)
-            {
-                textPer = 0f;
-            }
-            this.setProcessPer(textPer);
-        }
+        //測試用
+        //if (Input.GetKeyUp(KeyCode.N))
+        //{
+        //    textPer += 10f;
+        //    if (textPer > 100f)
+        //    {
+        //        textPer = 0f;
+        //    }
+        //    this.setProcessPer(textPer);
+        //}
 	}
 
     public void setProcessPer(float per)
