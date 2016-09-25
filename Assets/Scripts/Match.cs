@@ -141,7 +141,7 @@ public class Match : MonoBehaviour {
                 }
             }
         }
-        Debug.Log("tempObjectList Count = " + tempObjectList.Count);
+        //Debug.Log("tempObjectList Count = " + tempObjectList.Count);
         _matchObjectList = new List<MatchObject>(tempObjectList);
 
         // Imgproc.cvtColor(result, result, Imgproc.COLOR_BGR2RGB);
