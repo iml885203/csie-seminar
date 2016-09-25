@@ -54,7 +54,7 @@ public class HandControll : MonoBehaviour {
             if (body.IsTracked)
             {
                 var pos = body.Joints[TrackedJoint].Position;
-                gameObject.transform.position = new Vector3(pos.X * multiplier, pos.Y * multiplier ,89);
+                gameObject.transform.position = new Vector3(-pos.X * multiplier, pos.Y * multiplier ,89);
                 _handPosOld = new Vector2(_handPos.x, _handPos.y);
                 _handPos = new Vector3(pos.X * multiplier, pos.Y * multiplier);
             }
