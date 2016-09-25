@@ -100,15 +100,11 @@ public class LaserBall : MonoBehaviour {
 
         if (other.gameObject.tag == "wall") //碰撞到牆壁
         {
-            _generator.SetLaserLinesPos(_reflectCount, 1, reflectPosition);
-            _generator.HideNotUseLaser(_reflectCount);
             Destroy(this.gameObject);
         }
         else if(other.gameObject.tag == "reflectionObject") //碰撞反射物體
         {
             _reflectCount++;
-            _generator.SetLaserLinesPos(_reflectCount - 1, 1, reflectPosition);
-            _generator.SetLaserLinesPos(_reflectCount, 0, reflectPosition);
             //Debug.Log("_reflectCount = " + _reflectCount + ", nowPosition = " + nowPosition + "."); 
         }
         //else if (other.gameObject.tag == "dispersionObject")
