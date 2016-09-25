@@ -53,15 +53,18 @@ public class LaserBall : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
     {
+        
 
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit))
-        {
-            Debug.Log("Point of contact: " + hit.point);
-        }
-
+        //碰撞折射物事件
         if (other.gameObject.tag == "refractionObjects")
         {
+            //取得入射點
+            RaycastHit hit;
+            if (Physics.Raycast(transform.position, transform.forward, out hit))
+            {
+                Debug.Log("Point of contact: " + hit.point);
+            }
+
             Vector3 beforeReflectVelocity;
             Vector3 afterReflectVelocity;
 
@@ -76,6 +79,7 @@ public class LaserBall : MonoBehaviour {
             _ballRigidbody.velocity = new Vector3((horizontaVector.x + beforeReflectVelocity.x) / 2, (horizontaVector.y + beforeReflectVelocity.y) / 2, 0);
         }
 
+        //碰撞黑洞事件
         if (other.gameObject.tag == "windObject")
         {
             Vector3 windForce = new Vector3((_wind.transform.position.x - this.gameObject.transform.position.x) * 1000,
