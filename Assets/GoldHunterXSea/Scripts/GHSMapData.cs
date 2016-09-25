@@ -2,30 +2,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using OpenCVForUnity;
+using System;
 
 public class GHSMapData : MonoBehaviour {
 
-    //private byte[,] _mapCoordinateByte = new byte[9, 16]{//Height,Width
-    //    {9,12,9,10,12,9,10,14,9,10,12,13,13,13,11,12},
-    //    {5,1,2,12,3,6,9,10,0,12,3,6,5,3,12,5},
-    //    {7,1,12,5,13,9,6,11,4,3,10,8,6,11,2,4},
-    //    {11,4,7,1,6,5,9,14,5,9,10,2,12,9,8,4},
-    //    {9,2,12,3,10,2,6,9,4,7,13,13,7,5,5,7},
-    //    {7,9,6,9,14,9,10,6,3,14,1,0,10,4,1,10},
-    //    {9,2,8,4,9,4,9,14,9,10,6,5,13,7,3,12},
-    //    {5,9,6,7,5,5,5,9,0,10,10,2,6,9,12,5},
-    //    {7,3,10,14,7,3,2,6,3,14,11,10,10,6,3,6}};
-    private byte[,] _mapCoordinateByte = new byte[9, 16]{//Height,Width
-        {9, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 12},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4},
-        {3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 6}};
-    private Random rnd = new Random();
+    private const int _screenWidthBlock = 16;
+    private const int _screenHeightBlock = 8;
+
+    public GameObject _reflectionObject;
+    public GameObject _refractionObject;
+    public GameObject _windObject;
+    public GameObject _targetObject;
+    public GameObject _laserBall;
+
+    private byte[,] _mapCoordinateByte;
+    private UnityEngine.Random rnd = new UnityEngine.Random();
     private int dir = -1;
     private List<Point> _canMoveArea = new List<Point>();
     private List<Point> _playerPos = new List<Point>();
@@ -36,42 +27,82 @@ public class GHSMapData : MonoBehaviour {
 
     private int[] dCol = { 0, 1, 0, -1 };
     private int[] dRow = { -1, 0, 1, 0 };
-    private int[,] used = new int[9, 16];
+    private int[,] used;
     //dir=0 ->dCol=0,dRow=-1  dir=1 ->dCol=1,dRow=0   dir=2 ->dCol=0,dRow=1  dir=3 ->dCol=-1,dRow=0
     public GHSMapData()
     {
-        //_mapCoordinateByte = new byte[9, 16]{
-        //{9,12,9,10,12,9,10,14,9,10,12,13,13,13,11,12},
-        //{5,1,2,12,3,6,9,10,0,12,3,6,5,3,12,5},
-        //{7,1,12,5,13,9,6,11,4,3,10,8,6,11,2,4},
-        //{11,4,7,1,6,5,9,14,5,9,10,2,12,9,8,4},
-        //{9,2,12,3,10,2,6,9,4,7,13,13,7,5,5,7},
-        //{7,9,6,9,14,9,10,6,3,14,1,0,10,4,1,10},
-        //{9,2,8,4,9,4,9,14,9,10,6,5,13,7,3,12},
-        //{5,9,6,7,5,5,5,9,0,10,10,2,6,9,12,5},
-        //{7,3,10,14,7,3,2,6,3,14,11,10,10,6,3,6}};
+        _mapCoordinateByte = new byte[_screenHeightBlock, _screenWidthBlock]{//Height,Width
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
+        used = new int[_screenHeightBlock, _screenWidthBlock];
         List<Point> _canMoveArea = new List<Point>();
         List<Point> _playerPos = new List<Point>();
         List<Point> _treadsurePos = new List<Point>();
         List<Point> _sightPos = new List<Point>();
+        
+        //System.IO.StreamReader fileData = new System.IO.StreamReader("objectData.txt", System.Text.Encoding.Default);
 
+        //int kindAndNumber = Convert.ToInt16(fileData.ReadLine());
+        //Debug.Log("kindAndNumber = " + kindAndNumber);
+        //fileData.ReadLine();
+
+        //int kindIndex = (kindAndNumber & 224) / 32;
+        //Debug.Log("kindIndex = " + kindIndex);
+
+        ////GameObject productGameObject = new GameObject();
+        ////this.SwitchGameObject(kindIndex, ref productGameObject);
+        ////Debug.Log("productGameObject.name = " + productGameObject.name);
+
+        
+
+        //int numberIndex = kindAndNumber & 15;
+        //Debug.Log("numberIndex = " + numberIndex);
+        //for (int index = 0; index < numberIndex; index++)
+        //{
+        //    int dir = Convert.ToInt16(fileData.ReadLine());
+        //    int position = Convert.ToInt16(fileData.ReadLine());
+
+        //    float realDirection = this.TransferDirection(dir);
+        //    Debug.Log("realDirection = " + realDirection);
+
+        //    int widthBlock = (position & 240) / 16;
+        //    int heightBlock = (position & 15);
+        //    Debug.Log("widthBlock = " + widthBlock);
+        //    Debug.Log("heightBlock = " + heightBlock);
+
+        //    //GameObject cloneObject = (GameObject)Instantiate(productGameObject,
+        //    //    this.transform.FindChild("ReflectionObjects").position + new Vector3(Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine())),
+        //    //    new Quaternion(0, 0, realDirection, 0)
+        //    //    );
+        //    //cloneObject.transform.SetParent(this.transform.FindChild("ReflectionObjects"));
+                
+        //    fileData.ReadLine();
+        //}
+
+        //fileData.Close();
     }
+
+    private float TransferDirection(int dir)
+    {
+        return (dir & 7) * (float)45.0;
+    }
+
     public void CreateNewMap()
     {
-        for (int i = 0; i < 9; i++)
-            for (int j = 0; j < 16; j++)
+        for (int i = 0; i < _screenHeightBlock; i++)
+            for (int j = 0; j < _screenWidthBlock; j++)
                 used[i, j] = 0;
-        _mapCoordinateByte = new byte[9, 16];
 
-        for (int i = 0; i < 9; i++)
-            for (int j = 0; j < 16; j++)
-                _mapCoordinateByte[i, j] = 15;
+        _mapCoordinateByte = new byte[_screenHeightBlock, _screenWidthBlock];
 
         dfs(0, 0, -1, -1);
 
-        for (int i = 0; i < 9; i++)
-            for (int j = 0; j < 16; j++)
-                Debug.Log(_mapCoordinateByte[i, j]);
         List<Point> _canMoveArea = new List<Point>();
         List<Point> _playerPos = new List<Point>();
         List<Point> _treadsurePos = new List<Point>();
@@ -89,7 +120,7 @@ public class GHSMapData : MonoBehaviour {
             return;
         while (cnt < 10)
         {
-            dir = Random.Range(0, 4);//上dir=0 ->dCol=0,dRow=-1  右dir=1 ->dCol=1,dRow=0   下dir=2 ->dCol=0,dRow=1  左dir=3 ->dCol=-1,dRow=0
+            dir = UnityEngine.Random.Range(0, 4);//上dir=0 ->dCol=0,dRow=-1  右dir=1 ->dCol=1,dRow=0   下dir=2 ->dCol=0,dRow=1  左dir=3 ->dCol=-1,dRow=0
 
             if ((col + dCol[dir]) < 16 && (row + dRow[dir]) < 9 && (col + dCol[dir] >= 0 && row + dRow[dir] >= 0) && used[row + dRow[dir], col + dCol[dir]] != 1)
             {
@@ -171,7 +202,7 @@ public class GHSMapData : MonoBehaviour {
     private bool RandomTF()
     {
         bool response;
-        int testNumber = Random.Range(1, 6);
+        int testNumber = UnityEngine.Random.Range(1, 6);
         if (testNumber == 1)
             response = true;
         else
@@ -361,6 +392,57 @@ public class GHSMapData : MonoBehaviour {
     public void clearFlashLight()
     {
         _flashLight.Clear();
+    }
+
+    public int ScreenWidthBlock
+    {
+        get
+        {
+            return _screenWidthBlock;
+        }
+    }
+
+    public int ScreenHeightBlock
+    {
+        get
+        {
+            return _screenHeightBlock;
+        }
+    }
+
+    private void SwitchGameObject(int gameObjectNumber, ref GameObject productGameObject)
+    {
+        switch (gameObjectNumber)
+        {
+            case 0:
+                {
+                    Debug.Log("gameObject = reflectionObject");
+                    productGameObject = _reflectionObject;
+                    break;
+                }
+            case 1:
+                {
+                    productGameObject = _refractionObject;
+                    break;
+                }
+            case 2:
+                {
+                    productGameObject = _windObject;
+                    break;
+                }
+            case 3:
+                {
+                    productGameObject = _targetObject;
+                    break;
+                }
+            case 4:
+                {
+                    productGameObject = _laserBall;
+                    break;
+                }
+            default:
+                break;
+        }
     }
 }
 
