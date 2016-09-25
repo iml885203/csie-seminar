@@ -73,4 +73,10 @@ public class mapColorAndDepth : MonoBehaviour {
         Debug.Log(depthSpace.Length + ", " + colorIndex);
         return new Point(depthSpace[colorIndex].X, depthSpace[colorIndex].Y);
     }
+
+    public Vector2 CameraSpacePointToColorVector2(CameraSpacePoint CSP)
+    {
+        var colorPoint = _Mapper.MapCameraPointToColorSpace(CSP);
+        return new Vector2(colorPoint.X, colorPoint.Y);
+    }
 }

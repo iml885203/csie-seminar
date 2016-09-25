@@ -22,7 +22,11 @@ public class DrawBlock : MonoBehaviour {
     //儲存點擊位置
     private Point _pointOne = new Point();
     private Point _pointTwo = new Point();
-    private int _minX = 0, _maxX = 0, _minY = 0, _maxY = 0;
+    public int _minX { get; private set; }
+    public int _maxX { get; private set; }
+    public int _minY { get; private set; }
+    public int _maxY { get; private set; }
+    public bool SelectedBlock { get; private set; }
 
     //設定螢幕與輸入cam的影像大小
     private int _currentWidth;
@@ -88,7 +92,6 @@ public class DrawBlock : MonoBehaviour {
         //取得螢幕與輸入cam的影像大小
         _inputWidth = ColorSourceManager.ColorWidth;
         _inputHeight = ColorSourceManager.ColorHeight;
-        Debug.Log(_inputWidth);
         _depthData = DepthSourceManager.GetData();
         //Debug.Log(_depthData.Length);
 
@@ -115,6 +118,9 @@ public class DrawBlock : MonoBehaviour {
         _thread = new Thread(drawDepthSourceMat);
         //設定是否完成影像背景偵測
         ScreenSettingCompletionFlag = false;
+        //選擇範圍初始化
+        _minX = 0; _maxX = 0; _minY = 0; _maxY = 0;
+        SelectedBlock = false;
     }
 	
 	// Update is called once per frame
@@ -140,6 +146,11 @@ public class DrawBlock : MonoBehaviour {
         }
         else if (!mouseclick && MatchHeight != 0 && MatchWidth != 0) {
             runDrawBlock();
+            if(!SelectedBlock) SelectedBlock = true;
+        }
+        else
+        {
+            if (SelectedBlock) SelectedBlock = false;
         }
         //畫選取框框
         Imgproc.rectangle(_sourceMat, _pointOne, _pointTwo, _color, 4);
@@ -173,7 +184,6 @@ public class DrawBlock : MonoBehaviour {
             //存入list
             _pointOne = _positionTrans.TransToScreen2Pos(new Point(x, y));
             _pointTwo = _positionTrans.TransToScreen2Pos(new Point(x, y));
-            Debug.Log(Input.mousePosition.x.ToString() + " " + Input.mousePosition.y.ToString());
             mouseclick = true;
         }
         

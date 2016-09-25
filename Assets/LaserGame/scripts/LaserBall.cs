@@ -129,7 +129,7 @@ public class LaserBall : MonoBehaviour {
         //}
         else if (other.gameObject.tag == "targetObject")
         {
-            Debug.Log("Win");
+            //Debug.Log("Win");
             Destroy(this.gameObject);
 
         }

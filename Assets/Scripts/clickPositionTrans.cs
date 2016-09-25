@@ -37,6 +37,15 @@ public class clickPositionTrans {
     {
         return new Point(pos.x / _to2TateWidth, pos.y / _to2TateHeight);
     }
+
+    public Vector2 TransToScreen2Pos(Vector2 pos)
+    {
+        return new Vector2(pos.x * (float)_to2TateWidth, pos.y * (float)_to2TateHeight);
+    }
+    public Vector2 TransToScreen1Pos(Vector2 pos)
+    {
+        return new Vector2(pos.x / (float)_to2TateWidth, pos.y / (float)_to2TateHeight);
+    }
     // Use this for initialization
     void Start () {
 	    
