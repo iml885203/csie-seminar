@@ -65,6 +65,8 @@ public class DrawBlock : MonoBehaviour {
     //同步影像
     private bool _SyncFlag;
     private Mat _blockImageBuffer;
+    //是否完成影像處理的旗標
+    public bool ScreenSettingCompletionFlag { get; set; }
 
     //thread
     Thread _thread;
@@ -111,6 +113,8 @@ public class DrawBlock : MonoBehaviour {
         _SyncFlag = false;
         //thread
         _thread = new Thread(drawDepthSourceMat);
+        //設定是否完成影像背景偵測
+        ScreenSettingCompletionFlag = false;
     }
 	
 	// Update is called once per frame
@@ -405,6 +409,7 @@ public class DrawBlock : MonoBehaviour {
             //創造背景深度Mat
             _blockDepthBackGroundImage = new Mat();
             BackGround.copyTo(_blockDepthBackGroundImage);
+            ScreenSettingCompletionFlag = true;
         }
         else if (_blockDepthBackGroundImage == null)
         {

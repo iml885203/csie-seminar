@@ -18,9 +18,9 @@ public class DynamicMake : MonoBehaviour
     private clickPositionTrans _posTrans;
 
     private void OnGUI()
-    {
-        
-        if (GUILayout.Button("動態產生物件") == true)
+    { 
+
+        if (superGameObject.transform.childCount < _DataMatch._matchObjectList.Count && _drawBlock.ScreenSettingCompletionFlag)
         {
             //確認已開啟攝影機
             if (_drawBlock.MatchHeight == 0 && _drawBlock.MatchWidth == 0) return;
@@ -29,42 +29,46 @@ public class DynamicMake : MonoBehaviour
             // ==========================
             _Width = _drawBlock.MatchWidth;
             _Height = _drawBlock.MatchHeight;
-            // ==========================
-            // set public ObjectCount ==
-            // ==========================
-
-            childGameObject = Instantiate(copyGameObject);//複製copyGameObject物件(連同該物件身上的腳本一起複製)
-            childGameObject.transform.parent = superGameObject.transform;//放到superGameObject物件內
-            RectTransform childGameObjectRect = childGameObject.GetComponent<RectTransform>();
-            
-            //座標系統統一(左下0,0)
-            childGameObjectRect.anchorMin = new Vector2(0, 0);
-            childGameObjectRect.anchorMax = new Vector2(0, 0);
-            childGameObjectRect.pivot = new Vector2(.5f, .5f);
-            //初始化轉換座標class
-            RectTransform superGameObjectRect = superGameObject.GetComponent<RectTransform>();
-            _posTrans = new clickPositionTrans(_drawBlock.MatchWidth, _drawBlock.MatchHeight, superGameObjectRect.rect.width, superGameObjectRect.rect.height);
-            //初始化位置
-            UpdatePos(childGameObject,1);
-            //childGameObject.AddComponent<NullScript>();//動態增加名為"NullScript"的腳本到此物件身上
-            //下面這一行的功能為將複製出來的子物件命名為CopyObject
-
-            childGameObject.name = "CopyObject";
+            MatchObject matchObject = _DataMatch._matchObjectList[superGameObject.transform.childCount];
+            CreateObject(matchObject);
 
         }
-        if (superGameObject.transform.childCount > 0)
+        else if(superGameObject.transform.childCount > _DataMatch._matchObjectList.Count)
         {
-            UpdatePos(superGameObject.transform.GetChild(0).gameObject, .05f);
+            DeleteObject();
         }
+        else
+        {
+            for (int i = superGameObject.transform.childCount-1; i >=0 ; i--)
+            {
+                MatchObject matchObject = _DataMatch._matchObjectList[i];
+                UpdatePos(superGameObject.transform.GetChild(i).gameObject, .05f, matchObject);
+            }
+        }
+        if (GUILayout.Button("動態產生物件") == true && _drawBlock.ScreenSettingCompletionFlag)
+        {
+            //確認已開啟攝影機
+            if (_drawBlock.MatchHeight == 0 && _drawBlock.MatchWidth == 0) return;
+            // ==========================
+            // set public Width Height ==
+            // ==========================
+            _Width = _drawBlock.MatchWidth;
+            _Height = _drawBlock.MatchHeight;
+            MatchObject matchObject = _DataMatch._matchObjectList[superGameObject.transform.childCount];
+
+            CreateObject(matchObject);
+
+        }
+
         if (GUILayout.Button("動態移除物件") == true)
         {
             //Destroy(childGameObject);//刪除複製出來的子物件
             DeleteObject();
         }
+
     }
-    public void UpdatePos(GameObject Object,float speed)
+    public void UpdatePos(GameObject Object,float speed, MatchObject matchObject)
     {
-        MatchObject matchObject = _DataMatch._matchObjectList[0];
         RectTransform childGameObjectRect = Object.GetComponent<RectTransform>();
         //轉換對應座標並更新值
         Point transPos = _posTrans.TransToScreen2Pos(new Point(matchObject._pos.x, matchObject._pos.y));
@@ -77,24 +81,21 @@ public class DynamicMake : MonoBehaviour
         Object.transform.rotation = new Quaternion(0, 0, (float)((matchObject._rotation + .5f)), 1);
         return;
     }
-    public void CreateObject()
+    public void CreateObject(MatchObject matchObject)
     {
-        //確認已開啟攝影機
-        if (_drawBlock.MatchHeight == 0 && _drawBlock.MatchWidth == 0) return;
-        // ==========================
-        // set public Width Height ==
-        // ==========================
-        _Width = _drawBlock.MatchWidth;
-        _Height = _drawBlock.MatchHeight;
-        // ==========================
-        // set public ObjectCount ==
-        // ==========================
-        ObjectCount = _DataMatch._matchObjectList.Count;
-
         childGameObject = Instantiate(copyGameObject);//複製copyGameObject物件(連同該物件身上的腳本一起複製)
         childGameObject.transform.parent = superGameObject.transform;//放到superGameObject物件內
+        RectTransform childGameObjectRect = childGameObject.GetComponent<RectTransform>();
 
-        UpdatePos(childGameObject,50);
+        //座標系統統一(左下0,0)
+        childGameObjectRect.anchorMin = new Vector2(0, 0);
+        childGameObjectRect.anchorMax = new Vector2(0, 0);
+        childGameObjectRect.pivot = new Vector2(.5f, .5f);
+        //初始化轉換座標class
+        RectTransform superGameObjectRect = superGameObject.GetComponent<RectTransform>();
+        _posTrans = new clickPositionTrans(_drawBlock.MatchWidth, _drawBlock.MatchHeight, superGameObjectRect.rect.width, superGameObjectRect.rect.height);
+        //初始化位置
+        UpdatePos(childGameObject, 1, matchObject);
         //childGameObject.AddComponent<NullScript>();//動態增加名為"NullScript"的腳本到此物件身上
         //下面這一行的功能為將複製出來的子物件命名為CopyObject
 

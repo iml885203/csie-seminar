@@ -44,7 +44,6 @@ public class Match : MonoBehaviour {
     private OpenCVForUnity.Rect _DepthRect;
     //偵測到的Object
     public List<MatchObject> _matchObjectList { get; set; } 
-
     public Mat Temp;
 
     public Texture2D GetMatchTexture()
@@ -142,7 +141,8 @@ public class Match : MonoBehaviour {
                 }
             }
         }
-        if(tempObjectList.Count >0) _matchObjectList = new List<MatchObject>(tempObjectList);
+        Debug.Log("tempObjectList Count = " + tempObjectList.Count);
+        _matchObjectList = new List<MatchObject>(tempObjectList);
 
         // Imgproc.cvtColor(result, result, Imgproc.COLOR_BGR2RGB);
         result.copyTo(BlackMat);
