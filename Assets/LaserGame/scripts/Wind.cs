@@ -16,14 +16,14 @@ public class Wind : MonoBehaviour
 
     void Update()
     {
+        //Debug.Log("transform.parent = " + transform.parent.parent.ToString());
         try
         {
-            //Debug.Log("transform.parent = " + transform.parent.parent.ToString());
             ball = transform.parent.parent.FindChild("LaserGenerator").FindChild("laserBall(Clone)").gameObject;
         }
         catch
         {
-
+          //  Debug.Log("Ball not exist");
         }
     }
 

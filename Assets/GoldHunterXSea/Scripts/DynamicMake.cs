@@ -69,7 +69,7 @@ public class DynamicMake : MonoBehaviour
         //轉換對應座標並更新值
         Point transPos = _posTrans.TransToScreen2Pos(new Point(matchObject._pos.x, matchObject._pos.y));
         childGameObjectRect.anchoredPosition = Vector3.Lerp(childGameObjectRect.anchoredPosition, new Vector2((float)transPos.x, (float)transPos.y), speed);
-        childGameObjectRect.localPosition = new Vector3(childGameObjectRect.localPosition.x, childGameObjectRect.localPosition.y, 0);
+        childGameObjectRect.localPosition = new Vector3(childGameObjectRect.localPosition.x, childGameObjectRect.localPosition.y, -30);
         //轉換對應大小並更新值
         Point transScale = _posTrans.TransToScreen2Pos(new Point(matchObject._scale.x, matchObject._scale.y));
         childGameObject.transform.localScale = Vector3.Lerp(childGameObject.transform.localScale, new Vector3((float)transScale.x, (float)transScale.y, 50), speed);
