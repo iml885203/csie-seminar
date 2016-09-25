@@ -4,12 +4,10 @@ using Windows.Kinect;
 
 public class HandControll : MonoBehaviour {
     public GameObject BodySrcManager;
+    public DrawBlock _drawBlockManager;
     public JointType TrackedJoint;
-    private BodySourceManager bodyManager;
+    private BodySourceManager _bodyManager;
     private Body[] bodies;
-
-    private Vector2 _handPos;
-    private Vector2 _handPosOld;
 
     public float multiplier;
     public float _ErrorRange;
@@ -18,6 +16,8 @@ public class HandControll : MonoBehaviour {
     public float _clickTriggerTime = 1f;
 
     private processBar _processBar;
+
+    private clickPositionTrans _posTrans;
     // Use this for initialization
     void Start () {
 	    if(BodySrcManager == null)
@@ -26,24 +26,31 @@ public class HandControll : MonoBehaviour {
         }
         else
         {
-            bodyManager = BodySrcManager.GetComponent<BodySourceManager>();
+            _bodyManager = BodySrcManager.GetComponent<BodySourceManager>();
         }
-        _handPos = new Vector2();
-        _handPosOld = new Vector2();
         _processBar = this.GetComponent<processBar>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(bodyManager == null)
+        if(_bodyManager == null)
         {
             return;
         }
-        bodies = bodyManager.GetData();
+        bodies = _bodyManager.GetData();
         if(bodies == null)
         {
             return;
+        }
+        if (!_drawBlockManager.SelectedBlock)
+        {
+            return;
+        }
+        if(_posTrans == null)
+        {
+            RectTransform parentRect = this.transform.parent as RectTransform;
+            _posTrans = new clickPositionTrans(_drawBlockManager.MatchWidth, _drawBlockManager.MatchHeight, parentRect.rect.width, parentRect.rect.height);
         }
         foreach(var body in bodies)
         {
@@ -54,12 +61,15 @@ public class HandControll : MonoBehaviour {
             if (body.IsTracked)
             {
                 var pos = body.Joints[TrackedJoint].Position;
-                gameObject.transform.position = new Vector3(-pos.X * multiplier, pos.Y * multiplier ,89);
-                _handPosOld = new Vector2(_handPos.x, _handPos.y);
-                _handPos = new Vector3(pos.X * multiplier, pos.Y * multiplier);
+                //3D座標透過map轉換成2D座標
+                Vector2 colorPos = _drawBlockManager._map.CameraSpacePointToColorVector2(pos);
+                Vector2 pos_inDrawBlock = GetInDrawBlockPos(colorPos);
+                RectTransform myRect = this.transform as RectTransform;
+                myRect.anchoredPosition = _posTrans.TransToScreen2Pos(new Vector2(pos_inDrawBlock.x, -pos_inDrawBlock.y));
             }
         }
     }
+
     void OnTriggerStay(Collider other)
     {
         if (other.gameObject.tag == "UI_Test") //碰撞到牆壁
@@ -73,19 +83,33 @@ public class HandControll : MonoBehaviour {
             {
                 //累積移動時間增加
                 _clickTimer += Time.deltaTime;
-                //gameObject.transform.localScale = new Vector3(_clickTimer * 50 + 50, _clickTimer *50 + 50,  30);
                 _processBar.setProcessPer(_clickTimer / _clickTriggerTime * 100);
             }
         }
     }
+
     void OnTriggerExit(Collider other)
     {
         Debug.Log(other.gameObject.tag);
         if (other.gameObject.tag == "UI_Test")
         {
-            //gameObject.transform.localScale = new Vector3(50, 50, 30);
             _clickTimer = 0f;
             _processBar.setProcessPer(0f);
+        }
+    }
+
+    private Vector2 GetInDrawBlockPos(Vector2 pos)
+    {
+        //判斷是否在選取畫面內
+        if(pos.x > _drawBlockManager._minX && pos.x < _drawBlockManager._maxX &&
+           pos.y > _drawBlockManager._minY && pos.y < _drawBlockManager._maxY)
+        {
+            //回傳畫面內座標
+            return new Vector2(pos.x - _drawBlockManager._minX, pos.y - _drawBlockManager._minY);
+        }
+        else
+        {
+            return new Vector2(-99, -99);
         }
     }
 }
