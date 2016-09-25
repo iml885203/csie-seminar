@@ -6,6 +6,7 @@ public class HandControll : MonoBehaviour {
     public GameObject BodySrcManager;
     public DrawBlock _drawBlockManager;
     public JointType TrackedJoint;
+    private ButtonEvent _buttonEvent;
     private BodySourceManager _bodyManager;
     private Body[] bodies;
 
@@ -29,6 +30,7 @@ public class HandControll : MonoBehaviour {
             _bodyManager = BodySrcManager.GetComponent<BodySourceManager>();
         }
         _processBar = this.GetComponent<processBar>();
+        _buttonEvent = this.GetComponentInParent<ButtonEvent>();
     }
 
     // Update is called once per frame
@@ -78,6 +80,8 @@ public class HandControll : MonoBehaviour {
             if (_clickTimer > _clickTriggerTime)
             {
                 //觸發點擊UI
+                _buttonEvent.CallFuncByString(other.transform.parent.name + "Click");
+                _processBar.setProcessPer(0);
             }
             else
             {
