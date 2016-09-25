@@ -45,12 +45,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\GoldHunterXSea\Scripts\DeleteScript.cs" />
+     <Compile Include="Assets\GoldHunterXSea\Scripts\DynamicMake.cs" />
      <Compile Include="Assets\GoldHunterXSea\Scripts\GHSBackGroundSoundControl.cs" />
      <Compile Include="Assets\GoldHunterXSea\Scripts\GHSButtonEvent.cs" />
      <Compile Include="Assets\GoldHunterXSea\Scripts\GHSEffectSoundControl.cs" />
      <Compile Include="Assets\GoldHunterXSea\Scripts\GHSMain.cs" />
      <Compile Include="Assets\GoldHunterXSea\Scripts\GHSMapData.cs" />
      <Compile Include="Assets\GoldHunterXSea\Scripts\GHSPlayerState.cs" />
+     <Compile Include="Assets\GoldHunterXSea\Scripts\MatchObject.cs" />
      <Compile Include="Assets\GoldHunterXSea\Scripts\uselessClass\GHSChangeState.cs" />
      <Compile Include="Assets\GoldHunterXSea\Scripts\uselessClass\GHSListProducer.cs" />
      <Compile Include="Assets\GreenScreen\Scripts\CoordinateMapperManager.cs" />
@@ -67,6 +70,8 @@
      <Compile Include="Assets\KinectView\Scripts\MultiSourceManager.cs" />
      <Compile Include="Assets\LaserGame\scripts\LaserBall.cs" />
      <Compile Include="Assets\LaserGame\scripts\LaserGenerator.cs" />
+     <Compile Include="Assets\LaserGame\scripts\MapData.cs" />
+     <Compile Include="Assets\LaserGame\scripts\Wind.cs" />
      <Compile Include="Assets\OpenCVForUnity\Samples\CamShiftSample\CamShiftSample.cs" />
      <Compile Include="Assets\OpenCVForUnity\Samples\ComicFilterSample\ComicFilterSample.cs" />
      <Compile Include="Assets\OpenCVForUnity\Samples\ConvexHullSample\ConvexHullSample.cs" />
@@ -94,8 +99,10 @@
      <Compile Include="Assets\Scripts\DepthToMatView.cs" />
      <Compile Include="Assets\Scripts\DiceRecognition.cs" />
      <Compile Include="Assets\Scripts\DrawBlock.cs" />
+     <Compile Include="Assets\Scripts\HandControll.cs" />
      <Compile Include="Assets\Scripts\Match.cs" />
      <Compile Include="Assets\Scripts\MatchView.cs" />
+     <Compile Include="Assets\Scripts\UI\processBar.cs" />
      <Compile Include="Assets\Scripts\UI\sliderValueShow.cs" />
      <Compile Include="Assets\Scripts\clickPositionTrans.cs" />
      <Compile Include="Assets\Scripts\control.cs" />
