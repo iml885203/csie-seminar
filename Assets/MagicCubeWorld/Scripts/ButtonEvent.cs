@@ -170,7 +170,7 @@ public class ButtonEvent : MonoBehaviour
     private void RunListProducer()
     {
         //當最後一個字幕經過指定條件後，則進行一次重設字幕
-        if (_textListProducer[2].transform.position.y >= -30)
+        if (_textListProducer[2].transform.position.y >= -3)
         {
             _resetFlage = true;
         }
