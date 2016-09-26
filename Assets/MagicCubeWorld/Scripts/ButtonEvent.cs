@@ -91,6 +91,13 @@ public class ButtonEvent : MonoBehaviour
         }
     }
 
+    //用function name字串呼叫function
+    public void CallFuncByString(string funcName)
+    {
+        System.Reflection.MethodInfo mi = this.GetType().GetMethod(funcName);
+        mi.Invoke(this, null);
+    }
+
     //從開始畫面到設定畫面按鈕事件(menu -> setting)
     public void GameStateMenuToSettingButtonClick()
     {
