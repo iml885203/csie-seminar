@@ -4,16 +4,48 @@ using System.Collections.Generic;
 using OpenCVForUnity;
 using System;
 
+static class GameLevelFile
+{
+    public const string LEVEL_1 = "objectDataLevel1.txt";
+    public const string LEVEL_2 = "objectDataLevel2.txt";
+    public const string LEVEL_3 = "objectDataLevel3.txt";
+    public const string LEVEL_4 = "objectDataLevel4.txt";
+    public const string LEVEL_5 = "objectDataLevel5.txt";
+}
+
+/// <關卡文字檔格式說明>
+/// 雷射槍      <物件名稱>
+/// 1           <物件數量>
+///              <區隔用>
+/// 0            <旋轉角度>
+/// 1,5          <擺放格數>
+/// 
+/// 牆壁
+/// 2            <兩個以上時>
+///
+/// 135
+/// 13,5
+///
+/// 135
+/// 13,4
+///
+/// 目標
+/// 1
+///
+/// 90
+/// 13,2
+/// </關卡文字檔格式說明>
+
 public class LevelObject : MonoBehaviour
 {
-    private const string TEXT_FILE_NAME = "objectData.txt";
+    private const string TEXT_FILE_NAME = GameLevelFile.LEVEL_2;
 
-    public GameObject productGameObject;
+    private GameObject _productGameObject;
 
     public GameObject _laserGenerator;
     public GameObject _reflectionObject;
     public GameObject _refractionObject;
-    public GameObject _windObject;
+    public GameObject _blackHoleObject;
     public GameObject _targetObject;
     public GameObject _laserBall;
 
@@ -53,52 +85,57 @@ public class LevelObject : MonoBehaviour
         _blockWidth = _canvasWidth / _blockWidthCount;
         _blockHeight = _canvasHeight / _blockHeightCount;
 
+        string readLineBuffer;
 
         //讀檔設立物件
         System.IO.StreamReader fileData = new System.IO.StreamReader(TEXT_FILE_NAME, System.Text.Encoding.Default);
 
-        for(int testIndex = 0; testIndex < 3; testIndex++)
+        //直到沒讀到資訊
+        while((readLineBuffer = fileData.ReadLine()) != null)
         {
-            int kindAndNumber = Convert.ToInt16(fileData.ReadLine());
+            //給定物件種類字串
+            string kind = readLineBuffer;
 
-            int kindIndex = (kindAndNumber & 224) / 32;
-            //Debug.Log("kindIndex = " + kindIndex);
+            //將gameObject給定指定的物件
+            _productGameObject = new GameObject();
+            this.SwitchGameObject(kind, ref _productGameObject);
 
-            productGameObject = new GameObject();
-            this.SwitchGameObject(kindIndex, ref productGameObject);
-
-            int numberIndex = kindAndNumber & 15;
-            //Debug.Log("numberIndex = " + numberIndex);
-            for (int index = 0; index < numberIndex; index++)
+            //讀取數量跑迴圈
+            int amount = Convert.ToInt16(fileData.ReadLine());
+            for(int numberIndex = 0; numberIndex < amount; numberIndex++)
             {
-                int dir = Convert.ToInt16(fileData.ReadLine());
-                int position = Convert.ToInt16(fileData.ReadLine());
+                //區間用的readLine
+                fileData.ReadLine();
 
-                float realDirection = this.TransferDirection(dir);
-                //Debug.Log("realDirection = " + realDirection);
+                //讀取角度及格子座標
+                float rotateAngle = Convert.ToSingle(fileData.ReadLine());
+                string positionByBlock = fileData.ReadLine();
 
-                int widthBlock = (position & 240) / 16;
-                int heightBlock = (position & 15);
-                Debug.Log("widthBlock = " + widthBlock);
-                Debug.Log("heightBlock = " + heightBlock);
+                //把格子座標eg.1,1存成兩個int
+                string[] positionByBlockXY = positionByBlock.Split(',');
+                int positionByBlockX = Convert.ToInt16(positionByBlockXY[0]);
+                int positionByBlockY = Convert.ToInt16(positionByBlockXY[1]);
 
-                //Debug.Log("productGameObject.name = " + productGameObject);
-                Point objectPoint = new Point((double)widthBlock, (double)heightBlock);
+                //給定格子座標
+                Point objectPoint = new Point((double)positionByBlockX, (double)positionByBlockY);
 
+                //轉換格子座標成畫布實際座標
                 objectPoint = this.TransBlockToCanvasPosition(objectPoint);
-                Debug.Log("objectPoint = " + objectPoint);
 
-                GameObject cloneObject = (GameObject)Instantiate(productGameObject,
+                //根據給定的物件來創建關卡物件
+                GameObject cloneObject = (GameObject)Instantiate(_productGameObject,
                     new Vector3(Convert.ToSingle(objectPoint.x), Convert.ToSingle(objectPoint.y), Convert.ToSingle(0)),
                     new Quaternion(0, 0, 0, 1)
                     );
-                cloneObject.transform.localScale = productGameObject.transform.localScale;
-                cloneObject.transform.localRotation = productGameObject.transform.localRotation;
-                cloneObject.transform.Rotate(Vector3.forward * realDirection, Space.World);
-                cloneObject.transform.SetParent(this.transform);
+                cloneObject.transform.localScale = _productGameObject.transform.localScale;
+                cloneObject.transform.localRotation = _productGameObject.transform.localRotation;
+                cloneObject.transform.Rotate(Vector3.forward * rotateAngle, Space.World);
+                cloneObject.transform.SetParent(this.transform.FindChild("InLevelObjects"));
+
+                //轉換物件間區格用的readLine
+                if(numberIndex == amount - 1) fileData.ReadLine();
             }
         }
-
         fileData.Close();
     }
 
@@ -113,53 +150,46 @@ public class LevelObject : MonoBehaviour
     {
         Point canvasPosition;
 
+        //將座標給到指定格數的左上角
         canvasPosition = new Point((double)_originPointX + (position.x * _blockWidth), (double)_originPointY - (position.y * _blockHeight));
-        Debug.Log("canvasPosition = " + canvasPosition);
 
+        //將座標寬高各進行半個格子的位移，使物件在格子中心
         canvasPosition = new Point(canvasPosition.x + (double)_blockWidth * HalfRate, canvasPosition.y - (double)_blockHeight * HalfRate);
-        Debug.Log("canvasPosition = " + canvasPosition);
 
         return canvasPosition;
     }
 
-    //轉換八方位的角度
-    private float TransferDirection(int dir)
-    {
-        return (dir & 7) * (float)45.0;
-    }
-
     //將欲產生物件給到productGameObject上
-    private void SwitchGameObject(int gameObjectNumber, ref GameObject productGameObject)
+    private void SwitchGameObject(string gameObjectName, ref GameObject productGameObject)
     {
-        switch (gameObjectNumber)
+        switch (gameObjectName)
         {
-            case 0:
+            case "雷射槍":
                 {
                     productGameObject = _laserGenerator;
                     break;
                 }
-            case 1:
+            case "牆壁":
                 {
-                    Debug.Log("gameObject = reflectionObject");
                     productGameObject = _reflectionObject;
                     break;
                 }
-            case 2:
+            case "折射":
                 {
                     productGameObject = _refractionObject;
                     break;
                 }
-            case 3:
+            case "黑洞":
                 {
-                    productGameObject = _windObject;
+                    productGameObject = _blackHoleObject;
                     break;
                 }
-            case 4:
+            case "目標":
                 {
                     productGameObject = _targetObject;
                     break;
                 }
-            case 5:
+            case "雷射球":
                 {
                     productGameObject = _laserBall;
                     break;
