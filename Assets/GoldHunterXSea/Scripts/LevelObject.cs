@@ -38,7 +38,7 @@ static class GameLevelFile
 
 public class LevelObject : MonoBehaviour
 {
-    private const string TEXT_FILE_NAME = GameLevelFile.LEVEL_2;
+    private const string TEXT_FILE_NAME = GameLevelFile.LEVEL_1;
 
     private GameObject _productGameObject;
 
