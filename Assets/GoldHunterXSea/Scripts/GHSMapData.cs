@@ -9,12 +9,6 @@ public class GHSMapData : MonoBehaviour {
     private const int _screenWidthBlock = 16;
     private const int _screenHeightBlock = 8;
 
-    public GameObject _reflectionObject;
-    public GameObject _refractionObject;
-    public GameObject _windObject;
-    public GameObject _targetObject;
-    public GameObject _laserBall;
-
     private byte[,] _mapCoordinateByte;
     private UnityEngine.Random rnd = new UnityEngine.Random();
     private int dir = -1;
@@ -29,7 +23,8 @@ public class GHSMapData : MonoBehaviour {
     private int[] dRow = { -1, 0, 1, 0 };
     private int[,] used;
     //dir=0 ->dCol=0,dRow=-1  dir=1 ->dCol=1,dRow=0   dir=2 ->dCol=0,dRow=1  dir=3 ->dCol=-1,dRow=0
-    public GHSMapData()
+
+    void Start()
     {
         _mapCoordinateByte = new byte[_screenHeightBlock, _screenWidthBlock]{//Height,Width
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -45,52 +40,6 @@ public class GHSMapData : MonoBehaviour {
         List<Point> _playerPos = new List<Point>();
         List<Point> _treadsurePos = new List<Point>();
         List<Point> _sightPos = new List<Point>();
-        
-        //System.IO.StreamReader fileData = new System.IO.StreamReader("objectData.txt", System.Text.Encoding.Default);
-
-        //int kindAndNumber = Convert.ToInt16(fileData.ReadLine());
-        //Debug.Log("kindAndNumber = " + kindAndNumber);
-        //fileData.ReadLine();
-
-        //int kindIndex = (kindAndNumber & 224) / 32;
-        //Debug.Log("kindIndex = " + kindIndex);
-
-        ////GameObject productGameObject = new GameObject();
-        ////this.SwitchGameObject(kindIndex, ref productGameObject);
-        ////Debug.Log("productGameObject.name = " + productGameObject.name);
-
-        
-
-        //int numberIndex = kindAndNumber & 15;
-        //Debug.Log("numberIndex = " + numberIndex);
-        //for (int index = 0; index < numberIndex; index++)
-        //{
-        //    int dir = Convert.ToInt16(fileData.ReadLine());
-        //    int position = Convert.ToInt16(fileData.ReadLine());
-
-        //    float realDirection = this.TransferDirection(dir);
-        //    Debug.Log("realDirection = " + realDirection);
-
-        //    int widthBlock = (position & 240) / 16;
-        //    int heightBlock = (position & 15);
-        //    Debug.Log("widthBlock = " + widthBlock);
-        //    Debug.Log("heightBlock = " + heightBlock);
-
-        //    //GameObject cloneObject = (GameObject)Instantiate(productGameObject,
-        //    //    this.transform.FindChild("ReflectionObjects").position + new Vector3(Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine()), Convert.ToSingle(fileData.ReadLine())),
-        //    //    new Quaternion(0, 0, realDirection, 0)
-        //    //    );
-        //    //cloneObject.transform.SetParent(this.transform.FindChild("ReflectionObjects"));
-                
-        //    fileData.ReadLine();
-        //}
-
-        //fileData.Close();
-    }
-
-    private float TransferDirection(int dir)
-    {
-        return (dir & 7) * (float)45.0;
     }
 
     public void CreateNewMap()
@@ -199,16 +148,16 @@ public class GHSMapData : MonoBehaviour {
         }
     }
 
-    private bool RandomTF()
-    {
-        bool response;
-        int testNumber = UnityEngine.Random.Range(1, 6);
-        if (testNumber == 1)
-            response = true;
-        else
-            response = false;
-        return response;
-    }
+    //private bool RandomTF()
+    //{
+    //    bool response;
+    //    int testNumber = UnityEngine.Random.Range(1, 6);
+    //    if (testNumber == 1)
+    //        response = true;
+    //    else
+    //        response = false;
+    //    return response;
+    //}
 
     //回傳可走區塊相關功能
     public List<Point> getCanMoveArea()
@@ -250,9 +199,6 @@ public class GHSMapData : MonoBehaviour {
     public void RemovePlayerAreaByIndex(int ID)
     {
         _canMoveArea.Remove(_playerPos[ID]);
-        //_canMoveArea.Remove(_playerPos[1]);
-        //_canMoveArea.Remove(_playerPos[2]);
-        //_canMoveArea.Remove(_playerPos[3]);
     }
 
     //回傳玩家位置相關功能
@@ -407,41 +353,6 @@ public class GHSMapData : MonoBehaviour {
         get
         {
             return _screenHeightBlock;
-        }
-    }
-
-    private void SwitchGameObject(int gameObjectNumber, ref GameObject productGameObject)
-    {
-        switch (gameObjectNumber)
-        {
-            case 0:
-                {
-                    Debug.Log("gameObject = reflectionObject");
-                    productGameObject = _reflectionObject;
-                    break;
-                }
-            case 1:
-                {
-                    productGameObject = _refractionObject;
-                    break;
-                }
-            case 2:
-                {
-                    productGameObject = _windObject;
-                    break;
-                }
-            case 3:
-                {
-                    productGameObject = _targetObject;
-                    break;
-                }
-            case 4:
-                {
-                    productGameObject = _laserBall;
-                    break;
-                }
-            default:
-                break;
         }
     }
 }
