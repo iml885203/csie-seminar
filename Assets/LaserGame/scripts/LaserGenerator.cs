@@ -20,18 +20,27 @@ public class LaserGenerator : MonoBehaviour {
         _timer += Time.deltaTime;
         if (_timer >= GeneratorBallTime)
         {
-            _timer = 0f;
-            GameObject clone = (GameObject)Instantiate(LaserBall, this.transform.position, this.transform.rotation);
-            clone.transform.SetParent(this.transform);
-            clone.transform.localScale = LaserBall.transform.localScale; //給複製的球跟LaserBall一樣大
-            foreach (Transform child in transform)
+            try
             {
-                if (child.tag == "laserBall")
+                _timer = 0f;
+                GameObject clone = (GameObject)Instantiate(LaserBall, this.transform.position, this.transform.rotation);
+                clone.transform.SetParent(this.transform);
+                clone.transform.localScale = LaserBall.transform.localScale; //給複製的球跟LaserBall一樣大
+                foreach (Transform child in transform)
                 {
-                    Physics.IgnoreCollision(clone.GetComponent<SphereCollider>(), child.GetComponent<SphereCollider>());
+                    if (child.tag == "laserBall")
+                    {
+                        Physics.IgnoreCollision(clone.GetComponent<SphereCollider>(), child.GetComponent<SphereCollider>());
+                    }
                 }
+                clone.SetActive(true);
+                clone.GetComponent<Rigidbody>().AddForce(transform.right * BallForce);
             }
-            clone.GetComponent<Rigidbody>().AddForce(transform.right * BallForce);
+            catch
+            {
+
+            }
+            
         }
 	}
 }

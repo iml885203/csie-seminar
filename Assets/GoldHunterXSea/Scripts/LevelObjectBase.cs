@@ -37,12 +37,13 @@ static class GameLevelFile
 /// 13,2
 /// </關卡文字檔格式說明>
 
-public class LevelObject : MonoBehaviour
+public class LevelObjectBase : MonoBehaviour
 {
     public Text _levelFlag;
-    private string TEXT_FILE_NAME;
+    public Text _stateFlag;
+    protected string TEXT_FILE_NAME;
 
-    private GameObject _productGameObject;
+    protected GameObject _productGameObject;
 
     public GameObject _laserGenerator;
     public GameObject _reflectionObject;
@@ -53,25 +54,24 @@ public class LevelObject : MonoBehaviour
 
     public GameObject _canvas;
 
-    private float _canvasWidth;
-    private float _canvasHeight;
+    protected float _canvasWidth;
+    protected float _canvasHeight;
 
-    private float _blockWidth;
-    private float _blockHeight;
-    private const float HalfRate = (float).5;
+    protected float _blockWidth;
+    protected float _blockHeight;
+    protected const float HalfRate = (float).5;
 
-    private int _blockWidthCount;
-    private int _blockHeightCount;
+    protected int _blockWidthCount;
+    protected int _blockHeightCount;
 
     public GHSMapData _mapData;
 
-    private float _originPointX;
-    private float _originPointY;
+    protected float _originPointX;
+    protected float _originPointY;
 
     // Use this for initialization
-    void Start()
+    public void Start()
     {
-        //TEXT_FILE_NAME = GameLevelFile.LEVEL_1;
 
         //格數
         _blockWidthCount = _mapData.ScreenWidthBlock;
@@ -84,57 +84,66 @@ public class LevelObject : MonoBehaviour
         //原點座標
         _originPointX = _canvas.transform.localPosition.x - (_canvasWidth / 2);
         _originPointY = _canvas.transform.localPosition.y + (_canvasHeight / 2);
+        Debug.Log("_originPointX = " + _originPointX + ",_originPointY = " + _originPointY);
 
         //框格寬度
         _blockWidth = _canvasWidth / _blockWidthCount;
         _blockHeight = _canvasHeight / _blockHeightCount;
-
-        //this.SetLevelObjectsByFileName(TEXT_FILE_NAME);
     }
 
     // Update is called once per frame
-    void Update()
+    public void Update()
     {
-        this.SwitchLevelFile();
-    }
+        //this.SwitchLevelFile();
 
-    //依據選的關卡更變讀取的文件
-    public void SwitchLevelFile()
-    {
-        switch (_levelFlag.text)
-        {
-            case "1":
-                {
-                    TEXT_FILE_NAME = GameLevelFile.LEVEL_1;
-                    break;
-                }
-            case "2":
-                {
-                    TEXT_FILE_NAME = GameLevelFile.LEVEL_2;
-                    break;
-                }
-            case "3":
-                {
-                    TEXT_FILE_NAME = GameLevelFile.LEVEL_3;
-                    break;
-                }
-            case "4":
-                {
-                    TEXT_FILE_NAME = GameLevelFile.LEVEL_4;
-                    break;
-                }
-            case "5":
-                {
-                    TEXT_FILE_NAME = GameLevelFile.LEVEL_5;
-                    break;
-                }
-            default:
-                break;
-        }
+        //if(_stateFlag.text == GameState.Menu.ToString())
+        //{
+        //    if(this.name == "GameLevelObjects")
+        //    {
+        //        this.SetLevelObjectsActive(false);
+        //    }
+        //    if (this.name == "PreviewGameLevel")
+        //    {
+        //        this.SetLevelObjectsActive(false);
+        //    }
+        //}
+        //else if(_stateFlag.text == GameState.Setting.ToString())
+        //{
+        //    if (this.name == "GameLevelObjects")
+        //    {
+        //        this.SetLevelObjectsActive(false);
+        //    }
+        //    if (this.name == "PreviewGameLevel")
+        //    {
+        //        this.SetLevelObjectsActive(true);
+        //    }
+        //}
+        //else if (_stateFlag.text == GameState.GameRun.ToString())
+        //{
+        //    if (this.name == "GameLevelObjects")
+        //    {
+        //        this.SetLevelObjectsActive(true);
+        //    }
+        //    if (this.name == "PreviewGameLevel")
+        //    {
+        //        this.SetLevelObjectsActive(false);
+        //    }
+        //}
+        //else if (_stateFlag.text == GameState.ListProducer.ToString())
+        //{
+        //    if (this.name == "GameLevelObjects")
+        //    {
+        //        this.SetLevelObjectsActive(false);
+        //    }
+        //    if (this.name == "PreviewGameLevel")
+        //    {
+        //        this.SetLevelObjectsActive(false);
+        //    }
+        //}
     }
 
     //設置關卡物件
-    public void SetLevelObjectsByTextFile()
+    virtual public void SetLevelObjectsByTextFile()
     {
         string readLineBuffer;
 
@@ -178,10 +187,12 @@ public class LevelObject : MonoBehaviour
                     new Vector3(Convert.ToSingle(objectPoint.x), Convert.ToSingle(objectPoint.y), Convert.ToSingle(0)),
                     new Quaternion(0, 0, 0, 1)
                     );
+
                 cloneObject.transform.localScale = _productGameObject.transform.localScale;
                 cloneObject.transform.localRotation = _productGameObject.transform.localRotation;
                 cloneObject.transform.Rotate(Vector3.forward * rotateAngle, Space.World);
                 cloneObject.transform.SetParent(this.transform.FindChild("InLevelObjects"));
+                cloneObject.SetActive(true);
 
                 //轉換物件間區格用的readLine
                 if (numberIndex == amount - 1) fileData.ReadLine();
@@ -199,6 +210,14 @@ public class LevelObject : MonoBehaviour
         }
     }
 
+    public void SetLevelObjectsActive(bool value)
+    {
+        for (int activeIndex = 0; activeIndex < this.transform.FindChild("InLevelObjects").childCount; activeIndex++)
+        {
+            this.transform.FindChild("InLevelObjects").GetChild(activeIndex).gameObject.SetActive(value);
+        }
+    }
+
     //轉換框格點座標到畫布點座標
     public Point TransBlockToCanvasPosition(Point position)
     {
@@ -213,8 +232,43 @@ public class LevelObject : MonoBehaviour
         return canvasPosition;
     }
 
+    //依據選的關卡更變讀取的文件
+    public void SwitchLevelFile()
+    {
+        switch (_levelFlag.text)
+        {
+            case "1":
+                {
+                    TEXT_FILE_NAME = GameLevelFile.LEVEL_1;
+                    break;
+                }
+            case "2":
+                {
+                    TEXT_FILE_NAME = GameLevelFile.LEVEL_2;
+                    break;
+                }
+            case "3":
+                {
+                    TEXT_FILE_NAME = GameLevelFile.LEVEL_3;
+                    break;
+                }
+            case "4":
+                {
+                    TEXT_FILE_NAME = GameLevelFile.LEVEL_4;
+                    break;
+                }
+            case "5":
+                {
+                    TEXT_FILE_NAME = GameLevelFile.LEVEL_5;
+                    break;
+                }
+            default:
+                break;
+        }
+    }
+
     //將欲產生物件給到productGameObject上
-    private void SwitchGameObject(string gameObjectName, ref GameObject productGameObject)
+    public void SwitchGameObject(string gameObjectName, ref GameObject productGameObject)
     {
         switch (gameObjectName)
         {
