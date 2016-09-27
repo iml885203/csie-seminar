@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using OpenCVForUnity;
+using UnityEngine.UI;
 using System;
 
 static class GameLevelFile
@@ -38,7 +39,8 @@ static class GameLevelFile
 
 public class LevelObject : MonoBehaviour
 {
-    private const string TEXT_FILE_NAME = GameLevelFile.LEVEL_1;
+    public Text _levelFlag;
+    private string TEXT_FILE_NAME;
 
     private GameObject _productGameObject;
 
@@ -69,6 +71,8 @@ public class LevelObject : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        //TEXT_FILE_NAME = GameLevelFile.LEVEL_1;
+
         //格數
         _blockWidthCount = _mapData.ScreenWidthBlock;
         _blockHeightCount = _mapData.ScreenHeightBlock;
@@ -85,13 +89,60 @@ public class LevelObject : MonoBehaviour
         _blockWidth = _canvasWidth / _blockWidthCount;
         _blockHeight = _canvasHeight / _blockHeightCount;
 
+        //this.SetLevelObjectsByFileName(TEXT_FILE_NAME);
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        this.SwitchLevelFile();
+    }
+
+    //依據選的關卡更變讀取的文件
+    public void SwitchLevelFile()
+    {
+        switch (_levelFlag.text)
+        {
+            case "1":
+                {
+                    TEXT_FILE_NAME = GameLevelFile.LEVEL_1;
+                    break;
+                }
+            case "2":
+                {
+                    TEXT_FILE_NAME = GameLevelFile.LEVEL_2;
+                    break;
+                }
+            case "3":
+                {
+                    TEXT_FILE_NAME = GameLevelFile.LEVEL_3;
+                    break;
+                }
+            case "4":
+                {
+                    TEXT_FILE_NAME = GameLevelFile.LEVEL_4;
+                    break;
+                }
+            case "5":
+                {
+                    TEXT_FILE_NAME = GameLevelFile.LEVEL_5;
+                    break;
+                }
+            default:
+                break;
+        }
+    }
+
+    //設置關卡物件
+    public void SetLevelObjectsByTextFile()
+    {
         string readLineBuffer;
 
         //讀檔設立物件
         System.IO.StreamReader fileData = new System.IO.StreamReader(TEXT_FILE_NAME, System.Text.Encoding.Default);
 
         //直到沒讀到資訊
-        while((readLineBuffer = fileData.ReadLine()) != null)
+        while ((readLineBuffer = fileData.ReadLine()) != null)
         {
             //給定物件種類字串
             string kind = readLineBuffer;
@@ -102,7 +153,7 @@ public class LevelObject : MonoBehaviour
 
             //讀取數量跑迴圈
             int amount = Convert.ToInt16(fileData.ReadLine());
-            for(int numberIndex = 0; numberIndex < amount; numberIndex++)
+            for (int numberIndex = 0; numberIndex < amount; numberIndex++)
             {
                 //區間用的readLine
                 fileData.ReadLine();
@@ -133,16 +184,19 @@ public class LevelObject : MonoBehaviour
                 cloneObject.transform.SetParent(this.transform.FindChild("InLevelObjects"));
 
                 //轉換物件間區格用的readLine
-                if(numberIndex == amount - 1) fileData.ReadLine();
+                if (numberIndex == amount - 1) fileData.ReadLine();
             }
         }
         fileData.Close();
     }
 
-    // Update is called once per frame
-    void Update()
+    //清除關卡物件
+    public void DestoryLevelObjects()
     {
-
+        for (int destoryIndex = 0; destoryIndex < this.transform.FindChild("InLevelObjects").childCount; destoryIndex++)
+        {
+            Destroy(this.transform.FindChild("InLevelObjects").GetChild(destoryIndex).gameObject);
+        }
     }
 
     //轉換框格點座標到畫布點座標
