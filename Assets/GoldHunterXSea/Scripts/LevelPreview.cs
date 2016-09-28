@@ -61,7 +61,6 @@ public class LevelPreview : LevelObjectBase
             string kind = readLineBuffer;
 
             //將gameObject給定指定的物件
-            _productGameObject = new GameObject();
             this.SwitchGameObject(kind, ref _productGameObject);
 
             //讀取數量跑迴圈
