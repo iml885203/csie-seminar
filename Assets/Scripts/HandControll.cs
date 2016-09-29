@@ -67,7 +67,7 @@ public class HandControll : MonoBehaviour {
                 Vector2 colorPos = _drawBlockManager._map.CameraSpacePointToColorVector2(pos);
                 Vector2 pos_inDrawBlock = GetInDrawBlockPos(colorPos);
                 RectTransform myRect = this.transform as RectTransform;
-                myRect.anchoredPosition = _posTrans.TransToScreen2Pos(new Vector2(pos_inDrawBlock.x, -pos_inDrawBlock.y));
+                myRect.anchoredPosition = _posTrans.TransToScreen2Pos(new Vector2(-pos_inDrawBlock.x, -pos_inDrawBlock.y));
             }
         }
     }

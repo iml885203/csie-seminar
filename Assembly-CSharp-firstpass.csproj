@@ -133,6 +133,7 @@
      <None Include="Assets\OpenCVForUnity\StreamingAssets\haarcascade_frontalface_alt.xml" />
      <None Include="Assets\OpenCVForUnity\StreamingAssets\lbpcascade_frontalface.xml" />
      <None Include="Assets\GreenScreen\Materials\GreenScreenShader.shader" />
+     <None Include="Assets\LaserGame\LaserGameObject\SimpleGrabPassBlur.shader" />
      <None Include="Assets\GoldHunterXSea\Sound\message.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
