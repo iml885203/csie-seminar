@@ -17,6 +17,8 @@ public class DrawBlock : MonoBehaviour {
     private Mat _blockImage;
     private Mat _blockDepthImage;
     private Mat _blockDepthBackGroundImage;
+    //穩定狀態的畫面
+    private Mat _smoothesImage;
     public int MatchWidth { get; private set; }
     public int MatchHeight { get; private set; }
     //儲存點擊位置
@@ -310,12 +312,15 @@ public class DrawBlock : MonoBehaviour {
         //設定背景深度 快捷鍵L
         setDepthSourceBackGroundMat(depthMatchImagePorcess);
 
-        //平滑處理(之後嘗試看看)
+        
         //減去背景深度
         Core.absdiff(depthMatchImagePorcess, _blockDepthBackGroundImage, depthMatchImagePorcess);
 
         //二值化
         Imgproc.threshold(depthMatchImagePorcess, depthMatchImagePorcess, 50, 255, Imgproc.THRESH_OTSU);
+        //平滑處理(之後嘗試看看)
+        SmoothesImage(depthMatchImagePorcess).copyTo(depthMatchImagePorcess);
+
         //設定Canny參數
         //double threshold = 50.0;
         //做Canny輪廓化
@@ -426,5 +431,30 @@ public class DrawBlock : MonoBehaviour {
             _blockDepthBackGroundImage = new Mat();
             _blockDepthBackGroundImage.setTo(new Scalar(0, 0, 0));
         }
+    }
+    //平滑影像(若與上一張圖片相差過少將不更新畫面)
+    private Mat SmoothesImage(Mat currentImage)
+    {
+        Mat hierarchy = new Mat();
+        List<MatOfPoint> contours = new List<MatOfPoint>();
+        Mat diffImage = new Mat();
+        if (_smoothesImage == null)
+        {
+            _smoothesImage = new Mat(currentImage.height(), currentImage.width(), CvType.CV_8UC1);
+            currentImage.copyTo(_smoothesImage);
+        }
+        Core.absdiff(currentImage, _smoothesImage, diffImage);
+        Imgproc.findContours(diffImage, contours, hierarchy,Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+        for (int index = 0; index < contours.Count; index++)
+        {
+            OpenCVForUnity.Rect tempRect = Imgproc.boundingRect(contours[index]);
+            //差異面積
+            if(tempRect.area() > 1000)
+            {
+                currentImage.copyTo(_smoothesImage);
+                return currentImage;
+            }
+        }
+        return _smoothesImage;
     }
 }

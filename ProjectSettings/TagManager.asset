@@ -10,6 +10,10 @@ TagManager:
   - UI_Test
   - Hand
   - dispersionObject
+  - refractionObjects
+  - windObject
+  - targetObject
+  - SplitObject
   layers:
   - Default
   - TransparentFX
