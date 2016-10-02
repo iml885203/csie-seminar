@@ -13,6 +13,8 @@ TagManager:
   - refractionObjects
   - windObject
   - targetObject
+  - floatObject
+  - MenuMoveObject
   - SplitObject
   layers:
   - Default
