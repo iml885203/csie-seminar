@@ -88,10 +88,6 @@ public class Match : MonoBehaviour {
         getDepthContours(_DepthMat, BlackDepthMat);
          //getContours(_DepthMat, BlackMat);
 
-         //方法三 用特徵點抓物件
-         //descriptorsORB(_NewTowMat, BlackMat, "queen");
-         //descriptorsORB(BlackMat, BlackMat, "lena");
-
          //將結果影像轉換影像格式與大小設定
          Mat resizeMat = new Mat(_matchHeight, _matchWidth, CvType.CV_8UC3);
         Imgproc.resize(BlackDepthMat, resizeMat, resizeMat.size());
@@ -190,6 +186,13 @@ public class Match : MonoBehaviour {
                     //Debug.Log("setMatchObject fail");
                 }
             }
+            //else if(hullInt.toList().Count == 3)
+            //{
+            //    if (!setMatchObject(index, pointMatList, contours, hullPoints, result, matchObject))
+            //    {
+            //        //Debug.Log("setMatchObject fail");
+            //    }
+            //}
             //清空記憶體
             defects.Dispose();
             hullPointList.Clear();

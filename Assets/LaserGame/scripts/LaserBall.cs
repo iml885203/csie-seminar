@@ -131,7 +131,7 @@ public class LaserBall : MonoBehaviour {
         {
             //Debug.Log("Win");
             Destroy(this.gameObject);
-
+            other.gameObject.GetComponent<playerCube>().IsHit(1);
         }
     }
 }

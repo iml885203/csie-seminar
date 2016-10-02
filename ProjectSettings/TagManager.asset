@@ -15,6 +15,7 @@ TagManager:
   - targetObject
   - floatObject
   - MenuMoveObject
+  - SplitObject
   layers:
   - Default
   - TransparentFX

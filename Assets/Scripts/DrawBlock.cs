@@ -17,6 +17,8 @@ public class DrawBlock : MonoBehaviour {
     private Mat _blockImage;
     private Mat _blockDepthImage;
     private Mat _blockDepthBackGroundImage;
+    //穩定狀態的畫面
+    private Mat _smoothesImage;
     public int MatchWidth { get; private set; }
     public int MatchHeight { get; private set; }
     //儲存點擊位置
@@ -160,8 +162,9 @@ public class DrawBlock : MonoBehaviour {
         {
             _souceOut = new Texture2D(_inputWidth, _inputHeight);
         }
+        //翻轉影像
+        ReversedImage(_sourceMat).copyTo(_sourceMat);
         //將mat轉換回2D影像
-        
         Utils.matToTexture2D(_sourceMat, _souceOut);
         //放入輸出rawImage
         _inoutImg.texture = _souceOut;        
@@ -170,8 +173,8 @@ public class DrawBlock : MonoBehaviour {
     public void pointDown()//滑鼠點擊
     {
         //取得滑鼠在螢幕上點擊的位置
-        float x = Input.mousePosition.x;
-        float y = Screen.height - Input.mousePosition.y;
+        float x = Screen.width - Input.mousePosition.x;
+        float y = Input.mousePosition.y;
 
         if (Input.GetMouseButton(1))
         {
@@ -229,8 +232,8 @@ public class DrawBlock : MonoBehaviour {
     public void pointMove()//滑鼠移動
     {
         //取得滑鼠在螢幕放開的位置
-        float x = Input.mousePosition.x;
-        float y = Screen.height - Input.mousePosition.y;
+        float x = Screen.width - Input.mousePosition.x;
+        float y = Input.mousePosition.y;
         //存入list
         _pointTwo = _positionTrans.TransToScreen2Pos(new Point(x, y));
 
@@ -254,9 +257,7 @@ public class DrawBlock : MonoBehaviour {
         subMat.copyTo(_blockImage);
 
         //反轉化面
-        Point src_center = new Point(_blockImage.cols() / 2.0, _blockImage.rows() / 2.0);
-        Mat rot_mat = Imgproc.getRotationMatrix2D(src_center, 180, 1.0);
-        Imgproc.warpAffine(_blockImage, _blockImage, rot_mat, _blockImage.size());
+        ReversedImage(_blockImage).copyTo(_blockImage);
 
         //區塊畫面壓縮輸出
         Mat outMat = new Mat(100, 100, CvType.CV_8UC3);
@@ -292,14 +293,11 @@ public class DrawBlock : MonoBehaviour {
         else
             subDepthMat = _blockImageBuffer.submat((_blockImageBuffer.height() - _maxY), (_blockImageBuffer.height() - _minY), _minX, _maxX);
         //反轉化面
-        Mat TempWarpMat = new Mat();
-        Point src_center = new Point(subDepthMat.cols() / 2.0, subDepthMat.rows() / 2.0);
-        Mat rot_mat = Imgproc.getRotationMatrix2D(src_center, 180, 1.0);
-        Imgproc.warpAffine(subDepthMat, TempWarpMat, rot_mat, _blockImage.size());
+        ReversedImage(subDepthMat).copyTo(subDepthMat);
 
         // 膨脹收縮 處理depth影像
         Mat depthMatchImagePorcess = new Mat();
-        TempWarpMat.copyTo(depthMatchImagePorcess);
+        subDepthMat.copyTo(depthMatchImagePorcess);
         Mat erodeElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(7, 7));
         Mat dilateElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(5, 5));
         
@@ -310,12 +308,15 @@ public class DrawBlock : MonoBehaviour {
         //設定背景深度 快捷鍵L
         setDepthSourceBackGroundMat(depthMatchImagePorcess);
 
-        //平滑處理(之後嘗試看看)
+        
         //減去背景深度
         Core.absdiff(depthMatchImagePorcess, _blockDepthBackGroundImage, depthMatchImagePorcess);
 
         //二值化
         Imgproc.threshold(depthMatchImagePorcess, depthMatchImagePorcess, 50, 255, Imgproc.THRESH_OTSU);
+        //平滑處理(之後嘗試看看)
+        SmoothesImage(depthMatchImagePorcess).copyTo(depthMatchImagePorcess);
+
         //設定Canny參數
         //double threshold = 50.0;
         //做Canny輪廓化
@@ -351,7 +352,6 @@ public class DrawBlock : MonoBehaviour {
 
        
         subDepthMat.release();
-        TempWarpMat.release();
         depthMatchImagePorcess.release();
         outDepthMat.release();
     }
@@ -426,5 +426,40 @@ public class DrawBlock : MonoBehaviour {
             _blockDepthBackGroundImage = new Mat();
             _blockDepthBackGroundImage.setTo(new Scalar(0, 0, 0));
         }
+    }
+    //平滑影像(若與上一張圖片相差過少將不更新畫面)
+    private Mat SmoothesImage(Mat currentImage)
+    {
+        Mat hierarchy = new Mat();
+        List<MatOfPoint> contours = new List<MatOfPoint>();
+        Mat diffImage = new Mat();
+        if (_smoothesImage == null)
+        {
+            _smoothesImage = new Mat(currentImage.height(), currentImage.width(), CvType.CV_8UC1);
+            currentImage.copyTo(_smoothesImage);
+        }
+        Core.absdiff(currentImage, _smoothesImage, diffImage);
+        Imgproc.findContours(diffImage, contours, hierarchy,Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+        for (int index = 0; index < contours.Count; index++)
+        {
+            OpenCVForUnity.Rect tempRect = Imgproc.boundingRect(contours[index]);
+            //差異面積
+            if(tempRect.area() > 1000)
+            {
+                currentImage.copyTo(_smoothesImage);
+                return currentImage;
+            }
+        }
+        return _smoothesImage;
+    }
+    //反轉畫面
+    private Mat ReversedImage(Mat inImage)
+    {
+        Mat TempWarpMat = new Mat();
+        Point src_center = new Point(inImage.cols() / 2.0, inImage.rows() / 2.0);
+        Mat rot_mat = Imgproc.getRotationMatrix2D(src_center, 180, 1.0);
+        Imgproc.warpAffine(inImage, TempWarpMat, rot_mat, inImage.size());
+        TempWarpMat.copyTo(inImage);
+        return inImage;
     }
 }
