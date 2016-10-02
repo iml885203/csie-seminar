@@ -45,27 +45,6 @@ public class DynamicMake : MonoBehaviour
                 UpdatePos(superGameObject.transform.GetChild(i).gameObject, .05f, matchObject);
             }
         }
-        if (GUILayout.Button("動態產生物件") == true && _drawBlock.ScreenSettingCompletionFlag)
-        {
-            //確認已開啟攝影機
-            if (_drawBlock.MatchHeight == 0 && _drawBlock.MatchWidth == 0) return;
-            // ==========================
-            // set public Width Height ==
-            // ==========================
-            _Width = _drawBlock.MatchWidth;
-            _Height = _drawBlock.MatchHeight;
-            MatchObject matchObject = _DataMatch._matchObjectList[superGameObject.transform.childCount];
-
-            CreateObject(matchObject);
-
-        }
-
-        if (GUILayout.Button("動態移除物件") == true)
-        {
-            //Destroy(childGameObject);//刪除複製出來的子物件
-            DeleteObject();
-        }
-
     }
     public void UpdatePos(GameObject Object,float speed, MatchObject matchObject)
     {
