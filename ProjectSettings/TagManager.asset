@@ -10,6 +10,11 @@ TagManager:
   - UI_Test
   - Hand
   - dispersionObject
+  - refractionObjects
+  - windObject
+  - targetObject
+  - floatObject
+  - MenuMoveObject
   layers:
   - Default
   - TransparentFX
