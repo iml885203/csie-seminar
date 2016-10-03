@@ -8,11 +8,6 @@ public class ButtonEvent : MonoBehaviour
     //遊戲狀態
     public GameStateIndex _gameStateIndex;
 
-    //遊戲背景圖片
-    public GameObject _menuBackGroundImage;
-    public GameObject _listProducerBackGroundImage;
-    public GameObject _settingBackGroundImage;
-
     public GameObject[] _menuBackGroundImages;
     public GameObject[] _settingBackGroundImages;
     public GameObject[] _listProducerBackGroundImages;
