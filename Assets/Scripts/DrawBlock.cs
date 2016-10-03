@@ -346,6 +346,9 @@ public class DrawBlock : MonoBehaviour {
         Mat outDepthMat = new Mat(100, 100, CvType.CV_8UC1);
         Imgproc.resize(_blockDepthImage, outDepthMat, outDepthMat.size());
 
+        //反轉化面
+        ReversedImage(outDepthMat).copyTo(outDepthMat);
+
         //擷取輸出(顯示深度的切割結果)
         Utils.matToTexture2D(outDepthMat, _blockDepthTexture);
         _blockDepthImg.texture = _blockDepthTexture;

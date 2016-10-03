@@ -57,7 +57,7 @@ public class DynamicMake : MonoBehaviour
         Point transScale = _posTrans.TransToScreen2Pos(new Point(matchObject._scale.x, matchObject._scale.y));
         childGameObject.transform.localScale = Vector3.Lerp(childGameObject.transform.localScale, new Vector3((float)transScale.x, (float)transScale.y, 50), speed);
         //更新旋轉角度
-        Object.transform.rotation = new Quaternion(0, 0, (float)((matchObject._rotation + .5f)), 1);
+        Object.transform.eulerAngles = new Vector3(0, 0, (float)((matchObject._rotation + .5f) * 180));
         return;
     }
     public void CreateObject(MatchObject matchObject)

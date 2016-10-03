@@ -16,6 +16,7 @@ TagManager:
   - floatObject
   - MenuMoveObject
   - SplitObject
+  - SettingMoveObject
   layers:
   - Default
   - TransparentFX
@@ -52,4 +53,10 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: kinectView
+    uniqueID: 4063239173
+    locked: 0
+  - name: UI
+    uniqueID: 346900777
     locked: 0
