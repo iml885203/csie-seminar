@@ -24,7 +24,7 @@ public class ListProducer : MonoBehaviour
     public void Start()
     {
         _tempPosition = _gameObject.transform.localPosition;
-        _targetPosition = new Vector3(_gameObject.transform.localPosition.x, _gameObject.transform.localPosition.y + _gameObject.GetComponent<RectTransform>().rect.height, _gameObject.transform.localPosition.z);
+        _targetPosition = new Vector3(_gameObject.transform.localPosition.x, _gameObject.transform.localPosition.y + (_gameObject.GetComponent<RectTransform>().rect.height * 2), _gameObject.transform.localPosition.z);
     }
 
     private void FixedUpdate()
