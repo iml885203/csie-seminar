@@ -1667,7 +1667,7 @@ RectTransform:
   m_Children:
   - {fileID: 2135470068}
   m_Father: {fileID: 793509186}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: -0.000015258789, y: 0}
@@ -3983,8 +3983,8 @@ RectTransform:
   m_Children:
   - {fileID: 1131909410}
   - {fileID: 688609996}
-  - {fileID: 2032005506}
   - {fileID: 471797162}
+  - {fileID: 2032005506}
   m_Father: {fileID: 1431115659}
   m_RootOrder: 1
   m_AnchorMin: {x: 0, y: 0}
@@ -5723,6 +5723,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 224: {fileID: 1131909410}
+  - 114: {fileID: 1131909411}
   m_Layer: 5
   m_Name: ImageGroup1
   m_TagString: Untagged
@@ -5752,6 +5753,24 @@ RectTransform:
   m_AnchoredPosition: {x: -0.0000076293945, y: 0.0000038146973}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1131909411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1131909409}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b437703264a4b046bae481e38f1374f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _imageGroup:
+  - {fileID: 1720852780}
+  - {fileID: 367250141}
+  - {fileID: 1724713421}
+  - {fileID: 786527283}
+  - {fileID: 693852966}
+  _aImageTime: 0.25
 --- !u!1 &1146736642
 GameObject:
   m_ObjectHideFlags: 0
@@ -8559,10 +8578,10 @@ RectTransform:
   - {fileID: 793509186}
   m_Father: {fileID: 1688610108}
   m_RootOrder: 4
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0.25, y: 0.00047302246}
-  m_SizeDelta: {x: 799.5, y: 446}
+  m_SizeDelta: {x: -0.5, y: -4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1432709233
 GameObject:
@@ -10543,7 +10562,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1724713422
 RectTransform:
   m_ObjectHideFlags: 0
@@ -12064,7 +12083,7 @@ RectTransform:
   m_Children:
   - {fileID: 441096278}
   m_Father: {fileID: 793509186}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 175, y: -95}
