@@ -5,15 +5,6 @@ using OpenCVForUnity;
 using UnityEngine.UI;
 using System;
 
-static class GameLevelFile
-{
-    public const string LEVEL_1 = "objectDataLevel1.txt";
-    public const string LEVEL_2 = "objectDataLevel2.txt";
-    public const string LEVEL_3 = "objectDataLevel3.txt";
-    public const string LEVEL_4 = "objectDataLevel4.txt";
-    public const string LEVEL_5 = "objectDataLevel5.txt";
-}
-
 /// <關卡文字檔格式說明>
 /// 雷射槍      <物件名稱>
 /// 1           <物件數量>
@@ -72,7 +63,6 @@ public class LevelObjectBase : MonoBehaviour
     // Use this for initialization
     public void Start()
     {
-
         //格數
         _blockWidthCount = _mapData.ScreenWidthBlock;
         _blockHeightCount = _mapData.ScreenHeightBlock;
