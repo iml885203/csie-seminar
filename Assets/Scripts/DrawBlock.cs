@@ -314,7 +314,6 @@ public class DrawBlock : MonoBehaviour {
 
         //二值化
         Imgproc.threshold(depthMatchImagePorcess, depthMatchImagePorcess, 50, 255, Imgproc.THRESH_BINARY);
-        //Imgproc.threshold(depthMatchImagePorcess, depthMatchImagePorcess, 50, 255, Imgproc.THRESH_OTSU);
 
         //平滑處理(之後嘗試看看)
         SmoothesImage(depthMatchImagePorcess).copyTo(depthMatchImagePorcess);
