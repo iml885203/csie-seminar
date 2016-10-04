@@ -12,7 +12,7 @@ CGPROGRAM
 
 Texture2D _MainTex;
 
-sampler SampleType;
+sampler sampler_MainTex;
 
 struct vs_input {
 	float4 pos : POSITION;
@@ -54,7 +54,7 @@ float4 frag (ps_input i, in uint id : SV_InstanceID) : COLOR
 		float player = bodyIndexBuffer[(int)depthCoordinates[colorIndex].x + (int)(depthCoordinates[colorIndex].y * 512)];
 		if (player != 255)
 		{
-			o = _MainTex.Sample(SampleType, i.tex);
+			o = _MainTex.Sample(sampler_MainTex, i.tex);
 		}
 	}
 	
