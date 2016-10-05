@@ -7,15 +7,15 @@ public class LaserBall : MonoBehaviour {
     private int _reflectCount;
     private Vector3 _beforeReflectVelocity;
 
-    public WindZone _wind;
+    //public WindZone _wind;
     Vector3 _windForce;
-    float _windRadius;
+    //float _windRadius;
 
     // Use this for initialization
     void Start ()
     {
-        _windForce = _wind.GetComponent<Wind>().GetWindForce();
-        _windRadius = _wind.GetComponent<Wind>().GetWindRadius();
+        //_windForce = _wind.GetComponent<Wind>().GetWindForce();
+        //_windRadius = _wind.GetComponent<Wind>().GetWindRadius();
 
         //_reflashVelocityFlag = true;
         _ballRigidbody = GetComponent<Rigidbody>();
@@ -31,24 +31,21 @@ public class LaserBall : MonoBehaviour {
 
     void FixedUpdate()
     {
-        if (Vector3.Distance(this.gameObject.transform.position, _wind.transform.position) < _windRadius)
-        {
-            //Vector3 windForce = new Vector3((this.gameObject.transform.position.x - _wind.transform.position.x),
-            //                            (this.gameObject.transform.position.y - _wind.transform.position.y),
-            //                            0);
+        //if (Vector3.Distance(this.gameObject.transform.position, _wind.transform.position) < _windRadius)
+        //{
 
-            Vector3 windForce = new Vector3((_wind.transform.position.x - this.gameObject.transform.position.x) * 30000,
-                                            (_wind.transform.position.y - this.gameObject.transform.position.y) * 30000,
-                                            0);
+        //    Vector3 windForce = new Vector3((_wind.transform.position.x - this.gameObject.transform.position.x) * 30000,
+        //                                    (_wind.transform.position.y - this.gameObject.transform.position.y) * 30000,
+        //                                    0);
 
-            //windForce = windForce.normalized;
-            Debug.Log("windForce = " + windForce);
-            this.GetComponent<ConstantForce>().force = windForce;
-        }
-        else
-        {
-            this.GetComponent<ConstantForce>().force = Vector3.zero;
-        } 
+        //    //windForce = windForce.normalized;
+        //    Debug.Log("windForce = " + windForce);
+        //    this.GetComponent<ConstantForce>().force = windForce;
+        //}
+        //else
+        //{
+        //    this.GetComponent<ConstantForce>().force = Vector3.zero;
+        //} 
     }
 
     void OnTriggerEnter(Collider other)
@@ -82,11 +79,11 @@ public class LaserBall : MonoBehaviour {
         //碰撞黑洞事件
         if (other.gameObject.tag == "windObject")
         {
-            Vector3 windForce = new Vector3((_wind.transform.position.x - this.gameObject.transform.position.x) * 1000,
-                                            (_wind.transform.position.y - this.gameObject.transform.position.y) * 1000,
+            Vector3 windForce = new Vector3((other.transform.position.x - this.gameObject.transform.position.x) * 1000,
+                                            (other.transform.position.y - this.gameObject.transform.position.y) * 1000,
                                             0);
-            Debug.Log("_wind.transform.position.x = " + _wind.transform.position.x + ", this.gameObject.transform.position.x = " + this.gameObject.transform.position.x);
-            Debug.Log("_wind.transform.position.y = " + _wind.transform.position.y + ", this.gameObject.transform.position.y = " + this.gameObject.transform.position.y);
+            Debug.Log("_wind.transform.position.x = " + other.transform.position.x + ", this.gameObject.transform.position.x = " + this.gameObject.transform.position.x);
+            Debug.Log("_wind.transform.position.y = " + other.transform.position.y + ", this.gameObject.transform.position.y = " + this.gameObject.transform.position.y);
             
             //windForce = windForce.normalized;
             Debug.Log("windForce = " + windForce);

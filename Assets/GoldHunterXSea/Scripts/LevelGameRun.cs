@@ -21,21 +21,21 @@ public class LevelGameRun : LevelObjectBase
     {
         this.SwitchLevelFile();
 
-        if (_stateFlag.text == GameState.Menu.ToString())
+        if (_gameState.GetCurrentGameStateIndex() == GameState.Menu)
         {
             this.SetLevelObjectsActive(false);
             base.DestoryLevelObjects();
             _isSetLevelObjects = false;
         }
-        else if (_stateFlag.text == GameState.Setting.ToString())
+        else if (_gameState.GetCurrentGameStateIndex() == GameState.Setting)
         {
             this.SetLevelObjectsActive(false);
         }
-        else if (_stateFlag.text == GameState.GameRun.ToString())
+        else if (_gameState.GetCurrentGameStateIndex() == GameState.GameRun)
         {
             this.SetLevelObjectsActive(true);
         }
-        else if (_stateFlag.text == GameState.ListProducer.ToString())
+        else if (_gameState.GetCurrentGameStateIndex() == GameState.ListProducer)
         {
             this.SetLevelObjectsActive(false);
         }
