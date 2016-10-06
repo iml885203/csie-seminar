@@ -24,9 +24,7 @@ public class ButtonEvent : MonoBehaviour
     public Slider[] _inSettingSoundSlider;
     public Text[] _inSettingText;
 
-    public Text _levelFlagText;
-
-    public GameObject[] _levelPreviewImage;
+    public GameLevelIndex _levelIndex;
 
     private float _effectTimer = 1f;
     private float _readyTimer = 1f;
@@ -44,21 +42,13 @@ public class ButtonEvent : MonoBehaviour
 
         for (int index = 0; index < _inSettingLevelChoiceButton.Length; index++)
         {
-            if (index == int.Parse(_levelFlagText.text.ToString()) - 1)
+            if (index == _levelIndex.CurrentLevelIndex)
             {
                 _inSettingLevelChoiceButton[index].interactable = false;
-                //if (_levelFlagText.gameObject.activeSelf)
-                //{
-                //    _levelPreviewImage[index].SetActive(true);
-                //}
             }
             else
             {
                 _inSettingLevelChoiceButton[index].interactable = true;
-                //if (_levelFlagText.gameObject.activeSelf)
-                //{
-                //    _levelPreviewImage[index].SetActive(false);
-                //}
             }
         }
     }
@@ -178,21 +168,6 @@ public class ButtonEvent : MonoBehaviour
         StartCoroutine(ListProducerToSetting());
     }
 
-    public void ChoiceLevel1ButtonClick()
-    {
-        _levelFlagText.text = "1";
-    }
-
-    public void ChoiceLevel2ButtonClick()
-    {
-        _levelFlagText.text = "2";
-    }
-
-    public void ChoiceLevel3ButtonClick()
-    {
-        _levelFlagText.text = "3";
-    }
-
     public void SwitchGameStateByStateFlag()
     {
         switch (_gameStateIndex.GetCurrentGameStateIndex())
@@ -278,14 +253,6 @@ public class ButtonEvent : MonoBehaviour
         {
             _inSettingText[index].gameObject.SetActive(value);
         }
-
-        //setting的選關預覽圖
-        //for (int index = 0; index < _levelPreviewImage.Length; index++)
-        //{
-        //    _levelPreviewImage[index].gameObject.SetActive(value);
-        //}
-
-        _levelFlagText.gameObject.SetActive(value);
 
         //_settingBackGroundImage.SetActive(value);
     }

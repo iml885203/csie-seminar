@@ -30,8 +30,9 @@ using System;
 
 public class LevelObjectBase : MonoBehaviour
 {
-    public Text _levelFlag;
-    public Text _stateFlag;
+    public GameLevelIndex _gameLevel;
+    public GameStateIndex _gameState;
+
     protected string TEXT_FILE_NAME;
 
     protected GameObject _productGameObject;
@@ -41,7 +42,7 @@ public class LevelObjectBase : MonoBehaviour
     public GameObject _refractionObject;
     public GameObject _blackHoleObject;
     public GameObject _targetObject;
-    public GameObject _laserBall;
+    //public GameObject _laserBall;
 
     public GameObject _canvas;
 
@@ -55,7 +56,7 @@ public class LevelObjectBase : MonoBehaviour
     protected int _blockWidthCount;
     protected int _blockHeightCount;
 
-    public GHSMapData _mapData;
+    //public GHSMapData _mapData;
 
     protected float _originPointX;
     protected float _originPointY;
@@ -64,8 +65,8 @@ public class LevelObjectBase : MonoBehaviour
     public void Start()
     {
         //格數
-        _blockWidthCount = _mapData.ScreenWidthBlock;
-        _blockHeightCount = _mapData.ScreenHeightBlock;
+        _blockWidthCount = 16;
+        _blockHeightCount = 8;
 
         //畫布寬高
         _canvasWidth = _canvas.GetComponent<RectTransform>().rect.width;
@@ -225,29 +226,29 @@ public class LevelObjectBase : MonoBehaviour
     //依據選的關卡更變讀取的文件
     public void SwitchLevelFile()
     {
-        switch (_levelFlag.text)
+        switch (_gameLevel.CurrentLevelIndex)
         {
-            case "1":
+            case 0:
                 {
                     TEXT_FILE_NAME = GameLevelFile.LEVEL_1;
                     break;
                 }
-            case "2":
+            case 1:
                 {
                     TEXT_FILE_NAME = GameLevelFile.LEVEL_2;
                     break;
                 }
-            case "3":
+            case 2:
                 {
                     TEXT_FILE_NAME = GameLevelFile.LEVEL_3;
                     break;
                 }
-            case "4":
+            case 3:
                 {
                     TEXT_FILE_NAME = GameLevelFile.LEVEL_4;
                     break;
                 }
-            case "5":
+            case 4:
                 {
                     TEXT_FILE_NAME = GameLevelFile.LEVEL_5;
                     break;
@@ -287,11 +288,11 @@ public class LevelObjectBase : MonoBehaviour
                     productGameObject = _targetObject;
                     break;
                 }
-            case "雷射球":
-                {
-                    productGameObject = _laserBall;
-                    break;
-                }
+            //case "雷射球":
+            //    {
+            //        productGameObject = _laserBall;
+            //        break;
+            //    }
             default:
                 break;
         }

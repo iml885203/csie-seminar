@@ -17,6 +17,7 @@ TagManager:
   - MenuMoveObject
   - SplitObject
   - SettingMoveObject
+  - DestoryObject
   layers:
   - Default
   - TransparentFX

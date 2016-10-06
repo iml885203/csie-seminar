@@ -27,19 +27,19 @@ public class LevelPreview : LevelObjectBase
             _isChangePreviewLevel = false;
         }
 
-        if (_stateFlag.text == GameState.Menu.ToString())
+        if (_gameState.GetCurrentGameStateIndex() == GameState.Menu)
         {
             this.SetLevelObjectsActive(false);
         }
-        else if (_stateFlag.text == GameState.Setting.ToString())
+        else if (_gameState.GetCurrentGameStateIndex() == GameState.Setting)
         {
             this.SetLevelObjectsActive(true);
         }
-        else if (_stateFlag.text == GameState.GameRun.ToString())
+        else if (_gameState.GetCurrentGameStateIndex() == GameState.GameRun)
         {
-            this.SetLevelObjectsActive(false);
+            this.SetLevelObjectsActive(true);
         }
-        else if (_stateFlag.text == GameState.ListProducer.ToString())
+        else if (_gameState.GetCurrentGameStateIndex() == GameState.ListProducer)
         {
             this.SetLevelObjectsActive(false);
         }
@@ -85,16 +85,18 @@ public class LevelPreview : LevelObjectBase
                 //轉換格子座標成畫布實際座標
                 objectPoint = this.TransBlockToCanvasPosition(objectPoint);
 
+
                 //根據給定的物件來創建關卡物件
                 GameObject cloneObject = (GameObject)Instantiate(_productGameObject,
-                    new Vector3(Convert.ToSingle(objectPoint.x), Convert.ToSingle(objectPoint.y), Convert.ToSingle(0)),
+                    new Vector3(Convert.ToSingle(objectPoint.x), Convert.ToSingle(objectPoint.y), Convert.ToSingle(this.transform.position.z)),
                     new Quaternion(0, 0, 0, 1)
                     );
-
-                cloneObject.transform.localScale = _productGameObject.transform.localScale * halfRate;
+                
+                cloneObject.transform.localScale = _productGameObject.transform.localScale;
                 cloneObject.transform.localRotation = _productGameObject.transform.localRotation;
                 cloneObject.transform.Rotate(Vector3.forward * rotateAngle, Space.World);
                 cloneObject.transform.SetParent(this.transform.FindChild("InLevelObjects"));
+
                 cloneObject.SetActive(true);
 
                 //轉換物件間區格用的readLine
@@ -105,7 +107,7 @@ public class LevelPreview : LevelObjectBase
     }
     
     //改變預覽關卡
-    private void ChangePreviewLevel()
+    public void ChangePreviewLevel()
     {
         _isChangePreviewLevel = true;
     }
