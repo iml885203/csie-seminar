@@ -2165,7 +2165,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &375650193
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5555,6 +5555,8 @@ GameObject:
   - 224: {fileID: 793509186}
   - 222: {fileID: 793509188}
   - 114: {fileID: 793509187}
+  - 114: {fileID: 793509190}
+  - 114: {fileID: 793509189}
   m_Layer: 5
   m_Name: Window
   m_TagString: Untagged
@@ -5580,7 +5582,7 @@ RectTransform:
   m_RootOrder: 1
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 8, y: -11}
+  m_AnchoredPosition: {x: 8, y: -470}
   m_SizeDelta: {x: -350, y: -196}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &793509187
@@ -5616,6 +5618,42 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 793509185}
+--- !u!114 &793509189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 793509185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da7b769ef0d28154db3a3d022db865e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _wholeTime: 2
+  _effectTime: 1
+  _waitTime: 0
+  _moveGameObjects:
+  - {fileID: 793509185}
+  _targetGameObject: {fileID: 375650192}
+  _direction: down
+--- !u!114 &793509190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 793509185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 224c4a647c3f5414dafb81325735b117, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _wholeTime: 2
+  _effectTime: 1
+  _waitTime: 0
+  _moveGameObjects:
+  - {fileID: 793509185}
+  _targetGameObject: {fileID: 375650192}
+  _direction: up
 --- !u!1 &798899541
 GameObject:
   m_ObjectHideFlags: 0
@@ -9888,6 +9926,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7ab56f04fd397d458ad41534da0ac7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _popControl: {fileID: 1431115660}
+  _moveOutEffect: {fileID: 793509189}
   _teachState: {fileID: 851883349}
   _nextButton: {fileID: 2032005507}
   _previousButton: {fileID: 1366086479}
@@ -10473,7 +10513,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1279618768}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 571658317}
+        m_MethodName: ClickSkipButtonEvent
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1279618768
@@ -10601,6 +10652,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7ab56f04fd397d458ad41534da0ac7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _popControl: {fileID: 1431115660}
+  _moveOutEffect: {fileID: 793509189}
   _teachState: {fileID: 145051638}
   _nextButton: {fileID: 2032005507}
   _previousButton: {fileID: 1366086479}
@@ -10973,6 +11026,28 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 1390332584}
         m_MethodName: ResetCountDownTimer
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 793509190}
+        m_MethodName: SmoothMoveInButtonEffect
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1431115660}
+        m_MethodName: EnterPopUpWindowMode
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -11692,13 +11767,14 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 224: {fileID: 1431115659}
+  - 114: {fileID: 1431115660}
   m_Layer: 5
   m_Name: PopUpWindows
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1431115659
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11715,9 +11791,21 @@ RectTransform:
   m_RootOrder: 4
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.25, y: 0.00047302246}
-  m_SizeDelta: {x: -0.5, y: -4}
+  m_AnchoredPosition: {x: 0.25, y: 0}
+  m_SizeDelta: {x: 0, y: -4.02}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1431115660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1431115658}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13763122f93d38945b1c1c7823b5eed4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _backGroundPanel: {fileID: 375650192}
 --- !u!1 &1432709233
 GameObject:
   m_ObjectHideFlags: 0
@@ -17693,6 +17781,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7ab56f04fd397d458ad41534da0ac7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _popControl: {fileID: 1431115660}
+  _moveOutEffect: {fileID: 793509189}
   _teachState: {fileID: 1788814719}
   _nextButton: {fileID: 2032005507}
   _previousButton: {fileID: 1366086479}

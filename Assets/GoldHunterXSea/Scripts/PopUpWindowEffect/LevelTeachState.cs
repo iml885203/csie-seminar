@@ -35,5 +35,10 @@ public class LevelTeachState : MonoBehaviour
     {
         _stateIndex--;
     }
+
+    public void ToSkipState()
+    {
+        _stateIndex = 0;
+    }
 }
 

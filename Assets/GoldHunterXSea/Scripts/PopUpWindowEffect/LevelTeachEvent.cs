@@ -33,6 +33,11 @@ public class LevelTeachEvent : MonoBehaviour
         _levelContain[_levelIndex.CurrentLevelIndex].GetComponent<LevelTeachContainEvent>().ToPreviousTeachStateEvent();
     }
 
+    public void ClickSkipButtonEvent()
+    {
+        _levelContain[_levelIndex.CurrentLevelIndex].GetComponent<LevelTeachContainEvent>().ToSkipTeachStateEvent();
+    }
+
     public void ChangeLevelEvent()
     {
         for(int index = 0;index < _levelCount; index++)
