@@ -61,3 +61,6 @@ TagManager:
   - name: UI
     uniqueID: 346900777
     locked: 0
+  - name: LevelEditor
+    uniqueID: 3806187969
+    locked: 0
