@@ -88,20 +88,14 @@ public class LevelPreview : LevelObjectBase
 
                 //根據給定的物件來創建關卡物件
                 GameObject cloneObject = (GameObject)Instantiate(_productGameObject,
-                    new Vector3(Convert.ToSingle(objectPoint.x), Convert.ToSingle(objectPoint.y), Convert.ToSingle(0)),
+                    new Vector3(Convert.ToSingle(objectPoint.x), Convert.ToSingle(objectPoint.y), Convert.ToSingle(this.transform.position.z)),
                     new Quaternion(0, 0, 0, 1)
                     );
-                Debug.Log("cloneObject.transform.localPosition = " + cloneObject.transform.localPosition);
-                cloneObject.transform.SetParent(this.transform.FindChild("InLevelObjects"));
                 
-                
-
-                //cloneObject.transform.localScale = _productGameObject.transform.localScale * halfRate;
                 cloneObject.transform.localScale = _productGameObject.transform.localScale;
-                Debug.Log("cloneObject.transform.localScale = " + cloneObject.transform.localScale);
                 cloneObject.transform.localRotation = _productGameObject.transform.localRotation;
                 cloneObject.transform.Rotate(Vector3.forward * rotateAngle, Space.World);
-                //cloneObject.transform.SetParent(this.transform.FindChild("InLevelObjects"));
+                cloneObject.transform.SetParent(this.transform.FindChild("InLevelObjects"));
 
                 cloneObject.SetActive(true);
 

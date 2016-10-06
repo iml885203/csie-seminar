@@ -124,6 +124,10 @@ public class LaserBall : MonoBehaviour {
         //    //Debug.Log("after = " + this.gameObject.transform.rotation);
         //    //cloneBall.transform.SetParent(this.transform.parent);
         //}
+        else if(other.gameObject.tag == "DestoryObject")
+        {
+            Destroy(this.gameObject);
+        }
         else if (other.gameObject.tag == "targetObject")
         {
             //Debug.Log("Win");
