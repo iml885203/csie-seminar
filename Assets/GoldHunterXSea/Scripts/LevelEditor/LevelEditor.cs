@@ -119,6 +119,7 @@ public class LevelEditor : MonoBehaviour
         string saveDataString = this.TransGroupObjectsDataToString(listGroupObjects);
         string saveFileName = _fileName.transform.FindChild("Text").GetComponent<Text>().text;
         if (saveFileName == "") saveFileName = "預設名稱";
+
         System.IO.File.WriteAllText(saveFileName + ".txt", saveDataString, Encoding.Unicode);
 
         //Debug.Log("_listGroupObjects = " + _listGroupObjects[0].GroupName);
