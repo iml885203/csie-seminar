@@ -64,6 +64,8 @@ public class DrawBlock : MonoBehaviour {
     //選取區深度資料
     List<ushort> _depthDataSub = new List<ushort>();
     List<Point> _depthDataSubColorPoint = new List<Point>();
+    //深度的背景
+    List<ushort> _depthDataSubBackGround = new List<ushort>();
 
     //設定深度偵測距離(mm)
     public int _minDepthDistance = 500;
@@ -392,7 +394,12 @@ public class DrawBlock : MonoBehaviour {
             }
             else
             {
-               avg = 255 - ((double)(_depthDataSub[i] - _minDepthDistance) / (_maxDepthDistance - _minDepthDistance) * 255); //顯示範圍內深度顏色
+                if(_depthDataSubBackGround.Count > 0)
+                {
+                    avg = 255 - ((double)(_depthDataSub[i] - _depthDataSubBackGround[i]) / (1) * 255); //顯示範圍內深度顏色
+                }
+                else
+                    avg = 255 - ((double)(_depthDataSub[i] - _minDepthDistance) / (_maxDepthDistance - _minDepthDistance) * 255); //顯示範圍內深度顏色
                // avg = 255; //binary
             }
 
@@ -412,6 +419,14 @@ public class DrawBlock : MonoBehaviour {
     }
     private void setDepthSourceBackGroundMat(Mat BackGround)//取得背景Depth資訊
     {
+        if (Input.GetKeyUp(KeyCode.J))
+        {
+            _depthDataSubBackGround.Clear();
+            for (int i = 0;i< _depthDataSub.Count; i++)
+            {
+                _depthDataSubBackGround.Add(_depthDataSub[i]);
+            }
+        }
         if (Input.GetKeyUp(KeyCode.K))
         {
             int MaxDepth = 0;

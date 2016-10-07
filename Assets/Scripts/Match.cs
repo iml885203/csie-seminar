@@ -29,7 +29,10 @@ public class Match : MonoBehaviour {
     /*public data*/
     public int Width { get; private set; }
     public int Height { get; private set; }
-    //public List<Point> MatchObjectPoint { get; private set; }
+    
+    //變動區塊範圍
+    public List<OpenCVForUnity.Rect> _changeRectList { get; set;}
+
     DiceRecognition _dice = new DiceRecognition();
 
     //物體資訊
@@ -40,7 +43,6 @@ public class Match : MonoBehaviour {
 
     public Mat src;
     //傳給遊戲的結果
-    private OpenCVForUnity.Rect _TestDepthRect;
     private OpenCVForUnity.Rect _DepthRect;
     //偵測到的Object
     public List<MatchObject> _matchObjectList { get; set; } 
@@ -54,6 +56,7 @@ public class Match : MonoBehaviour {
     {
         return _DepthRect;
     }
+  
     // Use this for initialization
     void Start()
     {
@@ -62,6 +65,7 @@ public class Match : MonoBehaviour {
         _matchTexture = new Texture2D(_matchWidth, _matchHeight);
         isSave = false;
         _matchObjectList = new List<MatchObject>();
+        _changeRectList = new List<OpenCVForUnity.Rect>();
     }
 	// Update is called once per frame
 	void Update () {
@@ -95,15 +99,16 @@ public class Match : MonoBehaviour {
         _matchTexture.Apply();
 
         _ClolrMat.Dispose();
-       if(_DepthMat != null) _DepthMat.Dispose();
+        //因為CreatePlane也要用不能刪掉
+        //if(_DepthMat != null) _DepthMat.Dispose();
         BlackMat.Dispose();
         resizeMat.Dispose();
         BlackDepthMat.Dispose();
     }
     //深度影像處理
-   public  bool getDepthContours(Mat _DepthMat,Mat BlackMat)
+   public  bool getDepthContours(Mat _depthMat,Mat blackMat)
     {
-        if (_DepthMat == null)
+        if (_depthMat == null)
         {
             Debug.Log("_DepthMat Mat is Null");
             return false;
@@ -111,10 +116,10 @@ public class Match : MonoBehaviour {
         
         //載入影像
         Mat SrcMat = new Mat();
-        _DepthMat.copyTo(SrcMat);
+        _depthMat.copyTo(SrcMat);
         
         //宣告存放偵測結果資料
-        Mat result = new Mat(_DepthMat.height(), _DepthMat.width(),CvType.CV_8UC3);
+        Mat result = new Mat(_depthMat.height(), _depthMat.width(),CvType.CV_8UC3);
         result.setTo(new Scalar(0, 0, 0));
         Mat hierarchy = new Mat();
         List<MatOfPoint> contours = new List<MatOfPoint>();
@@ -131,28 +136,31 @@ public class Match : MonoBehaviour {
         {
             for (int index = 0; index < _ContoursCount; index++)
             {
-                if(!analysisContours(index, contours, result, tempObjectList))
+                if (!analysisContoursRect(index, contours, result, tempObjectList))
                 {
                     //Debug.Log("analysisContours fail");
                 }
+
             }
         }
+        _changeRectList = analysisContours(contours);
         //Debug.Log("tempObjectList Count = " + tempObjectList.Count);
         _matchObjectList = new List<MatchObject>(tempObjectList);
 
         // Imgproc.cvtColor(result, result, Imgproc.COLOR_BGR2RGB);
-        result.copyTo(BlackMat);
+        result.copyTo(blackMat);
         result.Dispose();
         hierarchy.Dispose();
         contours.Clear();
         SrcMat.Dispose();
         return true;
     }
+
     //辨識輪廓
-    private bool analysisContours(int index,List<MatOfPoint> contours,Mat result,List<MatchObject> matchObject)
+    private bool analysisContoursRect(int index,List<MatOfPoint> contours,Mat result,List<MatchObject> matchObject)
     {
-        _TestDepthRect = Imgproc.boundingRect(contours[index]);
-        if (_TestDepthRect.height > 5 && _TestDepthRect.width > 5 && _TestDepthRect.area() > 100)
+        OpenCVForUnity.Rect _testDepthRect = Imgproc.boundingRect(contours[index]);
+        if (_testDepthRect.height > 5 && _testDepthRect.width > 5 && _testDepthRect.area() > 100)
         {
             //宣告放置點資料
             MatOfInt hullInt = new MatOfInt();
@@ -203,6 +211,22 @@ public class Match : MonoBehaviour {
         }
         return false;
     }
+    //不辨識輪廓直接產生物體
+    private List<OpenCVForUnity.Rect> analysisContours(List<MatOfPoint> contours)
+    {
+        List<OpenCVForUnity.Rect> depthImageChangeRectList = new List<OpenCVForUnity.Rect>();
+
+        for (int index = 0; index < contours.Count; index++)
+        {
+            OpenCVForUnity.Rect testDepthRect = Imgproc.boundingRect(contours[index]);
+            if (testDepthRect.height > 0 && testDepthRect.width > 0 && testDepthRect.area() > 0)
+            {
+                depthImageChangeRectList.Add(testDepthRect);
+            }
+        }
+            return depthImageChangeRectList;
+    }
+
     //設定偵測物體參數
     private bool setMatchObject(int index,List<Point> pointMatList, List<MatOfPoint> contours, List<MatOfPoint> hullPoints,Mat result,List<MatchObject> matchObjectList)
     {
