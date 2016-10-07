@@ -3,6 +3,8 @@ using System.Collections;
 
 public class CreatePlane : MonoBehaviour
 {
+    //載入輸入深度資訊
+    public DrawBlock _drawBlock;
     public int lengthY = 50; //網格的長
     public int lengthX = 50; //寬
     public Material mat; //貼圖材質
@@ -16,7 +18,11 @@ public class CreatePlane : MonoBehaviour
     }
     void Update()
     {
-        UpdateMesh();
+        if (_drawBlock._DepthImageChangeFlag)
+        {
+            UpdateMesh();
+            _drawBlock._DepthImageChangeFlag = false;
+        }
     }
     void Create()
     {
