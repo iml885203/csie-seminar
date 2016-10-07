@@ -72,7 +72,9 @@ public class DrawBlock : MonoBehaviour {
     private bool _SyncFlag;
     private Mat _blockImageBuffer;
     //是否完成影像處理的旗標
-    public bool ScreenSettingCompletionFlag { get; set; }
+    public bool _ScreenSettingCompletionFlag { get; set; }
+    //是否有發生影像變動旗標
+    public bool _DepthImageChangeFlag { get; set; }
 
     //thread
     Thread _thread;
@@ -119,10 +121,12 @@ public class DrawBlock : MonoBehaviour {
         //thread
         _thread = new Thread(drawDepthSourceMat);
         //設定是否完成影像背景偵測
-        ScreenSettingCompletionFlag = false;
+        _ScreenSettingCompletionFlag = false;
         //選擇範圍初始化
         _minX = 0; _maxX = 0; _minY = 0; _maxY = 0;
         SelectedBlock = false;
+        //設定影像改變旗標
+        _DepthImageChangeFlag = true;
     }
 	
 	// Update is called once per frame
@@ -423,7 +427,7 @@ public class DrawBlock : MonoBehaviour {
             //創造背景深度Mat
             _blockDepthBackGroundImage = new Mat();
             BackGround.copyTo(_blockDepthBackGroundImage);
-            ScreenSettingCompletionFlag = true;
+            _ScreenSettingCompletionFlag = true;
         }
         else if (_blockDepthBackGroundImage == null)
         {
@@ -451,6 +455,7 @@ public class DrawBlock : MonoBehaviour {
             if(tempRect.area() > 1000)
             {
                 currentImage.copyTo(_smoothesImage);
+                _DepthImageChangeFlag = true;
                 return currentImage;
             }
         }

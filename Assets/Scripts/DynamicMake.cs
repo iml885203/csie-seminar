@@ -20,7 +20,7 @@ public class DynamicMake : MonoBehaviour
     private void OnGUI()
     { 
 
-        if (superGameObject.transform.childCount < _DataMatch._matchObjectList.Count && _drawBlock.ScreenSettingCompletionFlag)
+        if (superGameObject.transform.childCount < _DataMatch._matchObjectList.Count && _drawBlock._ScreenSettingCompletionFlag)
         {
             //確認已開啟攝影機
             if (_drawBlock.MatchHeight == 0 && _drawBlock.MatchWidth == 0) return;
