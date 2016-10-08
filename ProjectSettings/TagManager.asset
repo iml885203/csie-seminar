@@ -4,20 +4,21 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - wall
-  - reflectionObject
-  - laserBall
+  - Wall
+  - ReflectionObject
+  - LaserBall
   - UI_Test
   - Hand
-  - dispersionObject
-  - refractionObjects
-  - windObject
-  - targetObject
-  - floatObject
+  - SeparateObject
+  - RefractionObjects
+  - BlackHoleObject
+  - TargetObject
+  - FloatObject
   - MenuMoveObject
   - SplitObject
   - SettingMoveObject
   - DestoryObject
+  - windObject
   layers:
   - Default
   - TransparentFX
