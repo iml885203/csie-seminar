@@ -32,7 +32,7 @@ public class CreatePlane : MonoBehaviour
         }
         else
         {
-            Debug.Log("Is null");
+            //Debug.Log("Is null");
             return;
         }
 
@@ -132,10 +132,10 @@ public class CreatePlane : MonoBehaviour
             {
                 for (int x = (int)pMin.x; x < pMax.x; ++x)
                 {
-                    //Vector2 nowPoint = _posTrans.TransToScreen1Pos(new Vector2(x, y));
-                   // double[] Color = srcMat.get((int)nowPoint.x, (int)nowPoint.y);
-                    //座標還有點問題 先開啟正方形 拿掉true就變成像素決定深度
-                    if (true)//Color[0] > 0 ||true)
+                     Vector2 nowPoint = _posTrans.TransToScreen1Pos(new Vector2(x, y));
+                    byte[] Color = new byte[1];
+                    srcMat.get((int)nowPoint.y, (int)nowPoint.x, Color);
+                    if (Color[0] == 255)
                     {
                         matrix[y * lengthX + x] = new Vector3(((float)x) / 10, 1, ((float)y) / 10);
                     }
