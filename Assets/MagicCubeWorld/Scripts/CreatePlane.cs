@@ -116,7 +116,7 @@ public class CreatePlane : MonoBehaviour
         {
             for (int x = 0; x < lengthX; ++x)
             {
-                matrix[y * lengthX + x] = new Vector3(((float)x) / 10, 0, ((float)y) / 10);
+                matrix[y * lengthX + x] = new Vector3(((float)x) / 20, 0, ((float)y) / 20);
             }
         }
 
@@ -137,7 +137,7 @@ public class CreatePlane : MonoBehaviour
                     srcMat.get((int)nowPoint.y, (int)nowPoint.x, Color);
                     if (Color[0] == 255)
                     {
-                        matrix[y * lengthX + x] = new Vector3(((float)x) / 10, 1, ((float)y) / 10);
+                        matrix[y * lengthX + x] = new Vector3(((float)x) / 20, 1, ((float)y) / 20);
                     }
                 }
             }

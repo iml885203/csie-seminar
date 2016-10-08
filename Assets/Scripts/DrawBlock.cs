@@ -115,7 +115,7 @@ public class DrawBlock : MonoBehaviour {
         _blockImage = new Mat(_inputHeight, _inputWidth, CvType.CV_8UC3);
         _souceOut = new Texture2D(_inputWidth, _inputHeight);
         _blockTexture = new Texture2D(100, 100);
-        _blockDepthTexture = new Texture2D(100, 100);
+        _blockDepthTexture = new Texture2D(320, 180);
 
         isInput = false;
         //設定同步旗標
@@ -350,7 +350,7 @@ public class DrawBlock : MonoBehaviour {
         //}
 
         //圖形壓縮輸出(深度)
-        Mat outDepthMat = new Mat(100, 100, CvType.CV_8UC1);
+        Mat outDepthMat = new Mat(180, 320, CvType.CV_8UC1);
         Imgproc.resize(_blockDepthImage, outDepthMat, outDepthMat.size());
 
         //反轉化面
@@ -435,7 +435,7 @@ public class DrawBlock : MonoBehaviour {
                 if (_depthDataSub[i] > MaxDepth) MaxDepth = _depthDataSub[i];
             }
             _maxDepthDistance = MaxDepth;
-            _minDepthDistance = MaxDepth - 150;
+            _minDepthDistance = MaxDepth - 200;
         }
         if (Input.GetKeyUp(KeyCode.L))
         {
