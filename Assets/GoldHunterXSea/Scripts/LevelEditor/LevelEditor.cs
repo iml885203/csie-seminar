@@ -33,8 +33,13 @@ public class LevelEditor : MonoBehaviour
     private LevelObjectBase _LevelObjectBase;
     //private string _selectObjectKind;
 
+    private bool _isRotateClockWise;
+    private bool _isRotateInverseClock; 
+
     void Start()
     {
+        _isRotateClockWise = false;
+        _isRotateInverseClock = false;
         _selectorObject = _laserGeneratorObject;
     }
 
@@ -55,8 +60,19 @@ public class LevelEditor : MonoBehaviour
                 this.SetNewObjectBySelectedObject();
             }
         }
-        
+
+        if (_isRotateClockWise)
+            this.RotateSelectObjectClockWise();
+        if (_isRotateInverseClock)
+            this.RotateSelectObjectInverseClock();
+
     }
+
+    //void UpdateSelected()
+    //{
+    //    this.RotateSelectObjectClockWise();
+    //    this.RotateSelectObjectInverseClock();
+    //}
 
     public void EnterLevelEditor()
     {
@@ -93,13 +109,13 @@ public class LevelEditor : MonoBehaviour
         List<GroupObjects> listGroupObjects = new List<GroupObjects>();
 
         //將目前場地上的物件存進list
-        GameObject currentGameObject = new GameObject();
+        GameObject currentGameObject;
         for(int index = 0; index < this.gameObject.transform.FindChild("ProduceObjects").childCount; index++)
         {
             currentGameObject = this.gameObject.transform.FindChild("ProduceObjects").GetChild(index).gameObject;
 
             Vector3 gameObjectPosition = new Vector3(currentGameObject.transform.localPosition.x, currentGameObject.transform.localPosition.y, 0);
-            float gameObjectRotation = currentGameObject.transform.localRotation.z;
+            float gameObjectRotation = (float)currentGameObject.transform.eulerAngles.z;
             ObjectData objData = new ObjectData(gameObjectPosition, gameObjectRotation);
             //Debug.Log("objData.ObjectPosition = " + objData.ObjectPosition);
 
@@ -115,6 +131,9 @@ public class LevelEditor : MonoBehaviour
                 listGroupObjects.Add(newGroupObjects);
             }
         }
+        currentGameObject = new GameObject();
+        Destroy(currentGameObject);
+
 
         string saveDataString = this.TransGroupObjectsDataToString(listGroupObjects);
         string saveFileName = _fileName.transform.FindChild("Text").GetComponent<Text>().text;
@@ -146,6 +165,41 @@ public class LevelEditor : MonoBehaviour
             allData += ENTER;
         }
         return allData;
+    }
+
+    //旋轉物件按鈕事件
+    //順時鐘旋轉
+
+    public void PointerDownClockWiseButton()
+    {
+        _isRotateClockWise = true;
+    }
+
+    public void PointerUpClockWiseButton()
+    {
+        _isRotateClockWise = false;
+    }
+
+    public void RotateSelectObjectClockWise()
+    {
+        _selectorObject.transform.Rotate(new Vector3(0, 0, -5));
+    }
+
+    //逆時鐘旋轉
+
+    public void PointerDownInverseClockButton()
+    {
+        _isRotateInverseClock = true;
+    }
+
+    public void PointerUpInverseClockButton()
+    {
+        _isRotateInverseClock = false;
+    }
+
+    public void RotateSelectObjectInverseClock()
+    {
+        _selectorObject.transform.Rotate(new Vector3(0, 0, 5));
     }
 
 
