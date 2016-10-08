@@ -180,7 +180,7 @@ public class LevelObjectBase : MonoBehaviour
                     );
 
                 cloneObject.transform.localScale = _productGameObject.transform.localScale;
-                cloneObject.transform.localRotation = _productGameObject.transform.localRotation;
+                cloneObject.transform.eulerAngles = _productGameObject.transform.eulerAngles;
                 cloneObject.transform.Rotate(Vector3.forward * rotateAngle, Space.World);
                 cloneObject.transform.SetParent(this.transform.FindChild("InLevelObjects"));
                 cloneObject.SetActive(true);
