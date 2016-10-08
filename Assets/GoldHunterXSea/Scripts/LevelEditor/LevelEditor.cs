@@ -25,7 +25,7 @@ public class LevelEditor : MonoBehaviour
 
     //public GameObject _selectorBlock;
     public GameObject _selectorObject;
-    public GameObject _canvasPanel;
+    public GameObject _saveCanvasPanel;
 
     private Vector3 _mouseClickPosition;
     public GameObject _camera;
@@ -103,6 +103,17 @@ public class LevelEditor : MonoBehaviour
         cloneObject.SetActive(true);
     }
 
+    //重設按鈕事件
+    public void ResetButtonClick()
+    {
+        GameObject currentGameObject;
+        for (int index = 0; index < this.gameObject.transform.FindChild("ProduceObjects").childCount; index++)
+        {
+            currentGameObject = this.gameObject.transform.FindChild("ProduceObjects").GetChild(index).gameObject;
+            Destroy(currentGameObject);
+        }
+    }
+
     //存檔按鈕事件
     public void SaveButtonClick()
     {
@@ -115,6 +126,10 @@ public class LevelEditor : MonoBehaviour
             currentGameObject = this.gameObject.transform.FindChild("ProduceObjects").GetChild(index).gameObject;
 
             Vector3 gameObjectPosition = new Vector3(currentGameObject.transform.localPosition.x, currentGameObject.transform.localPosition.y, 0);
+
+            //這邊要再做座標轉換
+            gameObjectPosition = this.TransCoordinateMapping(gameObjectPosition);
+
             float gameObjectRotation = (float)currentGameObject.transform.eulerAngles.z;
             ObjectData objData = new ObjectData(gameObjectPosition, gameObjectRotation);
             //Debug.Log("objData.ObjectPosition = " + objData.ObjectPosition);
@@ -166,6 +181,19 @@ public class LevelEditor : MonoBehaviour
         }
         return allData;
     }
+
+    //座標轉換 用要存檔的panel座標系統為基準
+    public Vector3 TransCoordinateMapping(Vector3 originVector)
+    {
+        float XShift = _saveCanvasPanel.GetComponent<RectTransform>().position.x;
+        float YShift = _saveCanvasPanel.GetComponent<RectTransform>().position.y;
+
+        float XRate = _saveCanvasPanel.GetComponent<RectTransform>().rect.width / this.GetComponent<RectTransform>().rect.width;
+        float YRate = _saveCanvasPanel.GetComponent<RectTransform>().rect.height / this.GetComponent<RectTransform>().rect.height;
+
+        return new Vector3(originVector.x * XRate + XShift, originVector.y * YRate + YShift, originVector.z);
+    }
+         
 
     //旋轉物件按鈕事件
     //順時鐘旋轉
