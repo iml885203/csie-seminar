@@ -328,7 +328,8 @@ public class DrawBlock : MonoBehaviour {
         //double threshold = 50.0;
         //做Canny輪廓化
         //Imgproc.Canny(depthMatchImagePorcess, depthMatchImagePorcess, threshold, threshold * 3);
-
+        Imgproc.blur(depthMatchImagePorcess, depthMatchImagePorcess, new OpenCVForUnity.Size(8, 8));
+        Imgproc.threshold(depthMatchImagePorcess, depthMatchImagePorcess, 50, 255, Imgproc.THRESH_BINARY);
         //傳出深度
         depthMatchImagePorcess.copyTo(_blockDepthImage);
 

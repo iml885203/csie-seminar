@@ -29,6 +29,10 @@ public class CreatePlane : MonoBehaviour
         if(_drawBlock.GetBlockDepthMat() != null)
         {
             _drawBlock.GetBlockDepthMat().copyTo(_DepthMat);
+            Debug.Log("Wid");
+            Debug.Log(_DepthMat.width());
+            Debug.Log("Hei");
+            Debug.Log(_DepthMat.height());
         }
         else
         {
@@ -107,6 +111,7 @@ public class CreatePlane : MonoBehaviour
         newMesh.transform.parent = this.transform;
         newMesh.transform.position = this.transform.position;
         newMesh.transform.rotation = this.transform.rotation;
+        newMesh.transform.localScale = new Vector3(this.transform.localScale.x*20, this.transform.localScale.y*40, this.transform.localScale.z*20);
         MeshCollider ms = newMesh.AddComponent(typeof(MeshCollider)) as MeshCollider;
     }
     void UpdateMesh(List<OpenCVForUnity.Rect> changeRectList, Mat srcMat)
