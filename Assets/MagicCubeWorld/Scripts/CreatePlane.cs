@@ -32,7 +32,7 @@ public class CreatePlane : MonoBehaviour
         }
         else
         {
-            Debug.Log("Is null");
+            //Debug.Log("Is null");
             return;
         }
 

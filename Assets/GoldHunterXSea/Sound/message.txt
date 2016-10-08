@@ -1,0 +1,6 @@
+音樂來源
+MenuBackGround.mp3 -> 楓之谷登入畫面背景音樂
+GameRunBackGround00.mp3 -> 楓之谷維多利亞港背景音樂
+SettingBackGround.mp3 -> 楓之谷購物商城背景音樂
+
+音效來源
