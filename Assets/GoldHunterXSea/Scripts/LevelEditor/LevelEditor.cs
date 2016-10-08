@@ -103,6 +103,17 @@ public class LevelEditor : MonoBehaviour
         cloneObject.SetActive(true);
     }
 
+    //重設按鈕事件
+    public void ResetButtonClick()
+    {
+        GameObject currentGameObject;
+        for (int index = 0; index < this.gameObject.transform.FindChild("ProduceObjects").childCount; index++)
+        {
+            currentGameObject = this.gameObject.transform.FindChild("ProduceObjects").GetChild(index).gameObject;
+            Destroy(currentGameObject);
+        }
+    }
+
     //存檔按鈕事件
     public void SaveButtonClick()
     {
