@@ -19,6 +19,8 @@ public class HandControll : MonoBehaviour {
     private processBar _processBar;
 
     private clickPositionTrans _posTrans;
+
+    public float _speed = 2f;
     // Use this for initialization
     void Start () {
 	    if(BodySrcManager == null)
@@ -67,7 +69,8 @@ public class HandControll : MonoBehaviour {
                 Vector2 colorPos = _drawBlockManager._map.CameraSpacePointToColorVector2(pos);
                 Vector2 pos_inDrawBlock = GetInDrawBlockPos(colorPos);
                 RectTransform myRect = this.transform as RectTransform;
-                myRect.anchoredPosition = _posTrans.TransToScreen2Pos(new Vector2(-pos_inDrawBlock.x, -pos_inDrawBlock.y));
+                myRect.anchoredPosition = Vector2.Lerp(myRect.anchoredPosition, _posTrans.TransToScreen2Pos(new Vector2(-pos_inDrawBlock.x, -pos_inDrawBlock.y)), _speed);
+                Debug.Log(_posTrans.TransToScreen2Pos(new Vector2(-pos_inDrawBlock.x, -pos_inDrawBlock.y)));
             }
         }
     }
@@ -109,7 +112,7 @@ public class HandControll : MonoBehaviour {
            pos.y > _drawBlockManager._revertMinY && pos.y < _drawBlockManager._revertMaxY)
         {
             //回傳畫面內座標
-            return new Vector2(pos.x - _drawBlockManager._minX, pos.y - _drawBlockManager._minY);
+            return new Vector2(pos.x - _drawBlockManager._minX, pos.y - _drawBlockManager._revertMinY);
         }
         else
         {
