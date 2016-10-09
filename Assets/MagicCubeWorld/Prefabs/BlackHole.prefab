@@ -183,7 +183,7 @@ ParticleSystem:
   looping: 1
   prewarm: 0
   playOnAwake: 1
-  moveWithTransform: 1
+  moveWithTransform: 0
   scalingMode: 2
   InitialModule:
     serializedVersion: 2
@@ -1647,8 +1647,8 @@ ParticleSystem:
   looping: 1
   prewarm: 0
   playOnAwake: 1
-  moveWithTransform: 1
-  scalingMode: 2
+  moveWithTransform: 0
+  scalingMode: 1
   InitialModule:
     serializedVersion: 2
     enabled: 1
@@ -3087,7 +3087,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 346900777
+  m_SortingLayerID: 0
   m_SortingOrder: 0
   m_RenderMode: 0
   m_SortMode: 0
@@ -3128,7 +3128,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 346900777
+  m_SortingLayerID: 0
   m_SortingOrder: 0
   m_RenderMode: 0
   m_SortMode: 0

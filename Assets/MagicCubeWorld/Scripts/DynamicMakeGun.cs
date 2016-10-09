@@ -78,6 +78,7 @@ public class DynamicMakeGun : MonoBehaviour
         //下面這一行的功能為將複製出來的子物件命名為CopyObject
 
         childGameObject.name = "CopyObject";
+        childGameObject.SetActive(true);
     }
     public void DeleteObject()
     {
