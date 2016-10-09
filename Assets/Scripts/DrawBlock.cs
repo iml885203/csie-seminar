@@ -368,8 +368,10 @@ public class DrawBlock : MonoBehaviour {
         _blockDepthImg.texture = _blockDepthTexture;
 
         //輸出到遊戲背景
-        Imgproc.dilate(outDepthMat, outDepthMat, dilateElement);
-        Imgproc.blur(outDepthMat, outDepthMat, new Size(20, 20));
+        Mat dilateElementNEW = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(10, 10));
+        Imgproc.dilate(outDepthMat, outDepthMat, dilateElementNEW);
+        Imgproc.dilate(outDepthMat, outDepthMat, dilateElementNEW);
+        Imgproc.blur(outDepthMat, outDepthMat, new Size(10, 10));
         Core.bitwise_not(outDepthMat, outDepthMat);
         Utils.matToTexture2D(outDepthMat, _blockDepthTextureBg);
         _blockDepthBg.texture = _blockDepthTextureBg;

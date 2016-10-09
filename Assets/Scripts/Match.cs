@@ -33,7 +33,7 @@ public class Match : MonoBehaviour {
 
     //物體資訊
     public List<BaseObject> SensingResults = new List<BaseObject>();
-    private int _clolrRange = 15;
+    private int _clolrRange = 8;
     //是否可以儲存感測到的物件
     private bool isSave = new bool();
 
@@ -376,6 +376,7 @@ public class Match : MonoBehaviour {
                     ConsistP.Add(new Point(R0.x + R0.width, R0.y));
                     ConsistP.Add(new Point(R0.x, R0.y + R0.height));
                     clickRGB.Add(clickcolor(ColorMat, R0));
+                    Debug.Log("ID = " +  index + " Color = " + clickcolor(ColorMat, R0));
                 }
             }
             _matchColorObjectList.Clear();
@@ -392,10 +393,15 @@ public class Match : MonoBehaviour {
             int ID = inRange(ConsistP[i], ConsistP[i + 1], clickRGB[i / 4]);
             if (ID != -1)
             {
+                List<Point> nowPoint = new List<Point>();
+                nowPoint.Add(ConsistP[i]);
+                nowPoint.Add(ConsistP[i + 1]);
+                nowPoint.Add(ConsistP[i + 2]);
+                nowPoint.Add(ConsistP[i + 3]);
                 Imgproc.rectangle(resultMat, ConsistP[i], ConsistP[i + 1], new Scalar(255, 0, 255), 1);
                 Imgproc.putText(resultMat, "ID=" + ID.ToString(), ConsistP[i], 1, 1, new Scalar(255, 0, 255), 1);
                 MatchObject matchObject = new MatchObject();
-                matchObject._pos = calculateCenter(ConsistP);
+                matchObject._pos = calculateCenter(nowPoint);
                 matchObject._scale = new Vector3(22, 22, 22);
                 matchObjectList.Add(matchObject);
 
@@ -461,6 +467,7 @@ public class Match : MonoBehaviour {
         {
             Debug.Log("Create" + SensingResults.Count);
             SensingResults.Add(new BaseObject(P1, P2, src));
+            Debug.Log("Color =" + src);
             return SensingResults.Count;
         }
         else return -1;
