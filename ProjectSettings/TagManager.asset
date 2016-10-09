@@ -14,11 +14,10 @@ TagManager:
   - BlackHoleObject
   - TargetObject
   - FloatObject
-  - MenuMoveObject
-  - SplitObject
-  - SettingMoveObject
   - DestoryObject
-  - windObject
+  - LaserBall
+  - TransmissionObject
+  - WhiteHoleObject
   layers:
   - Default
   - TransparentFX
