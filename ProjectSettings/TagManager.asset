@@ -18,7 +18,8 @@ TagManager:
   - SplitObject
   - SettingMoveObject
   - DestoryObject
-  - windObject
+  - wall
+  - LaserBall
   layers:
   - Default
   - TransparentFX

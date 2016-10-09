@@ -28,7 +28,7 @@ public class LaserGenerator : MonoBehaviour {
                 clone.transform.localScale = LaserBall.transform.localScale; //給複製的球跟LaserBall一樣大
                 foreach (Transform child in transform)
                 {
-                    if (child.tag == "laserBall")
+                    if (child.tag == "LaserBall")
                     {
                         Physics.IgnoreCollision(clone.GetComponent<SphereCollider>(), child.GetComponent<SphereCollider>());
                     }
