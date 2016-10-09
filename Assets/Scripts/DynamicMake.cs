@@ -16,6 +16,7 @@ public class DynamicMake : MonoBehaviour
 
     private int ObjectCount;
     private clickPositionTrans _posTrans;
+    public float _speed = 1f;
 
     private void OnGUI()
     { 
@@ -74,7 +75,7 @@ public class DynamicMake : MonoBehaviour
         RectTransform superGameObjectRect = superGameObject.GetComponent<RectTransform>();
         _posTrans = new clickPositionTrans(_drawBlock.MatchWidth, _drawBlock.MatchHeight, superGameObjectRect.rect.width, superGameObjectRect.rect.height);
         //初始化位置
-        UpdatePos(childGameObject, 1, matchObject);
+        UpdatePos(childGameObject, _speed, matchObject);
         //childGameObject.AddComponent<NullScript>();//動態增加名為"NullScript"的腳本到此物件身上
         //下面這一行的功能為將複製出來的子物件命名為CopyObject
 
