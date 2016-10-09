@@ -5,15 +5,6 @@ using OpenCVForUnity;
 using UnityEngine.UI;
 using System;
 
-public static class Tags
-{
-    public static string FloatObject = "floatObject";
-    public static string MenuMoveObject = "MenuMoveObject";
-    public static string SettingMoveObject = "SettingMoveObject";
-    public static string GameRunMoveObject = "GameRunMoveObject";
-    public static string ListProducerObject = "ListProducerObject";
-}
-
 public class BackGroundEffect : MonoBehaviour
 {
     public GameStateIndex _gameStateIndex;
@@ -42,7 +33,7 @@ public class BackGroundEffect : MonoBehaviour
         foreach (GameObject currentObject in _gameObject)
         {
             //漂浮標籤物
-            if (currentObject.gameObject.tag == Tags.FloatObject)
+            if (currentObject.gameObject.tag == "FloatObject")
             {
                 //_floatObjectTimeTrigger/2的時間往下漂浮，_floatObjectTimeTrigger/2的時間往上漂浮
                 _floatObjectTimeTracker += Time.deltaTime;
