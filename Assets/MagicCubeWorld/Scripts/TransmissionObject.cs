@@ -20,7 +20,7 @@ public class TransmissionObject : MonoBehaviour {
 
     public bool CanMoveToAnotherSidePortal()
     {
-        return _triggerTimer.GetComponent<ShareTimer>().TriggerEvent();
+        return _triggerTimer.GetComponent<TransmissionShareTimer>().TriggerEvent();
     }
 
     public Vector3 ReturnAnotherSidePortalPosition()

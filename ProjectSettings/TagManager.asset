@@ -17,6 +17,7 @@ TagManager:
   - DestoryObject
   - LaserBall
   - TransmissionObject
+  - WhiteHoleObject
   layers:
   - Default
   - TransparentFX

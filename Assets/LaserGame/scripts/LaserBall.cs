@@ -38,6 +38,19 @@ public class LaserBall : MonoBehaviour {
 
     }
 
+    void OnTriggerExit(Collider other)
+    {
+        if(other.gameObject.tag == "BlackHoleObject")
+        {
+            this.GetComponent<ConstantForce>().force = Vector3.zero;
+        }
+
+        if (other.gameObject.tag == "WhiteHoleObject")
+        {
+            this.GetComponent<ConstantForce>().force = Vector3.zero;
+        }
+    }
+
     void OnTriggerEnter(Collider other)
     {
         ////碰撞折射物事件
@@ -67,8 +80,9 @@ public class LaserBall : MonoBehaviour {
         //碰撞黑洞事件
         if (other.gameObject.tag == "BlackHoleObject")
         {
-            Vector3 blackHoleForce = new Vector3((other.transform.position.x - this.gameObject.transform.position.x) * 1000,
-                                            (other.transform.position.y - this.gameObject.transform.position.y) * 1000,
+            Debug.Log("enter blackhole");
+            Vector3 blackHoleForce = new Vector3((other.transform.position.x - this.gameObject.transform.position.x) * 300,
+                                            (other.transform.position.y - this.gameObject.transform.position.y) * 300,
                                             0);
 
             this.GetComponent<ConstantForce>().force = blackHoleForce;
@@ -77,8 +91,8 @@ public class LaserBall : MonoBehaviour {
         //碰撞白洞事件
         if (other.gameObject.tag == "WhiteHoleObject")
         {
-            Vector3 whiteHoleForce = new Vector3((other.transform.position.x - this.gameObject.transform.position.x) * -1000,
-                                            (other.transform.position.y - this.gameObject.transform.position.y) * -1000,
+            Vector3 whiteHoleForce = new Vector3((other.transform.position.x - this.gameObject.transform.position.x) * -300,
+                                            (other.transform.position.y - this.gameObject.transform.position.y) * -300,
                                             0);
 
             this.GetComponent<ConstantForce>().force = whiteHoleForce;
