@@ -6,9 +6,13 @@ using System.Threading;
 
 public class DrawBlock : MonoBehaviour {
 
+    //輸出畫面
     public RawImage _inoutImg;
     public RawImage _blockImg;
     public RawImage _blockDepthImg;
+    public RawImage _blockDepthBg;
+
+    //輸出畫面資料
     private Mat _sourceMat;
     private Mat _sourceMat_backup;
     private Mat _sourceMatDepth;
@@ -51,6 +55,7 @@ public class DrawBlock : MonoBehaviour {
     Texture2D _souceOut;
     Texture2D _blockDepthTexture;
     Texture2D _blockTexture;
+    Texture2D _blockDepthTextureBg;
 
     //screen size to source size
     private clickPositionTrans _positionTrans;
@@ -116,6 +121,7 @@ public class DrawBlock : MonoBehaviour {
         _souceOut = new Texture2D(_inputWidth, _inputHeight);
         _blockTexture = new Texture2D(100, 100);
         _blockDepthTexture = new Texture2D(320, 180);
+        _blockDepthTextureBg = new Texture2D(320, 180);
 
         isInput = false;
         //設定同步旗標
@@ -361,7 +367,13 @@ public class DrawBlock : MonoBehaviour {
         Utils.matToTexture2D(outDepthMat, _blockDepthTexture);
         _blockDepthImg.texture = _blockDepthTexture;
 
-       
+        //輸出到遊戲背景
+        Imgproc.dilate(outDepthMat, outDepthMat, dilateElement);
+        Imgproc.blur(outDepthMat, outDepthMat, new Size(20, 20));
+        Utils.matToTexture2D(outDepthMat, _blockDepthTextureBg);
+        _blockDepthBg.texture = _blockDepthTextureBg;
+
+
         subDepthMat.release();
         depthMatchImagePorcess.release();
         outDepthMat.release();
