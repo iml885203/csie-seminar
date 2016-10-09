@@ -86,6 +86,10 @@ public class DrawBlock : MonoBehaviour {
     //thread
     Thread _thread;
 
+    //上下抓取反轉的位置
+    public int _revertMaxY;
+    public int _revertMinY;
+
     public Mat GetBlockMat()
     {
         return _blockImage;
@@ -229,7 +233,8 @@ public class DrawBlock : MonoBehaviour {
             _maxY = (int)_pointOne.y;
             _minY = (int)_pointTwo.y;
         }
-
+        _revertMinY = (_sourceMatDepth.height() - _maxY);
+        _revertMaxY = (_sourceMatDepth.height() - _minY);
         MatchWidth = _maxX - _minX;
         MatchHeight = _maxY - _minY;
     }
@@ -301,9 +306,9 @@ public class DrawBlock : MonoBehaviour {
         //做一個新的depthMat存放切割後的depthMat
         Mat subDepthMat = new Mat();
         if(_SyncFlag)
-            subDepthMat = _sourceMatDepth.submat((_sourceMatDepth.height() - _maxY), (_sourceMatDepth.height() - _minY), _minX, _maxX);
+            subDepthMat = _sourceMatDepth.submat(_revertMinY, _revertMaxY, _minX, _maxX);
         else
-            subDepthMat = _blockImageBuffer.submat((_blockImageBuffer.height() - _maxY), (_blockImageBuffer.height() - _minY), _minX, _maxX);
+            subDepthMat = _blockImageBuffer.submat(_revertMinY, _revertMaxY, _minX, _maxX);
         //反轉化面
         ReversedImage(subDepthMat).copyTo(subDepthMat);
 
