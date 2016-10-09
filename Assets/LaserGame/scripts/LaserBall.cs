@@ -24,7 +24,16 @@ public class LaserBall : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-        
+        foreach (Transform child in this.transform.parent)
+        {
+            
+            if (child.tag == "LaserBall")
+            {
+                //Debug.Log("this.gameObject.name = " + this.gameObject.name);
+                //Debug.Log("child.name = " + child.name);
+                Physics.IgnoreCollision(this.gameObject.GetComponent<SphereCollider>(), child.GetComponent<SphereCollider>());
+            }
+        }
     }
 
     void FixedUpdate()
@@ -64,11 +73,7 @@ public class LaserBall : MonoBehaviour {
             Vector3 blackHoleForce = new Vector3((other.transform.position.x - this.gameObject.transform.position.x) * 1000,
                                             (other.transform.position.y - this.gameObject.transform.position.y) * 1000,
                                             0);
-            //Debug.Log("_wind.transform.position.x = " + other.transform.position.x + ", this.gameObject.transform.position.x = " + this.gameObject.transform.position.x);
-            //Debug.Log("_wind.transform.position.y = " + other.transform.position.y + ", this.gameObject.transform.position.y = " + this.gameObject.transform.position.y);
-            
-            //windForce = windForce.normalized;
-            //Debug.Log("windForce = " + windForce);
+
             this.GetComponent<ConstantForce>().force = blackHoleForce;
         }
 
@@ -81,28 +86,41 @@ public class LaserBall : MonoBehaviour {
 
             this.GetComponent<ConstantForce>().force = whiteHoleForce;
         }
-        else if (other.gameObject.tag == "SeparateObject")
-        {
-            //修改物體速度(根據vector3)
-            //入射向量
-            Vector3 originVelocity = _ballRigidbody.velocity;
-            //Vector3 cloneObjectVelocity1 = Vector3.Angle() originVelocity;
-            //反射向量
-            //Vector3 afterReflectVelocity = new Vector3(20, -1, 0);
-            //_ballRigidbody.velocity = afterReflectVelocity;
-            //Debug.Log("reflectPosition = " + reflectPosition);
-            //Debug.Log("beforeReflectVelocity.velocity = " + beforeReflectVelocity);
-            //Debug.Log("afterReflectVelocity.velocity = " + _ballRigidbody.velocity);
 
-            //this.gameObject.transform.rotation = Quaternion.AngleAxis(20, Vector3.up);
-            //Debug.Log("after = " + this.gameObject.transform.rotation);
-            //cloneBall.transform.SetParent(this.transform.parent);
+
+        if (other.gameObject.tag == "SeparateObject")
+        {
+            if (other.GetComponent<SeparateObject>().TriggerEvent())
+            {
+                //Debug.Log("touch SeparateObject");
+                //修改物體速度(根據vector3)
+                //入射向量
+                Vector3 originVelocity = _ballRigidbody.velocity;
+
+                
+                GameObject cloneLaserBall1 = (GameObject)Instantiate(this.gameObject,
+                                new Vector3(this.transform.position.x + this.gameObject.GetComponent<RectTransform>().rect.width, this.transform.position.y, this.transform.position.z),
+                                new Quaternion(0, 0, 0, 1)
+                                );
+                cloneLaserBall1.GetComponent<Rigidbody>().velocity = Quaternion.Euler(0, 0, 10) * originVelocity;
+                cloneLaserBall1.transform.localScale = this.gameObject.transform.lossyScale;
+                cloneLaserBall1.transform.SetParent(this.transform.parent);
+
+                GameObject cloneLaserBall2 = (GameObject)Instantiate(this.gameObject,
+                                new Vector3(this.transform.position.x - this.gameObject.GetComponent<RectTransform>().rect.width, this.transform.position.y, this.transform.position.z),
+                                new Quaternion(0, 0, 0, 1)
+                                );
+                cloneLaserBall2.GetComponent<Rigidbody>().velocity = Quaternion.Euler(0, 0, -10) * originVelocity;
+                cloneLaserBall2.transform.localScale = this.gameObject.transform.lossyScale;
+                cloneLaserBall2.transform.SetParent(this.transform.parent);
+            }
         }
     }
 
     void OnCollisionEnter(Collision other)
     {
-        
+        Debug.Log("Touch SomeThing");
+
         ContactPoint contact = other.contacts[0];
         Vector3 reflectPosition = contact.point;
         //Debug.Log("reflectPosition = " + reflectPosition);
