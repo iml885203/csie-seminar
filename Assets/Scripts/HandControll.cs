@@ -106,7 +106,7 @@ public class HandControll : MonoBehaviour {
     {
         //判斷是否在選取畫面內
         if(pos.x > _drawBlockManager._minX && pos.x < _drawBlockManager._maxX &&
-           pos.y > _drawBlockManager._minY && pos.y < _drawBlockManager._maxY)
+           pos.y > _drawBlockManager._revertMinY && pos.y < _drawBlockManager._revertMaxY)
         {
             //回傳畫面內座標
             return new Vector2(pos.x - _drawBlockManager._minX, pos.y - _drawBlockManager._minY);
