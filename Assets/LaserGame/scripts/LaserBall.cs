@@ -26,11 +26,8 @@ public class LaserBall : MonoBehaviour {
     {
         foreach (Transform child in this.transform.parent)
         {
-            
             if (child.tag == "LaserBall")
             {
-                //Debug.Log("this.gameObject.name = " + this.gameObject.name);
-                //Debug.Log("child.name = " + child.name);
                 Physics.IgnoreCollision(this.gameObject.GetComponent<SphereCollider>(), child.GetComponent<SphereCollider>());
             }
         }
@@ -101,14 +98,8 @@ public class LaserBall : MonoBehaviour {
                 Vector3 verticalVelocity2 = new Vector3();
                 this.GetTwoVerticalVector(originVelocity, ref verticalVelocity1, ref verticalVelocity2);
 
-                //Debug.Log("verticalVelocity1 = " + verticalVelocity1);
-                //Debug.Log("verticalVelocity2 = " + verticalVelocity2);
-
                 verticalVelocity1 = this.GetShiftPosition(verticalVelocity1, this.gameObject.GetComponent<RectTransform>().rect.width / 5);
                 verticalVelocity2 = this.GetShiftPosition(verticalVelocity2, this.gameObject.GetComponent<RectTransform>().rect.width / 5);
-
-                Debug.Log("verticalVelocity1 = " + verticalVelocity1);
-                Debug.Log("verticalVelocity2 = " + verticalVelocity2);
 
                 GameObject cloneLaserBall1 = (GameObject)Instantiate(this.gameObject,
                                 new Vector3(this.transform.position.x + verticalVelocity1.x, this.transform.position.y + verticalVelocity1.y, this.transform.position.z),
@@ -127,11 +118,16 @@ public class LaserBall : MonoBehaviour {
                 cloneLaserBall2.transform.SetParent(this.transform.parent);
             }
         }
+
+        if(other.gameObject.tag == "TransmissionObject")
+        {
+            if(other.GetComponent<TransmissionObject>().CanMoveToAnotherSidePortal())
+                this.transform.position = other.GetComponent<TransmissionObject>().ReturnAnotherSidePortalPosition();
+        }
     }
 
     void OnCollisionEnter(Collision other)
     {
-        Debug.Log("Touch SomeThing");
 
         ContactPoint contact = other.contacts[0];
         Vector3 reflectPosition = contact.point;

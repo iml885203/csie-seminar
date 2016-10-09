@@ -14,12 +14,9 @@ TagManager:
   - BlackHoleObject
   - TargetObject
   - FloatObject
-  - MenuMoveObject
-  - SplitObject
-  - SettingMoveObject
   - DestoryObject
-  - wall
   - LaserBall
+  - TransmissionObject
   layers:
   - Default
   - TransparentFX
