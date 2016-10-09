@@ -15,11 +15,7 @@ public class Match : MonoBehaviour {
     private int _matchHeight;
     private Mat hsvMat;
     private Mat thresholdMat;
-    //colorObject
-    ColorObject blue = new ColorObject("blue");
-    ColorObject yellow = new ColorObject("yellow");
-    ColorObject red = new ColorObject("red");
-    ColorObject green = new ColorObject("green");
+
     /*kinect color */
     private int _colorWidth;
     private int _colorHeight;
@@ -41,13 +37,11 @@ public class Match : MonoBehaviour {
     //是否可以儲存感測到的物件
     private bool isSave = new bool();
 
-    public Mat src;
     //傳給遊戲的結果
     private OpenCVForUnity.Rect _DepthRect;
     //偵測到的Object
     public List<MatchObject> _matchObjectList { get; set; } 
-    public Mat Temp;
-
+    public List<MatchObject> _matchColorObjectList { get; set; }
     public Texture2D GetMatchTexture()
     {
         return _matchTexture;
@@ -65,6 +59,7 @@ public class Match : MonoBehaviour {
         _matchTexture = new Texture2D(_matchWidth, _matchHeight);
         isSave = false;
         _matchObjectList = new List<MatchObject>();
+        _matchColorObjectList = new List<MatchObject>();
         _changeRectList = new List<OpenCVForUnity.Rect>();
     }
 	// Update is called once per frame
@@ -84,17 +79,20 @@ public class Match : MonoBehaviour {
         //取得影像資訊
         _ClolrMat = _drawBlock.GetBlockMat();
         _DepthMat = _drawBlock.GetBlockDepthMat();
-
+        if (_ClolrMat == null || _DepthMat == null)
+            return;
         //宣告結果影像
         Mat BlackMat = new Mat();
         Mat BlackDepthMat = new Mat();
 
+        getContours(_ClolrMat, _DepthMat).copyTo(BlackMat);
         getDepthContours(_DepthMat, BlackDepthMat);
+
          //getContours(_DepthMat, BlackMat);
 
          //將結果影像轉換影像格式與大小設定
-         Mat resizeMat = new Mat(_matchHeight, _matchWidth, CvType.CV_8UC3);
-        Imgproc.resize(BlackDepthMat, resizeMat, resizeMat.size());
+         Mat resizeMat = new Mat(_matchHeight, _matchWidth, CvType.CV_8UC1);
+        Imgproc.resize(BlackMat, resizeMat, resizeMat.size());
         Utils.matToTexture2D(resizeMat, _matchTexture);
         _matchTexture.Apply();
 
@@ -340,37 +338,28 @@ public class Match : MonoBehaviour {
         return DRoation;
     }
 
-    //============================================================
-    //=================以下為沒有再使用的函式=====================
-    //============================================================
-    //找出特徵的顏色方法二
-    public void getContours(Mat RGB, Mat cameraFeed)
+    //利用深度的輪廓做RGB的顏色判斷
+    public Mat getContours(Mat srcColorMat,Mat srcDepthMat)
     {
-        Point cof_center = new Point(cameraFeed.cols() / 2.0, cameraFeed.rows() / 2.0);
-        Mat cof_mat = Imgproc.getRotationMatrix2D(cof_center, 180, 1.0);
-        Imgproc.warpAffine(cameraFeed, cameraFeed, cof_mat, cameraFeed.size());
-
-        src = new Mat();
-        RGB.copyTo(src);
+        Mat ColorMat = new Mat();
+        Mat DepthMat = new Mat();
+        srcColorMat.copyTo(ColorMat);
+        srcDepthMat.copyTo(DepthMat);
 
         List<ColorObject> colorObjects = new List<ColorObject>();
-        Temp = new Mat(RGB.height(),RGB.width(), CvType.CV_8UC3);
-       // threshold.copyTo(temp);
+        Mat resultMat = new Mat(DepthMat.height(), DepthMat.width(), CvType.CV_8UC1);
+        // threshold.copyTo(temp);
         Mat hierarchy = new Mat();
         List<Point> ConsistP = new List<Point>();
         List<MatOfPoint> contours = new List<MatOfPoint>();
 
-        Imgproc.blur(src, src, new Size(3, 3));
-        Imgproc.Canny(src, Temp, 50, 150);
-        morphOps(Temp);
-
-        Imgproc.findContours(Temp, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);
+        Imgproc.findContours(DepthMat, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
         
         int numObjects = contours.Count;
         List<Scalar> clickRGB = new List<Scalar>();
         for (int i = 0; i < numObjects; i++)
         {
-            Imgproc.drawContours(Temp, contours, i, new Scalar(255, 255, 255),1);
+            Imgproc.drawContours(resultMat, contours, i, new Scalar(255),1);
         }
         double[] GetRGB = new double[10];
         if (numObjects > 0)
@@ -380,33 +369,43 @@ public class Match : MonoBehaviour {
 
                 OpenCVForUnity.Rect R0 = Imgproc.boundingRect(contours[index]);
 
-                if (R0.height > 20 && R0.width > 20 && R0.height <_drawBlock.MatchHeight-10 && R0.width < _drawBlock.MatchWidth-10)
+                if (R0.height > 20 && R0.width > 20 && R0.height < _drawBlock.MatchHeight - 10 && R0.width < _drawBlock.MatchWidth - 10)
                 {
                     ConsistP.Add(new Point(R0.x, R0.y));
                     ConsistP.Add(new Point(R0.x + R0.width, R0.y + R0.height));
-                    clickRGB.Add(clickcolor(src, R0));
+                    ConsistP.Add(new Point(R0.x + R0.width, R0.y));
+                    ConsistP.Add(new Point(R0.x, R0.y + R0.height));
+                    clickRGB.Add(clickcolor(ColorMat, R0));
                 }
             }
-
-            for (int i = 0; i < ConsistP.Count; i += 2)
-            {
-                int ID = inRange(ConsistP[i], ConsistP[i + 1], clickRGB[i / 2]);
-                if (ID != -1)
-                {
-                    Imgproc.rectangle(Temp, ConsistP[i], ConsistP[i + 1], new Scalar(255, 0, 255), 1);
-                    Imgproc.putText(Temp, "ID=" + ID.ToString(), ConsistP[i], 1, 1, new Scalar(255, 0, 255), 1);
-                }
-            }
-            // =================================
-            // set public MatchObjectPoint =====
-            // =================================
-            //MatchObjectPoint = ConsistP;
-
-            //ConsistP.Clear();
+            _matchColorObjectList.Clear();
+            _matchColorObjectList = setColorMatchObject(ConsistP, clickRGB, resultMat);
         }
-        Temp.copyTo(cameraFeed);
-        Imgproc.warpAffine(cameraFeed, cameraFeed, cof_mat, cameraFeed.size());
+        return resultMat;
     }
+    //設定偵測物體參數
+    private List<MatchObject> setColorMatchObject(List<Point> ConsistP, List<Scalar> clickRGB,Mat resultMat)
+    {
+        List<MatchObject> matchObjectList = new List<MatchObject>();
+        for (int i = 0; i < ConsistP.Count; i += 4)
+        {
+            int ID = inRange(ConsistP[i], ConsistP[i + 1], clickRGB[i / 4]);
+            if (ID != -1)
+            {
+                Imgproc.rectangle(resultMat, ConsistP[i], ConsistP[i + 1], new Scalar(255, 0, 255), 1);
+                Imgproc.putText(resultMat, "ID=" + ID.ToString(), ConsistP[i], 1, 1, new Scalar(255, 0, 255), 1);
+                MatchObject matchObject = new MatchObject();
+                matchObject._pos = calculateCenter(ConsistP);
+                matchObject._scale = new Vector3(22, 22, 22);
+                matchObjectList.Add(matchObject);
+
+            }
+        }
+        return matchObjectList;
+    }
+    //============================================================
+    //=================以下為沒有再使用的函式=====================
+    //============================================================
     //侵蝕膨脹消除雜訊
     public void morphOps(Mat thresh)
     {
