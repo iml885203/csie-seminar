@@ -64,7 +64,7 @@ public class DynamicMake : MonoBehaviour
     public void CreateObject(MatchObject matchObject)
     {
         childGameObject = Instantiate(copyGameObject);//複製copyGameObject物件(連同該物件身上的腳本一起複製)
-        childGameObject.transform.parent = superGameObject.transform;//放到superGameObject物件內
+        childGameObject.transform.SetParent(superGameObject.transform);//放到superGameObject物件內
         RectTransform childGameObjectRect = childGameObject.GetComponent<RectTransform>();
 
         //座標系統統一(左下0,0)
