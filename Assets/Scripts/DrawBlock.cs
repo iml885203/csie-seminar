@@ -32,7 +32,6 @@ public class DrawBlock : MonoBehaviour {
     public int _maxX { get; private set; }
     public int _minY { get; private set; }
     public int _maxY { get; private set; }
-    public bool SelectedBlock { get; private set; }
 
     //設定螢幕與輸入cam的影像大小
     private int _currentWidth;
@@ -137,7 +136,6 @@ public class DrawBlock : MonoBehaviour {
         _ScreenSettingCompletionFlag = false;
         //選擇範圍初始化
         _minX = 0; _maxX = 0; _minY = 0; _maxY = 0;
-        SelectedBlock = false;
         //設定影像改變旗標
         _DepthImageChangeFlag = true;
     }

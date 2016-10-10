@@ -10,9 +10,6 @@ public class HandControll : MonoBehaviour {
     private BodySourceManager _bodyManager;
     private Body[] bodies;
 
-    public float multiplier;
-    public float _ErrorRange;
-
     private float _clickTimer = 0f;
     public float _clickTriggerTime = 1f;
 
@@ -47,7 +44,7 @@ public class HandControll : MonoBehaviour {
         {
             return;
         }
-        if (!_drawBlockManager.SelectedBlock)
+        if (_drawBlockManager.MatchHeight == 0 || _drawBlockManager.MatchWidth == 0)
         {
             return;
         }
