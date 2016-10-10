@@ -57,7 +57,14 @@ public class ButtonEvent : MonoBehaviour
     public void CallFuncByString(string funcName)
     {
         System.Reflection.MethodInfo mi = this.GetType().GetMethod(funcName);
-        mi.Invoke(this, null);
+        try
+        {
+            mi.Invoke(this, null);
+        }
+        catch
+        {
+            Debug.Log("funcName undefined function");
+        }
     }
 
     IEnumerator MenuToSetting()

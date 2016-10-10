@@ -18,6 +18,8 @@ public class HandControll : MonoBehaviour {
     private clickPositionTrans _posTrans;
 
     public float _speed = 2f;
+    private GameObject _handImage;
+
     // Use this for initialization
     void Start () {
 	    if(BodySrcManager == null)
@@ -30,6 +32,7 @@ public class HandControll : MonoBehaviour {
         }
         _processBar = this.GetComponent<processBar>();
         _buttonEvent = this.GetComponentInParent<ButtonEvent>();
+        _handImage = transform.Find("handImage").gameObject;
     }
 
     // Update is called once per frame
@@ -66,8 +69,20 @@ public class HandControll : MonoBehaviour {
                 Vector2 colorPos = _drawBlockManager._map.CameraSpacePointToColorVector2(pos);
                 Vector2 pos_inDrawBlock = GetInDrawBlockPos(colorPos);
                 RectTransform myRect = this.transform as RectTransform;
-                myRect.anchoredPosition = Vector2.Lerp(myRect.anchoredPosition, _posTrans.TransToScreen2Pos(new Vector2(-pos_inDrawBlock.x, -pos_inDrawBlock.y)), _speed);
-                Debug.Log(_posTrans.TransToScreen2Pos(new Vector2(-pos_inDrawBlock.x, -pos_inDrawBlock.y)));
+                if(pos_inDrawBlock.x == -99 && pos_inDrawBlock.y == -99)
+                {
+                    myRect.localPosition = new Vector3(myRect.localPosition.x, myRect.localPosition.y, 100);
+                    if(_handImage.active)
+                        _handImage.SetActive(false);
+                }
+                else
+                {
+                    myRect.localPosition = new Vector3(myRect.localPosition.x, myRect.localPosition.y, 0);
+                    myRect.anchoredPosition = Vector2.Lerp(myRect.anchoredPosition, _posTrans.TransToScreen2Pos(new Vector2(-pos_inDrawBlock.x, -pos_inDrawBlock.y)), _speed);
+                    if (!_handImage.active)
+                        _handImage.SetActive(true);
+                }
+                
             }
         }
     }
@@ -94,7 +109,6 @@ public class HandControll : MonoBehaviour {
 
     void OnTriggerExit(Collider other)
     {
-        Debug.Log(other.gameObject.tag);
         if (other.gameObject.tag == "UI_Test")
         {
             _clickTimer = 0f;
