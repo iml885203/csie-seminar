@@ -69,17 +69,17 @@ public class HandControll : MonoBehaviour {
                 Vector2 colorPos = _drawBlockManager._map.CameraSpacePointToColorVector2(pos);
                 Vector2 pos_inDrawBlock = GetInDrawBlockPos(colorPos);
                 RectTransform myRect = this.transform as RectTransform;
-                if(pos_inDrawBlock.x == -99 && pos_inDrawBlock.y == -99)
+                if(pos_inDrawBlock.x == -99 && pos_inDrawBlock.y == -99)//不在drawblock範圍內
                 {
                     myRect.localPosition = new Vector3(myRect.localPosition.x, myRect.localPosition.y, 100);
-                    if(_handImage.active)
+                    if(_handImage.active)//隱藏圖示
                         _handImage.SetActive(false);
                 }
                 else
                 {
-                    myRect.localPosition = new Vector3(myRect.localPosition.x, myRect.localPosition.y, 0);
                     myRect.anchoredPosition = Vector2.Lerp(myRect.anchoredPosition, _posTrans.TransToScreen2Pos(new Vector2(-pos_inDrawBlock.x, -pos_inDrawBlock.y)), _speed);
-                    if (!_handImage.active)
+                    myRect.localPosition = new Vector3(myRect.localPosition.x, myRect.localPosition.y, 0);
+                    if (!_handImage.active)//顯示圖示
                         _handImage.SetActive(true);
                 }
                 
