@@ -88,6 +88,9 @@ public class DrawBlock : MonoBehaviour {
     public int _revertMaxY;
     public int _revertMinY;
 
+    //SmoothesImage參數
+    private const int  _smoothesImageIndex = 500;
+
     public Mat GetBlockMat()
     {
         return _blockImage;
@@ -476,7 +479,7 @@ public class DrawBlock : MonoBehaviour {
         {
             OpenCVForUnity.Rect tempRect = Imgproc.boundingRect(contours[index]);
             //差異面積
-            if(tempRect.area() > 1000)
+            if(tempRect.area() > _smoothesImageIndex)
             {
                 currentImage.copyTo(_smoothesImage);
                 _DepthImageChangeFlag = true;
