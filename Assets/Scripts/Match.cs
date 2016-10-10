@@ -85,10 +85,10 @@ public class Match : MonoBehaviour {
         getContours(_ClolrMat, _DepthMat).copyTo(BlackMat);
         getDepthContours(_DepthMat, BlackDepthMat);
 
-         //getContours(_DepthMat, BlackMat);
+        //getContours(_DepthMat, BlackMat);
 
-         //將結果影像轉換影像格式與大小設定
-         Mat resizeMat = new Mat(_matchHeight, _matchWidth, CvType.CV_8UC1);
+        //將結果影像轉換影像格式與大小設定
+        Mat resizeMat = new Mat(_matchHeight, _matchWidth, CvType.CV_8UC1);
         Imgproc.resize(BlackMat, resizeMat, resizeMat.size());
         Utils.matToTexture2D(resizeMat, _matchTexture);
         _matchTexture.Apply();
@@ -372,7 +372,7 @@ public class Match : MonoBehaviour {
                     ConsistP.Add(new Point(R0.x + R0.width, R0.y));
                     ConsistP.Add(new Point(R0.x, R0.y + R0.height));
                     clickRGB.Add(clickcolor(ColorMat, R0));
-                    Debug.Log("ID = " +  index + " Color = " + clickcolor(ColorMat, R0));
+                    //Debug.Log("ID = " +  index + " Color = " + clickcolor(ColorMat, R0));
                     ColorMat.submat(R0).copyTo(resultMat);
                 }
             }
@@ -440,11 +440,11 @@ public class Match : MonoBehaviour {
         double[] _getrgb_Top = src.get((int)R.y + R.height / 4, (int)R.x + R.width / 2);
         double[] _getrgb_Bot = src.get((int)R.y + R.height / 4 * 3, (int)R.x + R.width / 2);
 
-        Debug.Log("Mid = " + _getrgb_Mid[0] + "," + _getrgb_Mid[1] + "," +_getrgb_Mid[2]);
-        Debug.Log("Lift = " + _getrgb_Lift[0] + "," + _getrgb_Lift[1] + "," + _getrgb_Lift[2] +
-                  "Right = " + _getrgb_Right[0] + "," + _getrgb_Right[1] + "," + _getrgb_Right[2]);
-        Debug.Log("Top = " + _getrgb_Top[0] + "," + _getrgb_Top[1] + "," + _getrgb_Top[2] + 
-                  "Bot = " + _getrgb_Bot[0] + "," + _getrgb_Bot[1] + "," + _getrgb_Bot[2]);
+        //Debug.Log("Mid = " + _getrgb_Mid[0] + "," + _getrgb_Mid[1] + "," +_getrgb_Mid[2]);
+        //Debug.Log("Lift = " + _getrgb_Lift[0] + "," + _getrgb_Lift[1] + "," + _getrgb_Lift[2] +
+        //          "Right = " + _getrgb_Right[0] + "," + _getrgb_Right[1] + "," + _getrgb_Right[2]);
+        //Debug.Log("Top = " + _getrgb_Top[0] + "," + _getrgb_Top[1] + "," + _getrgb_Top[2] + 
+        //          "Bot = " + _getrgb_Bot[0] + "," + _getrgb_Bot[1] + "," + _getrgb_Bot[2]);
 
         average_R = (_getrgb_Mid[0] + _getrgb_Lift[0] + _getrgb_Right[0] + _getrgb_Top[0] + _getrgb_Bot[0])/5;
         average_G = (_getrgb_Mid[1] + _getrgb_Lift[1] + _getrgb_Right[1] + _getrgb_Top[1] + _getrgb_Bot[1])/5;
