@@ -15,7 +15,6 @@ TagManager:
   - TargetObject
   - FloatObject
   - DestoryObject
-  - LaserBall
   - TransmissionObject
   - WhiteHoleObject
   - windObject

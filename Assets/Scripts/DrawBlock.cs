@@ -238,6 +238,8 @@ public class DrawBlock : MonoBehaviour {
         _revertMaxY = (_sourceMatDepth.height() - _minY);
         MatchWidth = _maxX - _minX;
         MatchHeight = _maxY - _minY;
+        _inoutImg.gameObject.SetActive(false);
+        transform.root.Find("/UICanvas/InfoView/view-KinectSetting").gameObject.SetActive(false);
     }
 
     public void runDrawBlock()//區塊影像處理
