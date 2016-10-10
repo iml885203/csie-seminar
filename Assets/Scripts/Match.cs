@@ -16,9 +16,6 @@ public class Match : MonoBehaviour {
     private Mat hsvMat;
     private Mat thresholdMat;
 
-    /*kinect color */
-    private int _colorWidth;
-    private int _colorHeight;
     /*drawBlock*/
     public DrawBlock _drawBlock;
     private Mat blockMat;
@@ -403,6 +400,14 @@ public class Match : MonoBehaviour {
                 MatchObject matchObject = new MatchObject();
                 matchObject._pos = calculateCenter(nowPoint);
                 matchObject._scale = new Vector3(22, 22, 22);
+                if (calculateCenter(nowPoint).x > resultMat.width() / 2)
+                {
+                    matchObject._rotation = 0.5f;
+                }
+                else
+                {
+                    matchObject._rotation = -0.5f;
+                }
                 matchObjectList.Add(matchObject);
 
             }
