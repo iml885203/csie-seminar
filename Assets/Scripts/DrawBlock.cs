@@ -41,8 +41,8 @@ public class DrawBlock : MonoBehaviour {
     private int _inputHeight;
     private ushort[] _depthData;
 
-    //滑鼠是否點擊
-    private bool mouseclick = false;
+    //滑鼠是否點擊 0=尚未點擊/1=點擊中/2=點擊完成
+    private byte mouseclick = 0;
     
     //繪圖顏色
     Scalar _color = new Scalar(255, 0, 0);
@@ -69,8 +69,6 @@ public class DrawBlock : MonoBehaviour {
     //選取區深度資料
     List<ushort> _depthDataSub = new List<ushort>();
     List<Point> _depthDataSubColorPoint = new List<Point>();
-    //深度的背景
-    List<ushort> _depthDataSubBackGround = new List<ushort>();
 
     //設定深度偵測距離(mm)
     public int _minDepthDistance = 500;
@@ -158,17 +156,12 @@ public class DrawBlock : MonoBehaviour {
             _sourceMat_backup.copyTo(_sourceMat);
         }
         //滑鼠點擊判斷
-        if (mouseclick)
+        if (mouseclick == 1)
         {
             pointMove();
         }
-        else if (!mouseclick && MatchHeight != 0 && MatchWidth != 0) {
+        else if (mouseclick == 2 && MatchHeight != 0 && MatchWidth != 0) {
             runDrawBlock();
-            if(!SelectedBlock) SelectedBlock = true;
-        }
-        else
-        {
-            if (SelectedBlock) SelectedBlock = false;
         }
         //畫選取框框
         Imgproc.rectangle(_sourceMat, _pointOne, _pointTwo, _color, 4);
@@ -188,11 +181,16 @@ public class DrawBlock : MonoBehaviour {
 
     public void pointDown()//滑鼠點擊
     {
+        //變數初始化
+        MatchHeight = 0;
+        MatchWidth = 0;
+        _ScreenSettingCompletionFlag = false;
+        _smoothesImage = null;
         //取得滑鼠在螢幕上點擊的位置
         float x = Screen.width - Input.mousePosition.x;
         float y = Input.mousePosition.y;
 
-        if (Input.GetMouseButton(1))
+        if (Input.GetMouseButton(1))//滑鼠右鍵 抓取座標
         {
             Point newPos = _positionTrans.TransToScreen2Pos(new Point(x, y));
             double[] getPix = _sourceMat.get((int)newPos.y, (int)newPos.x);
@@ -203,7 +201,7 @@ public class DrawBlock : MonoBehaviour {
             //存入list
             _pointOne = _positionTrans.TransToScreen2Pos(new Point(x, y));
             _pointTwo = _positionTrans.TransToScreen2Pos(new Point(x, y));
-            mouseclick = true;
+            mouseclick = 1;//設為點擊中
         }
         
     }
@@ -211,7 +209,7 @@ public class DrawBlock : MonoBehaviour {
     public void pointUp()//滑鼠放開
     {
         //設定滑鼠點擊
-        mouseclick = false;
+        mouseclick = 2;//設為點擊結束
         //儲存選取區塊座標
         if (_pointTwo.x >= _pointOne.x)
         {
@@ -294,9 +292,24 @@ public class DrawBlock : MonoBehaviour {
 
     private void updateDepthTexture()
     {
-        _blockDepthImage = new Mat();
+        if (_blockDepthBackGroundImage == null)
+        {
+            _blockDepthBackGroundImage = new Mat();
+            _blockDepthBackGroundImage.setTo(new Scalar(0, 0, 0));
+        }
+        if(_blockDepthImage == null)
+        {
+            _blockDepthImage = new Mat();
+        }
+        
+
         // 獲得depth資料與座標
         getDepthData(_minX, _minY, _maxX, _maxY);
+        //更新深度距離範圍
+        if (mouseclick == 2 && _ScreenSettingCompletionFlag == false)
+        {
+            InitDepthDistance();
+        }
         // 畫出選取區的depth畫面
         _thread = new Thread(drawDepthSourceMat);
         _thread.Start();
@@ -324,42 +337,22 @@ public class DrawBlock : MonoBehaviour {
 
         //設定背景深度 快捷鍵L
         setDepthSourceBackGroundMat(depthMatchImagePorcess);
-
+        if(mouseclick == 2 && _ScreenSettingCompletionFlag == false)
+        {
+            InitDepthBackground(depthMatchImagePorcess);
+        }
         
         //減去背景深度
         Core.absdiff(depthMatchImagePorcess, _blockDepthBackGroundImage, depthMatchImagePorcess);
-
         //二值化
         Imgproc.threshold(depthMatchImagePorcess, depthMatchImagePorcess, 50, 255, Imgproc.THRESH_BINARY);
-
         //平滑處理(之後嘗試看看)
         SmoothesImage(depthMatchImagePorcess).copyTo(depthMatchImagePorcess);
-
-        //設定Canny參數
-        //double threshold = 50.0;
-        //做Canny輪廓化
-        //Imgproc.Canny(depthMatchImagePorcess, depthMatchImagePorcess, threshold, threshold * 3);
+        //處理鋸齒
         Imgproc.blur(depthMatchImagePorcess, depthMatchImagePorcess, new OpenCVForUnity.Size(8, 8));
         Imgproc.threshold(depthMatchImagePorcess, depthMatchImagePorcess, 50, 255, Imgproc.THRESH_BINARY);
         //傳出深度
         depthMatchImagePorcess.copyTo(_blockDepthImage);
-
-
-        // canny 取出輪廓
-        //Imgproc.blur(matchImagePorcess, matchImagePorcess, new Size(3, 3));
-        //Imgproc.Canny(matchImagePorcess, _matchDepthImage, 50, 150);
-
-        //Imgproc.dilate(_matchDepthImage, _matchDepthImage, dilateElement);
-        //Imgproc.dilate(_matchDepthImage, _matchDepthImage, dilateElement);
-
-        //Mat hierarchy = new Mat();
-        //List<MatOfPoint> contours = new List<MatOfPoint>();
-        ////Imgproc.findContours(_matchImage, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);//Imgproc.RETR_EXTERNAL那邊0-3都可以
-        //Imgproc.findContours(_matchImage, contours, hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
-        //for (int i = 0; i < contours.Count; i++)
-        //{
-        //    Imgproc.drawContours(_matchImage, contours, i, new Scalar(255, 255, 255), 2);
-        //}
 
         //圖形壓縮輸出(深度)
         Mat outDepthMat = new Mat(180, 320, CvType.CV_8UC1);
@@ -373,14 +366,16 @@ public class DrawBlock : MonoBehaviour {
         _blockDepthImg.texture = _blockDepthTexture;
 
         //輸出到遊戲背景
-        Mat dilateElementNEW = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(10, 10));
-        Imgproc.dilate(outDepthMat, outDepthMat, dilateElementNEW);
-        Imgproc.dilate(outDepthMat, outDepthMat, dilateElementNEW);
-        Imgproc.blur(outDepthMat, outDepthMat, new Size(10, 10));
-        Core.bitwise_not(outDepthMat, outDepthMat);
-        Utils.matToTexture2D(outDepthMat, _blockDepthTextureBg);
-        _blockDepthBg.texture = _blockDepthTextureBg;
-
+        if(_blockDepthBg != null)
+        {
+            Mat dilateElementNEW = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(10, 10));
+            Imgproc.dilate(outDepthMat, outDepthMat, dilateElementNEW);
+            Imgproc.dilate(outDepthMat, outDepthMat, dilateElementNEW);
+            Imgproc.blur(outDepthMat, outDepthMat, new Size(10, 10));
+            Core.bitwise_not(outDepthMat, outDepthMat);
+            Utils.matToTexture2D(outDepthMat, _blockDepthTextureBg);
+            _blockDepthBg.texture = _blockDepthTextureBg;
+        }
 
         subDepthMat.release();
         depthMatchImagePorcess.release();
@@ -404,7 +399,6 @@ public class DrawBlock : MonoBehaviour {
 
     private void drawDepthSourceMat()//畫出depth影像
     {
-
         Mat procMat = new Mat(_sourceMatDepth.height(), _sourceMatDepth.width(), CvType.CV_8UC1);
         for (int i = 0; i < _depthDataSub.Count; i++)
         {
@@ -415,13 +409,8 @@ public class DrawBlock : MonoBehaviour {
             }
             else
             {
-                if(_depthDataSubBackGround.Count > 0)
-                {
-                    avg = 255 - ((double)(_depthDataSub[i] - _depthDataSubBackGround[i]) / (1) * 255); //顯示範圍內深度顏色
-                }
-                else
-                    avg = 255 - ((double)(_depthDataSub[i] - _minDepthDistance) / (_maxDepthDistance - _minDepthDistance) * 255); //顯示範圍內深度顏色
-               // avg = 255; //binary
+                avg = 255 - ((double)(_depthDataSub[i] - _minDepthDistance) / (_maxDepthDistance - _minDepthDistance) * 255); //顯示範圍內深度顏色
+                // avg = 255; //binary
             }
 
             double[] color = new double[1] { avg };
@@ -440,37 +429,36 @@ public class DrawBlock : MonoBehaviour {
     }
     private void setDepthSourceBackGroundMat(Mat BackGround)//取得背景Depth資訊
     {
-        if (Input.GetKeyUp(KeyCode.J))
-        {
-            _depthDataSubBackGround.Clear();
-            for (int i = 0;i< _depthDataSub.Count; i++)
-            {
-                _depthDataSubBackGround.Add(_depthDataSub[i]);
-            }
-        }
         if (Input.GetKeyUp(KeyCode.K))
         {
-            int MaxDepth = 0;
-            for (int i = 0; i < _depthDataSub.Count; i++)
-            {
-                if (_depthDataSub[i] > MaxDepth) MaxDepth = _depthDataSub[i];
-            }
-            _maxDepthDistance = MaxDepth;
-            _minDepthDistance = MaxDepth - 200;
+            InitDepthDistance();
         }
         if (Input.GetKeyUp(KeyCode.L))
         {
-            //創造背景深度Mat
-            _blockDepthBackGroundImage = new Mat();
-            BackGround.copyTo(_blockDepthBackGroundImage);
-            _ScreenSettingCompletionFlag = true;
-        }
-        else if (_blockDepthBackGroundImage == null)
-        {
-            _blockDepthBackGroundImage = new Mat();
-            _blockDepthBackGroundImage.setTo(new Scalar(0, 0, 0));
+            InitDepthBackground(BackGround);
         }
     }
+
+    //初始化牆壁深度範圍
+    private void InitDepthDistance()
+    {
+        int MaxDepth = 0;
+        for (int i = 0; i < _depthDataSub.Count; i++)
+        {
+            if (_depthDataSub[i] > MaxDepth) MaxDepth = _depthDataSub[i];
+        }
+        _maxDepthDistance = MaxDepth;
+        _minDepthDistance = MaxDepth - 200;
+    }
+
+    //初始化背景深度Mat
+    private void InitDepthBackground(Mat BackGround)
+    {
+        _blockDepthBackGroundImage = new Mat();
+        BackGround.copyTo(_blockDepthBackGroundImage);
+        _ScreenSettingCompletionFlag = true;
+    }
+
     //平滑影像(若與上一張圖片相差過少將不更新畫面)
     private Mat SmoothesImage(Mat currentImage)
     {
