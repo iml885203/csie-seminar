@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Windows.Kinect;
+using UnityEngine.UI;
 
 public class HandControll : MonoBehaviour {
     public GameObject BodySrcManager;
     public DrawBlock _drawBlockManager;
     public JointType TrackedJoint;
-    private ButtonEvent _buttonEvent;
     private BodySourceManager _bodyManager;
     private Body[] bodies;
 
@@ -31,7 +31,6 @@ public class HandControll : MonoBehaviour {
             _bodyManager = BodySrcManager.GetComponent<BodySourceManager>();
         }
         _processBar = this.GetComponent<processBar>();
-        _buttonEvent = this.GetComponentInParent<ButtonEvent>();
         _handImage = transform.Find("handImage").gameObject;
     }
 
@@ -72,15 +71,15 @@ public class HandControll : MonoBehaviour {
                 if(pos_inDrawBlock.x == -99 && pos_inDrawBlock.y == -99)//不在drawblock範圍內
                 {
                     myRect.localPosition = new Vector3(myRect.localPosition.x, myRect.localPosition.y, 100);
-                    if(_handImage.active)//隱藏圖示
-                        _handImage.SetActive(false);
+                    //if(_handImage.active)//隱藏圖示
+                    //    _handImage.SetActive(false);
                 }
                 else
                 {
                     myRect.anchoredPosition = Vector2.Lerp(myRect.anchoredPosition, _posTrans.TransToScreen2Pos(new Vector2(-pos_inDrawBlock.x, -pos_inDrawBlock.y)), _speed);
                     myRect.localPosition = new Vector3(myRect.localPosition.x, myRect.localPosition.y, 0);
-                    if (!_handImage.active)//顯示圖示
-                        _handImage.SetActive(true);
+                    //if (!_handImage.active)//顯示圖示
+                    //    _handImage.SetActive(true);
                 }
                 
             }
@@ -95,7 +94,7 @@ public class HandControll : MonoBehaviour {
             if (_clickTimer > _clickTriggerTime)
             {
                 //觸發點擊UI
-                _buttonEvent.CallFuncByString(other.transform.parent.name + "Click");
+                other.transform.parent.GetComponent<Button>().onClick.Invoke();
                 _processBar.setProcessPer(0);
             }
             else

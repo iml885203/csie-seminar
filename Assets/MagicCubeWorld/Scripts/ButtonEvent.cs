@@ -53,20 +53,6 @@ public class ButtonEvent : MonoBehaviour
         }
     }
 
-    //用function name字串呼叫function
-    public void CallFuncByString(string funcName)
-    {
-        System.Reflection.MethodInfo mi = this.GetType().GetMethod(funcName);
-        try
-        {
-            mi.Invoke(this, null);
-        }
-        catch
-        {
-            Debug.Log("funcName undefined function");
-        }
-    }
-
     IEnumerator MenuToSetting()
     {
         yield return new WaitForSeconds(_effectTimer);

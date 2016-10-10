@@ -31923,7 +31923,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22469598, guid: 00fca524ff12af54097b105c2901a375, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 22469598, guid: 00fca524ff12af54097b105c2901a375, type: 2}
       propertyPath: m_LocalRotation.x
@@ -31947,11 +31947,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22469598, guid: 00fca524ff12af54097b105c2901a375, type: 2}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: -400
       objectReference: {fileID: 0}
     - target: {fileID: 22469598, guid: 00fca524ff12af54097b105c2901a375, type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -225
       objectReference: {fileID: 0}
     - target: {fileID: 22469598, guid: 00fca524ff12af54097b105c2901a375, type: 2}
       propertyPath: m_SizeDelta.x
@@ -32020,6 +32020,10 @@ Prefab:
     - target: {fileID: 11454456, guid: 00fca524ff12af54097b105c2901a375, type: 2}
       propertyPath: m_FillAmount
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11488526, guid: 00fca524ff12af54097b105c2901a375, type: 2}
+      propertyPath: _clickTriggerTime
+      value: 1.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 00fca524ff12af54097b105c2901a375, type: 2}
