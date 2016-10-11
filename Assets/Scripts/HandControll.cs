@@ -57,7 +57,13 @@ public class HandControll : MonoBehaviour {
             RectTransform parentRect = this.transform.parent as RectTransform;
             _posTrans = new clickPositionTrans(_drawBlockManager.MatchWidth, _drawBlockManager.MatchHeight, parentRect.rect.width, parentRect.rect.height);
         }
-        foreach(var body in bodies)
+        //遊戲狀態關閉手的圖案，保留手勢功能
+        var gameStatus = _gmaeStatusManager.GetCurrentGameStateIndex();
+        if (gameStatus == GameState.GameRun && _handImage.active)
+        {
+            _handImage.SetActive(false);
+        }
+        foreach (var body in bodies)
         {
             if(body == null)
             {
@@ -78,11 +84,6 @@ public class HandControll : MonoBehaviour {
                 {
                     myRect.anchoredPosition = Vector2.Lerp(myRect.anchoredPosition, _posTrans.TransToScreen2Pos(new Vector2(-pos_inDrawBlock.x, -pos_inDrawBlock.y)), _speed);
                     myRect.localPosition = new Vector3(myRect.localPosition.x, myRect.localPosition.y, 0);
-                }
-                //遊戲狀態關閉手的圖案，保留手勢功能
-                if (_gmaeStatusManager.GetCurrentGameStateIndex() == GameState.GameRun && _handImage.active)
-                {
-                    _handImage.SetActive(false);
                 }
             }
         }
