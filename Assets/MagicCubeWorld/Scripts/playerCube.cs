@@ -39,7 +39,8 @@ public class playerCube : MonoBehaviour {
     public void PlayerDead()
     {
         Renderer rend = this.gameObject.GetComponent<Renderer>();
-        rend.material.color = Color.white;   
+        rend.material.color = Color.white;
+        transform.FindChild("Eff_Burst_2_oneShot").gameObject.SetActive(true);
         //rend.material.shader = Shader.Find("02 - Default");
         //rend.material.SetColor("MainColor", Color.blue);
     }
@@ -51,5 +52,6 @@ public class playerCube : MonoBehaviour {
         _processBar.setProcessPer(Life);
         Renderer rend = this.gameObject.GetComponent<Renderer>();
         rend.material.color = Color.red;
+        transform.FindChild("Eff_Burst_2_oneShot").gameObject.SetActive(false);
     }
 }
