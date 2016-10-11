@@ -19,6 +19,7 @@ public class HandControll : MonoBehaviour {
 
     public float _speed = 2f;
     private GameObject _handImage;
+    private GameStateIndex _gmaeStatusManager;
 
     // Use this for initialization
     void Start () {
@@ -32,6 +33,7 @@ public class HandControll : MonoBehaviour {
         }
         _processBar = this.GetComponent<processBar>();
         _handImage = transform.Find("handImage").gameObject;
+        _gmaeStatusManager = transform.root.Find("/GameState").GetComponent<GameStateIndex>();
     }
 
     // Update is called once per frame
@@ -71,17 +73,17 @@ public class HandControll : MonoBehaviour {
                 if(pos_inDrawBlock.x == -99 && pos_inDrawBlock.y == -99)//不在drawblock範圍內
                 {
                     myRect.localPosition = new Vector3(myRect.localPosition.x, myRect.localPosition.y, 100);
-                    //if(_handImage.active)//隱藏圖示
-                    //    _handImage.SetActive(false);
                 }
                 else
                 {
                     myRect.anchoredPosition = Vector2.Lerp(myRect.anchoredPosition, _posTrans.TransToScreen2Pos(new Vector2(-pos_inDrawBlock.x, -pos_inDrawBlock.y)), _speed);
                     myRect.localPosition = new Vector3(myRect.localPosition.x, myRect.localPosition.y, 0);
-                    //if (!_handImage.active)//顯示圖示
-                    //    _handImage.SetActive(true);
                 }
-                
+                //遊戲狀態關閉手的圖案，保留手勢功能
+                if (_gmaeStatusManager.GetCurrentGameStateIndex() == GameState.GameRun && _handImage.active)
+                {
+                    _handImage.SetActive(false);
+                }
             }
         }
     }
