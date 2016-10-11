@@ -36,6 +36,9 @@ public class Match : MonoBehaviour {
 
     //傳給遊戲的結果
     private OpenCVForUnity.Rect _DepthRect;
+
+    private GameStateIndex _gmaeStatusManager;
+
     //偵測到的Object
     public List<MatchObject> _matchObjectList { get; set; } 
     public List<MatchObject> _matchColorObjectList { get; set; }
@@ -58,9 +61,14 @@ public class Match : MonoBehaviour {
         _matchObjectList = new List<MatchObject>();
         _matchColorObjectList = new List<MatchObject>();
         _changeRectList = new List<OpenCVForUnity.Rect>();
+        _gmaeStatusManager = transform.root.Find("/GameState").GetComponent<GameStateIndex>();
     }
 	// Update is called once per frame
 	void Update () {
+        if (_gmaeStatusManager.GetCurrentGameStateIndex() != GameState.GameRun)
+        {
+            return;
+        }
         //確認已開啟攝影機
         if (_drawBlock.MatchHeight == 0 && _drawBlock.MatchWidth == 0) return;
         // ==========================

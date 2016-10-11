@@ -17,10 +17,19 @@ public class DynamicMake : MonoBehaviour
     private int ObjectCount;
     private clickPositionTrans _posTrans;
     public float _speed = 1f;
+    private GameStateIndex _gmaeStatusManager;
 
-    private void OnGUI()
+    void Start()
+    {
+        _gmaeStatusManager = transform.root.Find("/GameState").GetComponent<GameStateIndex>();
+    }
+
+    void Update()
     { 
-
+        if(_gmaeStatusManager.GetCurrentGameStateIndex() != GameState.GameRun)
+        {
+            return;
+        }
         if (superGameObject.transform.childCount < _DataMatch._matchObjectList.Count && _drawBlock._ScreenSettingCompletionFlag)
         {
             //確認已開啟攝影機

@@ -16,9 +16,19 @@ public class DynamicMakeGun : MonoBehaviour
 
     private int ObjectCount;
     private clickPositionTrans _posTrans;
+    private GameStateIndex _gmaeStatusManager;
 
-    private void OnGUI()
+    void Start()
     {
+        _gmaeStatusManager = transform.root.Find("/GameState").GetComponent<GameStateIndex>();
+    }
+
+    void Update()
+    {
+        if (_gmaeStatusManager.GetCurrentGameStateIndex() != GameState.GameRun)
+        {
+            return;
+        }
 
         if (superGameObject.transform.childCount < _DataMatch._matchColorObjectList.Count && _drawBlock._ScreenSettingCompletionFlag)
         {
