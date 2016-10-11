@@ -14,6 +14,7 @@ public class HandControll : MonoBehaviour {
     public float _clickTriggerTime = 1f;
 
     private processBar _processBar;
+    private bool _idClicked;
 
     private clickPositionTrans _posTrans;
 
@@ -59,9 +60,15 @@ public class HandControll : MonoBehaviour {
         }
         //遊戲狀態關閉手的圖案，保留手勢功能
         var gameStatus = _gmaeStatusManager.GetCurrentGameStateIndex();
-        if (gameStatus == GameState.GameRun && _handImage.active)
+        if (gameStatus == GameState.GameRun)
         {
-            _handImage.SetActive(false);
+            if(_handImage.active)
+                _handImage.SetActive(false);
+        }
+        else
+        {
+            if(!_handImage.active)
+                _handImage.SetActive(true);
         }
         foreach (var body in bodies)
         {
@@ -93,12 +100,18 @@ public class HandControll : MonoBehaviour {
     {
         if (other.gameObject.tag == "UI_Test") //碰撞到牆壁
         {
+            var button = other.transform.parent.GetComponent<Button>();
+            if (!button.IsInteractable() || _idClicked)
+            {
+                return;
+            }
             //累積移動時間大於_movedTriggerTime,就移動玩家座標
             if (_clickTimer > _clickTriggerTime)
             {
                 //觸發點擊UI
-                other.transform.parent.GetComponent<Button>().onClick.Invoke();
+                button.onClick.Invoke();
                 _processBar.setProcessPer(0);
+                _idClicked = true;
             }
             else
             {
@@ -115,6 +128,7 @@ public class HandControll : MonoBehaviour {
         {
             _clickTimer = 0f;
             _processBar.setProcessPer(0f);
+            _idClicked = false;
         }
     }
 
