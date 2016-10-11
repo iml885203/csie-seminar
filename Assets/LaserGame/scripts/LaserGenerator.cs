@@ -9,14 +9,21 @@ public class LaserGenerator : MonoBehaviour {
 
     private float _timer = 0f;
     private List<GameObject> _laserBalls;
-    
-	// Use this for initialization
-	void Start () {
+    public GameStateIndex _gameStateIndex;
+    // Use this for initialization
+    void Start () {
 
     }
 
     // Update is called once per frame
     void Update () {
+
+        if (_gameStateIndex._gameStateIndex != 2)
+        {
+            //遊戲尚未開始 不攻擊
+            return;
+        }
+
         _timer += Time.deltaTime;
         if (_timer >= GeneratorBallTime)
         {
