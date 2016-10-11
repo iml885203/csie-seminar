@@ -143,6 +143,12 @@ public class ButtonEvent : MonoBehaviour
         StartCoroutine(SettingToListProducer());
     }
 
+    //按下重新校正按鈕事件
+    public void ReCorrectionButtonClick()
+    {
+        transform.root.Find("/UICanvas/InfoView/view-KinectSetting").gameObject.SetActive(true);
+    }
+
     IEnumerator ListProducerToSetting()
     {
         yield return new WaitForSeconds(_effectTimer);
