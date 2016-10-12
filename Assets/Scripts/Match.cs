@@ -386,7 +386,6 @@ public class Match : MonoBehaviour {
                     ConsistP.Add(new Point(R0.x, R0.y + R0.height));
                     clickRGB.Add(clickcolor(ColorMat, R0));
                     //Debug.Log("ID = " +  index + " Color = " + clickcolor(ColorMat, R0));
-                    ColorMat.submat(R0).copyTo(resultMat);
                 }
             }
             _matchColorObjectList.Clear();
