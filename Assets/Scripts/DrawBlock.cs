@@ -123,7 +123,7 @@ public class DrawBlock : MonoBehaviour {
         //創造mat儲存比對用mat(原始比對圖形為未改變比例)
         _blockImage = new Mat(_inputHeight, _inputWidth, CvType.CV_8UC3);
         _souceOut = new Texture2D(_inputWidth, _inputHeight);
-        _blockTexture = new Texture2D(100, 100);
+        _blockTexture = new Texture2D(320, 180);
         _blockDepthTexture = new Texture2D(320, 180);
         _blockDepthTextureBg = new Texture2D(320, 180);
 
@@ -172,7 +172,7 @@ public class DrawBlock : MonoBehaviour {
         {
             _souceOut = new Texture2D(_inputWidth, _inputHeight);
         }
-        //翻轉影像
+        //旋轉影像
         ReversedImage(_sourceMat).copyTo(_sourceMat);
         //將mat轉換回2D影像
         Utils.matToTexture2D(_sourceMat, _souceOut);
@@ -279,12 +279,15 @@ public class DrawBlock : MonoBehaviour {
         subMat = _sourceMat.submat(_minY, _maxY, _minX, _maxX);
         subMat.copyTo(_blockImage);
 
-        //反轉化面
-        ReversedImage(_blockImage).copyTo(_blockImage);
+        //左右反轉畫面與depth對應
+        Core.flip(_blockImage, _blockImage, 1);
 
         //區塊畫面壓縮輸出
-        Mat outMat = new Mat(100, 100, CvType.CV_8UC3);
+        Mat outMat = new Mat(180, 320, CvType.CV_8UC3);
         Imgproc.resize(_blockImage, outMat, outMat.size());
+
+        //旋轉呈現畫面
+        ReversedImage(outMat).copyTo(outMat);
 
         //擷取輸出
         Utils.matToTexture2D(outMat, _blockTexture);
@@ -330,7 +333,7 @@ public class DrawBlock : MonoBehaviour {
             subDepthMat = _sourceMatDepth.submat(_revertMinY, _revertMaxY, _minX, _maxX);
         else
             subDepthMat = _blockImageBuffer.submat(_revertMinY, _revertMaxY, _minX, _maxX);
-        //反轉化面
+        //旋轉畫面(Mat畫出來相反)
         ReversedImage(subDepthMat).copyTo(subDepthMat);
 
         // 膨脹收縮 處理depth影像
@@ -366,7 +369,7 @@ public class DrawBlock : MonoBehaviour {
         Mat outDepthMat = new Mat(180, 320, CvType.CV_8UC1);
         Imgproc.resize(_blockDepthImage, outDepthMat, outDepthMat.size());
 
-        //反轉化面
+        //旋轉呈現化面
         ReversedImage(outDepthMat).copyTo(outDepthMat);
 
         //擷取輸出(顯示深度的切割結果)
@@ -493,7 +496,7 @@ public class DrawBlock : MonoBehaviour {
         }
         return _smoothesImage;
     }
-    //反轉畫面
+    //旋轉畫面180度
     private Mat ReversedImage(Mat inImage)
     {
         Mat TempWarpMat = new Mat();
