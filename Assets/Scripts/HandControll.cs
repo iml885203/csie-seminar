@@ -23,6 +23,7 @@ public class HandControll : MonoBehaviour {
     private GameObject _handImage;
     private GameStateIndex _gmaeStatusManager;
     private bool _drawblockReset = false;
+    private GameObject _kinectSettingView;
 
     // Use this for initialization
     void Start () {
@@ -37,6 +38,7 @@ public class HandControll : MonoBehaviour {
         _processBar = this.GetComponent<processBar>();
         _handImage = transform.Find("handImage").gameObject;
         _gmaeStatusManager = transform.root.Find("/GameState").GetComponent<GameStateIndex>();
+        _kinectSettingView = transform.root.Find("/UICanvas/InfoView/view-KinectSetting").gameObject;
     }
 
     // Update is called once per frame
@@ -61,17 +63,26 @@ public class HandControll : MonoBehaviour {
             RectTransform parentRect = this.transform.parent as RectTransform;
             _posTrans = new clickPositionTrans(_drawBlockManager.MatchWidth, _drawBlockManager.MatchHeight, parentRect.rect.width, parentRect.rect.height);
         }
+        if (_kinectSettingView.active)
+        {
+            return;
+        }
         //遊戲狀態關閉手的圖案，保留手勢功能
         var gameStatus = _gmaeStatusManager.GetCurrentGameStateIndex();
+        Color imageColor = _handImage.GetComponent<Image>().color;
         if (gameStatus == GameState.GameRun && !_isTriggerButton)
         {
-            if(_handImage.active)
-                _handImage.SetActive(false);
+            if(imageColor.a == 1f)
+                _handImage.GetComponent<Image>().color = new Color(imageColor.r, imageColor.g, imageColor.b, .1f);
+            //if(_handImage.active)
+            //    _handImage.SetActive(false);
         }
         else
         {
-            if(!_handImage.active)
-                _handImage.SetActive(true);
+            if (imageColor.a == .1f)
+                _handImage.GetComponent<Image>().color = new Color(imageColor.r, imageColor.g, imageColor.b, 1f);
+            //if(!_handImage.active)
+            //    _handImage.SetActive(true);
         }
         foreach (var body in bodies)
         {
