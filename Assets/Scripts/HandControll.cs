@@ -14,13 +14,15 @@ public class HandControll : MonoBehaviour {
     public float _clickTriggerTime = 1f;
 
     private processBar _processBar;
-    private bool _idClicked;
+    private bool _isTriggerButton = false;
+    private bool _idClicked = false;
 
     private clickPositionTrans _posTrans;
 
     public float _speed = 2f;
     private GameObject _handImage;
     private GameStateIndex _gmaeStatusManager;
+    private bool _drawblockReset = false;
 
     // Use this for initialization
     void Start () {
@@ -51,6 +53,7 @@ public class HandControll : MonoBehaviour {
         }
         if (_drawBlockManager.MatchHeight == 0 || _drawBlockManager.MatchWidth == 0)
         {
+            _posTrans = null;//初始化
             return;
         }
         if(_posTrans == null)
@@ -60,7 +63,7 @@ public class HandControll : MonoBehaviour {
         }
         //遊戲狀態關閉手的圖案，保留手勢功能
         var gameStatus = _gmaeStatusManager.GetCurrentGameStateIndex();
-        if (gameStatus == GameState.GameRun)
+        if (gameStatus == GameState.GameRun && !_isTriggerButton)
         {
             if(_handImage.active)
                 _handImage.SetActive(false);
@@ -100,6 +103,7 @@ public class HandControll : MonoBehaviour {
     {
         if (other.gameObject.tag == "UI_Test") //碰撞到牆壁
         {
+            _isTriggerButton = true;
             var button = other.transform.parent.GetComponent<Button>();
             if (!button.IsInteractable() || _idClicked)
             {
@@ -130,6 +134,7 @@ public class HandControll : MonoBehaviour {
             _clickTimer = 0f;
             _processBar.setProcessPer(0f);
             _idClicked = false;
+            _isTriggerButton = false;
         }
     }
 
