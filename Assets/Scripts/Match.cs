@@ -16,6 +16,9 @@ public class Match : MonoBehaviour {
     private Mat hsvMat;
     private Mat thresholdMat;
 
+    //最小depth物件趴數參數
+    private const float _minDepthObjectSizePer = .001f;
+
     /*drawBlock*/
     public DrawBlock _drawBlock;
     private Mat blockMat;
@@ -30,7 +33,7 @@ public class Match : MonoBehaviour {
 
     //物體資訊
     public List<BaseObject> SensingResults = new List<BaseObject>();
-    private int _clolrRange = 8;
+    private int _clolrRange = 50;
     //是否可以儲存感測到的物件
     private bool isSave = new bool();
 
@@ -163,7 +166,8 @@ public class Match : MonoBehaviour {
     private bool analysisContoursRect(int index,List<MatOfPoint> contours,Mat result,List<MatchObject> matchObject)
     {
         OpenCVForUnity.Rect _testDepthRect = Imgproc.boundingRect(contours[index]);
-        if (_testDepthRect.height > 5 && _testDepthRect.width > 5 && _testDepthRect.area() > 100)
+        float minAreaSize = _minDepthObjectSizePer * _drawBlock.MatchHeight * _drawBlock.MatchWidth;
+        if (_testDepthRect.area() > minAreaSize)
         {
             //宣告放置點資料
             MatOfInt hullInt = new MatOfInt();
@@ -366,6 +370,7 @@ public class Match : MonoBehaviour {
             Imgproc.drawContours(resultMat, contours, i, new Scalar(255),1);
         }
         double[] GetRGB = new double[10];
+        float minAreaSize = _minDepthObjectSizePer * _drawBlock.MatchHeight * _drawBlock.MatchWidth;
         if (numObjects > 0)
         {
             for (int index = 0; index < numObjects; index++)
@@ -373,7 +378,7 @@ public class Match : MonoBehaviour {
 
                 OpenCVForUnity.Rect R0 = Imgproc.boundingRect(contours[index]);
 
-                if (R0.height > 20 && R0.width > 20 && R0.height < _drawBlock.MatchHeight - 10 && R0.width < _drawBlock.MatchWidth - 10)
+                if (R0.area() > minAreaSize)
                 {
                     ConsistP.Add(new Point(R0.x, R0.y));
                     ConsistP.Add(new Point(R0.x + R0.width, R0.y + R0.height));

@@ -108,10 +108,11 @@ public class HandControll : MonoBehaviour {
             //累積移動時間大於_movedTriggerTime,就移動玩家座標
             if (_clickTimer > _clickTriggerTime)
             {
-                //觸發點擊UI
-                button.onClick.Invoke();
                 _processBar.setProcessPer(0);
                 _idClicked = true;
+                //觸發點擊UI
+                button.onClick.Invoke();
+                
             }
             else
             {
