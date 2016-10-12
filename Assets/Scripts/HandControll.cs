@@ -75,8 +75,10 @@ public class HandControll : MonoBehaviour {
         }
         foreach (var body in bodies)
         {
-            if(body == null)
+            RectTransform myRect = this.transform as RectTransform;
+            if (body == null)
             {
+                myRect.localPosition = new Vector3(myRect.localPosition.x, myRect.localPosition.y, 100);
                 continue;
             }
             if (body.IsTracked)
@@ -85,7 +87,7 @@ public class HandControll : MonoBehaviour {
                 //3D座標透過map轉換成2D座標
                 Vector2 colorPos = _drawBlockManager._map.CameraSpacePointToColorVector2(pos);
                 Vector2 pos_inDrawBlock = GetInDrawBlockPos(colorPos);
-                RectTransform myRect = this.transform as RectTransform;
+                
                 if(pos_inDrawBlock.x == -99 && pos_inDrawBlock.y == -99)//不在drawblock範圍內
                 {
                     myRect.localPosition = new Vector3(myRect.localPosition.x, myRect.localPosition.y, 100);
