@@ -35,13 +35,11 @@ public class LevelTeachContainEvent : MonoBehaviour
     {
         if (_nextButton.transform.FindChild("Text").GetComponent<Text>().text == "開始遊戲")
             this.ExitTeachMode();
-        
-        if (_teachState.CurrentTeachState < _stateCount - 1)
-        {
+        else if (_teachState.CurrentTeachState < _stateCount - 1)
             _teachState.ToNextState();
-            this.SetCurrentContainActiveOrNot();
-            this.SetCurrentButtonEnableOrNot();
-        }
+
+        this.SetCurrentContainActiveOrNot();
+        this.SetCurrentButtonEnableOrNot();
     }
 
     public void ToPreviousTeachStateEvent()
