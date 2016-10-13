@@ -53,29 +53,11 @@ public class LaserBall : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
     {
-        ////碰撞折射物事件
-        //if (other.gameObject.tag == "refractionObjects")
-        //{
-        //    //取得入射點
-        //    RaycastHit hit;
-        //    if (Physics.Raycast(transform.position, transform.forward, out hit))
-        //    {
-        //        Debug.Log("Point of contact: " + hit.point);
-        //    }
-
-        //    Vector3 beforeReflectVelocity;
-        //    Vector3 afterReflectVelocity;
-
-        //    beforeReflectVelocity = _ballRigidbody.velocity;
-        //    afterReflectVelocity = Vector3.Reflect(_ballRigidbody.velocity, hit.normal);
-
-        //    Debug.Log("beforeReflectVelocity.velocity = " + beforeReflectVelocity);
-        //    Debug.Log("afterReflectVelocity.velocity = " + afterReflectVelocity);
-
-        //    Vector3 horizontaVector = new Vector3((beforeReflectVelocity.x + afterReflectVelocity.x) / 2, (beforeReflectVelocity.y + afterReflectVelocity.y) / 2, 0);
-
-        //    _ballRigidbody.velocity = new Vector3((horizontaVector.x + beforeReflectVelocity.x) / 2, (horizontaVector.y + beforeReflectVelocity.y) / 2, 0);
-        //}
+        //碰撞目標事件
+        if (other.gameObject.tag == "TargetObject")
+        {
+            Debug.Log("撞到目標物");
+        }
 
         //碰撞黑洞事件
         if (other.gameObject.tag == "BlackHoleObject")
@@ -103,7 +85,6 @@ public class LaserBall : MonoBehaviour {
         {
             if (other.GetComponent<SeparateObject>().TriggerEvent())
             {
-                //Debug.Log("touch SeparateObject");
                 //修改物體速度(根據vector3)
                 //入射向量
                 Vector3 originVelocity = _ballRigidbody.velocity;
@@ -160,7 +141,8 @@ public class LaserBall : MonoBehaviour {
         {
             Destroy(this.gameObject);
         }
-        else if (other.gameObject.tag == "TargetObject")
+
+        else if (other.gameObject.tag == "TargetObjectFight")
         {
             //Debug.Log("Win");
             Destroy(this.gameObject);

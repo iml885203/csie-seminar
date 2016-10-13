@@ -245,12 +245,7 @@ public class LevelObjectBase : MonoBehaviour
                 }
             case 3:
                 {
-                    TEXT_FILE_NAME = GameLevelFile.LEVEL_4;
-                    break;
-                }
-            case 4:
-                {
-                    TEXT_FILE_NAME = GameLevelFile.LEVEL_5;
+                    TEXT_FILE_NAME = GameLevelFile.LEVEL_FIGHT;
                     break;
                 }
             default:

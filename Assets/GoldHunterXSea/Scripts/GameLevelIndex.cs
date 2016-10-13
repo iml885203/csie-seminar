@@ -35,5 +35,10 @@ public class GameLevelIndex : MonoBehaviour
     {
         _gameLevelIndex = 2;
     }
+
+    public void ToGameFight()
+    {
+        _gameLevelIndex = 3;
+    }
 }
 

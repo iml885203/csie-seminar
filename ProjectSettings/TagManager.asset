@@ -21,6 +21,7 @@ TagManager:
   - refractionObjects
   - laserBall
   - targetObject
+  - TargetObjectFight
   layers:
   - Default
   - TransparentFX

@@ -5,9 +5,11 @@ using System.Text;
 
 static class GameLevelFile
 {
-    public const string LEVEL_1 = "objectDataLevel1.txt";
-    public const string LEVEL_2 = "objectDataLevel2.txt";
-    public const string LEVEL_3 = "objectDataLevel3.txt";
-    public const string LEVEL_4 = "objectDataLevel4.txt";
-    public const string LEVEL_5 = "objectDataLevel5.txt";
+    public const string LEVEL_1 = "Level1.txt";
+    public const string LEVEL_2 = "Level2.txt";
+    public const string LEVEL_3 = "Level3.txt";
+    public const string LEVEL_FIGHT = "LevelFight.txt";
+
+    //public const string LEVEL_4 = "Level4.txt";
+    //public const string LEVEL_5 = "Level5.txt";
 }
