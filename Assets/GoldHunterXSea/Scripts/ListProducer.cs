@@ -31,7 +31,7 @@ public class ListProducer : MonoBehaviour
     private void FixedUpdate()
     {
         //如果在listProducer的GameState的話
-        if(_gameStateIndex.GetCurrentGameStateIndex() == GameState.ListProducer)
+        if(_gameStateIndex.CurrentStateIndex == GameState.ListProducer)
         {
             if (!_arrival)//未到達目標時
             {
@@ -51,7 +51,7 @@ public class ListProducer : MonoBehaviour
         }
 
         //如果GameState不在listProducer的話 物件回原始座標
-        if (_gameStateIndex.GetCurrentGameStateIndex() != GameState.ListProducer)
+        if (_gameStateIndex.CurrentStateIndex != GameState.ListProducer)
         {
             _gameObject.transform.localPosition = _tempPosition;
         }

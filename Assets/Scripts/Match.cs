@@ -68,7 +68,7 @@ public class Match : MonoBehaviour {
     }
 	// Update is called once per frame
 	void Update () {
-        if (_gmaeStatusManager.GetCurrentGameStateIndex() != GameState.GameRun)
+        if (_gmaeStatusManager.CurrentStateIndex != GameState.GameRun)
         {
             return;
         }

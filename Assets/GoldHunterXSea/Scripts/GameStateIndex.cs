@@ -8,6 +8,17 @@ using System;
 public class GameStateIndex : MonoBehaviour
 {
     public int _gameStateIndex;
+    public int CurrentStateIndex
+    {
+        get
+        {
+            return _gameStateIndex;
+        }
+        set
+        {
+            _gameStateIndex = value;
+        }
+    }
 
     // Use this for initialization
     public void Start()
@@ -37,6 +48,11 @@ public class GameStateIndex : MonoBehaviour
     public void ToStateListProducer()
     {
         _gameStateIndex = GameState.ListProducer;
+    }
+
+    public void ToStateTeach()
+    {
+        _gameStateIndex = GameState.Teach;
     }
 
     public int GetCurrentGameStateIndex()

@@ -19832,10 +19832,11 @@ GameObject:
   - 224: {fileID: 793509186}
   - 222: {fileID: 793509188}
   - 114: {fileID: 793509187}
+  - 114: {fileID: 793509191}
   - 114: {fileID: 793509190}
   - 114: {fileID: 793509189}
   m_Layer: 5
-  m_Name: Window
+  m_Name: TeachWindow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -19931,6 +19932,23 @@ MonoBehaviour:
   - {fileID: 793509185}
   _targetGameObject: {fileID: 375650192}
   _direction: up
+--- !u!114 &793509191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 793509185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85c12726dc2a4494d91ae651b6412f8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _levelIndex: {fileID: 434419725}
+  _moveInEvent: {fileID: 793509190}
+  _levelPreview: {fileID: 1106879928}
+  _levelTeachEvent: {fileID: 571658317}
+  _popWindow: {fileID: 793509185}
+  _popControl: {fileID: 1431115660}
 --- !u!1 &798899541
 GameObject:
   m_ObjectHideFlags: 0
@@ -24067,6 +24085,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf802fcaa4e0b8b458d5b64fc88db6a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _stateIndex: {fileID: 0}
+  _levelChangeEvent: {fileID: 0}
 --- !u!54 &938335080
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -27518,6 +27538,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf802fcaa4e0b8b458d5b64fc88db6a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _stateIndex: {fileID: 0}
+  _levelChangeEvent: {fileID: 0}
 --- !u!54 &973387677
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -40686,6 +40708,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13763122f93d38945b1c1c7823b5eed4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _stateIndex: {fileID: 1800272295}
   _backGroundPanel: {fileID: 375650192}
 --- !u!1 &1432709233
 GameObject:
@@ -44353,6 +44376,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf802fcaa4e0b8b458d5b64fc88db6a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _stateIndex: {fileID: 0}
+  _levelChangeEvent: {fileID: 0}
 --- !u!54 &1452237711
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -56959,6 +56984,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf802fcaa4e0b8b458d5b64fc88db6a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _stateIndex: {fileID: 1800272295}
+  _levelChangeEvent: {fileID: 793509191}
 --- !u!54 &1838436651
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -60199,7 +60226,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2022483959
 RectTransform:
   m_ObjectHideFlags: 0
