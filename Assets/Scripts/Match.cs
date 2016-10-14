@@ -34,6 +34,8 @@ public class Match : MonoBehaviour {
     //物體資訊
     public List<BaseObject> SensingResults = new List<BaseObject>();
     private int _clolrRange = 15;
+    //物體資訊Text讀存檔
+    public GameObject ColorSaveData;
     //是否可以儲存感測到的物件
     private bool isSave = new bool();
 
@@ -65,9 +67,11 @@ public class Match : MonoBehaviour {
         _matchColorObjectList = new List<MatchObject>();
         _changeRectList = new List<OpenCVForUnity.Rect>();
         _gmaeStatusManager = transform.root.Find("/GameState").GetComponent<GameStateIndex>();
+        //讀取ObjectColor.txt
+        SensingResults = ColorSaveData.GetComponent<ColorSaveData>().ReadColorData();
     }
-	// Update is called once per frame
-	void Update () {
+    // Update is called once per frame
+    void Update () {
         if (_gmaeStatusManager.GetCurrentGameStateIndex() != GameState.GameRun)
         {
             return;
@@ -479,7 +483,7 @@ public class Match : MonoBehaviour {
                _srcColor[2] < _getrgb[2] + _clolrRange &&
                _srcColor[2] > _getrgb[2] - _clolrRange)
            {
-                SensingResults[i].SetPoint(P1, P2);
+                //SensingResults[i].SetPoint(P1, P2);
                return i;
            }
         }
@@ -487,8 +491,9 @@ public class Match : MonoBehaviour {
         if (isSave)
         {
             Debug.Log("Create" + SensingResults.Count);
-            SensingResults.Add(new BaseObject(P1, P2, src));
+            SensingResults.Add(new BaseObject(SensingResults.Count,P1, P2, src));
             Debug.Log("Color =" + src);
+            ColorSaveData.GetComponent<ColorSaveData>().SaveColorData(SensingResults);
             return SensingResults.Count;
         }
         else return -1;
@@ -500,6 +505,10 @@ public class Match : MonoBehaviour {
         {
             isSave = (isSave) ? false : true;
             Debug.Log((isSave) ? "isSave Set True" : "isSave Set false");
+            if (isSave)
+            {
+                SensingResults.Clear();
+            }
         }
     }
 
