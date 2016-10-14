@@ -9,6 +9,11 @@ public class PopUpWindowControl : MonoBehaviour
 {
     private bool _isPopUpWinsowsMode;
 
+    public ObjectMoveOutEffect _moveOutEffect;
+    public ObjectMoveInEffect _moveInEffect;
+
+    //public LevelBeenTeachFlag _levelBeenTeachFlag;
+
     public GameStateIndex _stateIndex;
     public GameObject _backGroundPanel;
 
@@ -26,6 +31,7 @@ public class PopUpWindowControl : MonoBehaviour
 
     public void EnterPopUpWindowMode()
     {
+        _moveInEffect.SmoothMoveInButtonEffect();
         _originStateIndex = _stateIndex.CurrentStateIndex;
         _stateIndex.ToStateTeach();
         _isPopUpWinsowsMode = true;
@@ -34,6 +40,7 @@ public class PopUpWindowControl : MonoBehaviour
 
     public void ExitPopUpWindowMode()
     {
+        _moveOutEffect.SmoothMoveOutButtonEffect();
         _stateIndex.CurrentStateIndex = _originStateIndex;
         _isPopUpWinsowsMode = false;
         _backGroundPanel.SetActive(false);

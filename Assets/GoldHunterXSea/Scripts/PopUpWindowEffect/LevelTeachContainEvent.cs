@@ -8,7 +8,6 @@ using System;
 public class LevelTeachContainEvent : MonoBehaviour
 {
     public PopUpWindowControl _popControl;
-    public ObjectMoveOutEffect _moveOutEffect;
 
     public LevelTeachState _teachState;
     public Button _nextButton;
@@ -54,7 +53,6 @@ public class LevelTeachContainEvent : MonoBehaviour
     {
         _teachState.ToSkipState();
         _popControl.ExitPopUpWindowMode();
-        _moveOutEffect.SmoothMoveOutButtonEffect();
     }
 
     public void SetCurrentContainActiveOrNot()
