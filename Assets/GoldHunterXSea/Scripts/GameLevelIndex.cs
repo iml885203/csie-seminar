@@ -41,6 +41,11 @@ public class GameLevelIndex : MonoBehaviour
         _gameLevelIndex = 3;
     }
 
+    public void ToGameLoadEditor()
+    {
+        _gameLevelIndex = 4;
+    }
+
     public void ToNextLevel()
     {
         _gameLevelIndex++;

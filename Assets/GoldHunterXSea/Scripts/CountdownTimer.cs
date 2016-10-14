@@ -23,6 +23,16 @@ public class CountdownTimer : MonoBehaviour
     private int _viewMinute = 0;
     private int _viewSecond = 0;
 
+    private float _warningTime = 30f;
+
+    public int GetRestTime
+    {
+        get
+        {
+            return (int)_countDownTimer;
+        }
+    }
+
     // Use this for initialization
     public void Start()
     {
@@ -31,6 +41,10 @@ public class CountdownTimer : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (_countDownTimer <= _warningTime)
+            this.GetComponent<Text>().color = Color.red;
+        else
+            this.GetComponent<Text>().color = Color.black;
 
         if (_countDownTimer > 0)
         {

@@ -5322,7 +5322,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &243362442
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9955,7 +9955,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1813768719}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0.000076293945, y: -35.958015}
@@ -19159,8 +19159,8 @@ RectTransform:
   m_RootOrder: 0
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1030, y: -61}
-  m_SizeDelta: {x: 330, y: 65}
+  m_AnchoredPosition: {x: 994, y: -61}
+  m_SizeDelta: {x: 257, y: 65}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &701131635
 MonoBehaviour:
@@ -30114,6 +30114,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 131844643}
+  - {fileID: 1390332583}
   - {fileID: 1731701155}
   m_Father: {fileID: 464494036}
   m_RootOrder: 2
@@ -39574,6 +39575,7 @@ MonoBehaviour:
   - {fileID: 131844642}
   - {fileID: 1731701154}
   - {fileID: 1727504568}
+  - {fileID: 1390332582}
   _targetGameObject: {fileID: 131844642}
   _direction: down
 --- !u!1 &1366086477
@@ -39716,7 +39718,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1390332583
 RectTransform:
   m_ObjectHideFlags: 0
@@ -39724,15 +39726,15 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1390332582}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 1349.3087}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 1813768719}
+  m_Father: {fileID: 1146736643}
   m_RootOrder: 1
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 13, y: 183}
-  m_SizeDelta: {x: -606, y: -348}
+  m_AnchoredPosition: {x: 13, y: 257}
+  m_SizeDelta: {x: -606, y: -348.00003}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1390332584
 MonoBehaviour:
@@ -39746,8 +39748,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _outputTime: {fileID: 1390332586}
-  _assignMinute: 3
-  _assignSecond: 0
+  _assignMinute: 0
+  _assignSecond: 50
 --- !u!23 &1390332585
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -39786,7 +39788,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: da794ffd1555d2944af5c1a2c5703c48, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -46990,7 +46992,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 163.6, y: 31.1, z: 52.48}
+  m_Size: {x: 128.14, y: 31.1, z: 52.48}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!33 &1552573448
 MeshFilter:
@@ -49834,7 +49836,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 175886, guid: 00fca524ff12af54097b105c2901a375, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 00fca524ff12af54097b105c2901a375, type: 2}
@@ -50167,7 +50169,6 @@ MonoBehaviour:
   _listProducerBackGroundImages:
   - {fileID: 1092146328}
   _gameRunBackGroundImages:
-  - {fileID: 1390332582}
   - {fileID: 435576525}
   _inMenuButton:
   - {fileID: 1063496683}
@@ -52415,6 +52416,7 @@ MonoBehaviour:
   - {fileID: 1727504568}
   - {fileID: 131844642}
   - {fileID: 1731701154}
+  - {fileID: 1390332582}
   _targetGameObject: {fileID: 131844642}
   _direction: up
 --- !u!114 &1727504574
@@ -54067,7 +54069,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1146736643}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: -313, y: 262}
@@ -54879,7 +54881,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1432709234}
-  - {fileID: 1390332583}
   - {fileID: 435576526}
   m_Father: {fileID: 1475492131}
   m_RootOrder: 2
