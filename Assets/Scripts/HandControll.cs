@@ -89,7 +89,6 @@ public class HandControll : MonoBehaviour {
             RectTransform myRect = this.transform as RectTransform;
             if (body == null)
             {
-                //myRect.localPosition = new Vector3(myRect.localPosition.x, myRect.localPosition.y, 100);
                 if (_handImage.active)
                     _handImage.SetActive(false);
                 continue;
@@ -104,6 +103,8 @@ public class HandControll : MonoBehaviour {
                 if(pos_inDrawBlock.x == -99 && pos_inDrawBlock.y == -99)//不在drawblock範圍內
                 {
                     myRect.localPosition = new Vector3(myRect.localPosition.x, myRect.localPosition.y, 100);
+                    if (_handImage.active)
+                        _handImage.SetActive(false);
                 }
                 else
                 {
