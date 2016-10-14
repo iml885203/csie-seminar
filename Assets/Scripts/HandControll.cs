@@ -70,30 +70,34 @@ public class HandControll : MonoBehaviour {
         //遊戲狀態關閉手的圖案，保留手勢功能
         var gameStatus = _gmaeStatusManager.CurrentStateIndex;
         Color imageColor = _handImage.GetComponent<Image>().color;
-        if (gameStatus == GameState.GameRun && !_isTriggerButton)
-        {
-            if(imageColor.a == 1f)
-                _handImage.GetComponent<Image>().color = new Color(imageColor.r, imageColor.g, imageColor.b, .1f);
-            //if(_handImage.active)
-            //    _handImage.SetActive(false);
-        }
-        else
-        {
-            if (imageColor.a == .1f)
-                _handImage.GetComponent<Image>().color = new Color(imageColor.r, imageColor.g, imageColor.b, 1f);
-            //if(!_handImage.active)
-            //    _handImage.SetActive(true);
-        }
+        //if (gameStatus == GameState.GameRun && !_isTriggerButton)
+        //{
+        //    if(imageColor.a == 1f)
+        //        _handImage.GetComponent<Image>().color = new Color(imageColor.r, imageColor.g, imageColor.b, .1f);
+        //    //if(_handImage.active)
+        //    //    _handImage.SetActive(false);
+        //}
+        //else
+        //{
+        //    if (imageColor.a == .1f)
+        //        _handImage.GetComponent<Image>().color = new Color(imageColor.r, imageColor.g, imageColor.b, 1f);
+        //    //if(!_handImage.active)
+        //    //    _handImage.SetActive(true);
+        //}
         foreach (var body in bodies)
         {
             RectTransform myRect = this.transform as RectTransform;
             if (body == null)
             {
-                myRect.localPosition = new Vector3(myRect.localPosition.x, myRect.localPosition.y, 100);
+                //myRect.localPosition = new Vector3(myRect.localPosition.x, myRect.localPosition.y, 100);
+                if (_handImage.active)
+                    _handImage.SetActive(false);
                 continue;
             }
             if (body.IsTracked)
             {
+                if (!_handImage.active)
+                    _handImage.SetActive(true);
                 var pos = body.Joints[TrackedJoint].Position;
                 //3D座標透過map轉換成2D座標
                 Vector2 colorPos = _drawBlockManager._map.CameraSpacePointToColorVector2(pos);
