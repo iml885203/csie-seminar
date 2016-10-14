@@ -18,6 +18,7 @@ public class LevelTeachContainEvent : MonoBehaviour
     public GameObject[] _description;
 
     private int _stateCount;
+    //private bool _isBeenTeach;
 
     void Start()
     {

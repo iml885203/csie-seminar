@@ -40,5 +40,15 @@ public class GameLevelIndex : MonoBehaviour
     {
         _gameLevelIndex = 3;
     }
+
+    public void ToNextLevel()
+    {
+        _gameLevelIndex++;
+    }
+
+    public void ToPreviousLevel()
+    {
+        _gameLevelIndex--;
+    }
 }
 

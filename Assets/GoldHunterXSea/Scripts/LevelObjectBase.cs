@@ -39,10 +39,13 @@ public class LevelObjectBase : MonoBehaviour
 
     public GameObject _laserGenerator;
     public GameObject _reflectionObject;
-    public GameObject _refractionObject;
+    public GameObject _destoryObject;
     public GameObject _blackHoleObject;
+    public GameObject _whiteHoleObject;
+    public GameObject _separateObject;
+    public GameObject _transmissionObject;
     public GameObject _targetObject;
-    //public GameObject _laserBall;
+    public GameObject _targetFightObject;
 
     public GameObject _canvas;
 
@@ -263,31 +266,46 @@ public class LevelObjectBase : MonoBehaviour
                     productGameObject = _laserGenerator;
                     break;
                 }
-            case "牆壁":
+            case "反彈牆":
                 {
                     productGameObject = _reflectionObject;
                     break;
                 }
-            case "折射":
+            case "障礙牆":
                 {
-                    productGameObject = _refractionObject;
+                    productGameObject = _destoryObject;
                     break;
                 }
-            case "黑洞":
+            case "蟲洞":
                 {
                     productGameObject = _blackHoleObject;
                     break;
                 }
-            case "目標":
+            case "白洞":
+                {
+                    productGameObject = _whiteHoleObject;
+                    break;
+                }
+            case "分離器":
+                {
+                    productGameObject = _separateObject;
+                    break;
+                }
+            case "傳送門":
+                {
+                    productGameObject = _transmissionObject;
+                    break;
+                }
+            case "接收器":
                 {
                     productGameObject = _targetObject;
                     break;
                 }
-            //case "雷射球":
-            //    {
-            //        productGameObject = _laserBall;
-            //        break;
-            //    }
+            case "生命裝置":
+                {
+                    productGameObject = _targetFightObject;
+                    break;
+                }
             default:
                 break;
         }
