@@ -26,7 +26,7 @@ public class DynamicMakeGun : MonoBehaviour
 
     void Update()
     {
-        if (_gmaeStatusManager.GetCurrentGameStateIndex() != GameState.GameRun)
+        if (_gmaeStatusManager.CurrentStateIndex != GameState.GameRun)
         {
             return;
         }

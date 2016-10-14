@@ -26,9 +26,6 @@ public class ButtonEvent : MonoBehaviour
 
     public GameLevelIndex _levelIndex;
 
-    private float _effectTimer = 1f;
-    private float _readyTimer = 1f;
-
     void Start()
     {
         GHSPlayerState _playerState = gameObject.GetComponent<GHSPlayerState>();
@@ -53,94 +50,52 @@ public class ButtonEvent : MonoBehaviour
         }
     }
 
-    IEnumerator MenuToSetting()
+    //從開始畫面到設定畫面按鈕事件(menu -> setting)
+    public void GameStateMenuToSettingButtonClick()
     {
-        yield return new WaitForSeconds(_effectTimer);
         _gameStateIndex.ToStateSetting();
         this.SwitchBackGroundImagesByStateFlag();
-        //yield return new WaitForSeconds(_readyTimer);
         this.SwitchGameStateByStateFlag();
 
         _inSettingButton[1].GetComponentInChildren<Text>().text = "開始遊戲";
     }
 
-    //從開始畫面到設定畫面按鈕事件(menu -> setting)
-    public void GameStateMenuToSettingButtonClick()
-    {
-        StartCoroutine(MenuToSetting());
-    }
-
-    IEnumerator SettingToGameRun()
-    {
-        yield return new WaitForSeconds(_effectTimer);
-        _gameStateIndex.ToStateGameRun();
-        this.SwitchBackGroundImagesByStateFlag();
-        //yield return new WaitForSeconds(_readyTimer);
-        this.SwitchGameStateByStateFlag();
-
-        _inMenuButton[0].GetComponentInChildren<Text>().text = "設定";
-
-        //ViewActiveEnableOrDisable(true);
-    }
-
     //從設定畫面到遊戲執行按鈕事件(setting -> gameRun)
     public void GameStateSettingToGameRunButtonClick()
     {
-        StartCoroutine(SettingToGameRun());
-    }
-
-    IEnumerator GameRunToSetting()
-    {
-        yield return new WaitForSeconds(_effectTimer);
-        _gameStateIndex.ToStateSetting();
+        _gameStateIndex.ToStateGameRun();
         this.SwitchBackGroundImagesByStateFlag();
-        //yield return new WaitForSeconds(_readyTimer);
         this.SwitchGameStateByStateFlag();
 
-        _inSettingButton[1].GetComponentInChildren<Text>().text = "繼續遊戲";
-
-        //this.ViewActiveEnableOrDisable(false);
+        _inMenuButton[0].GetComponentInChildren<Text>().text = "設定";
     }
 
     //從遊戲執行到設定畫面按鈕事件(gameRun -> setting)
     public void GameStateGameRunToSettingButtonClick()
     {
-        StartCoroutine(GameRunToSetting());
-    }
-
-    IEnumerator SettingToMenu()
-    {
-        yield return new WaitForSeconds(_effectTimer);
-        _gameStateIndex.ToStateMenu();
+        _gameStateIndex.ToStateSetting();
         this.SwitchBackGroundImagesByStateFlag();
-        //yield return new WaitForSeconds(_readyTimer);
         this.SwitchGameStateByStateFlag();
 
-        _inMenuButton[0].GetComponentInChildren<Text>().text = "進入設定並開始遊戲";
+        _inSettingButton[1].GetComponentInChildren<Text>().text = "繼續遊戲";
     }
 
     //從設定畫面到開始畫面按鈕事件(setting -> menu)
     public void GameStateSettingToMenuButtonClick()
     {
-        StartCoroutine(SettingToMenu());
-    }
-
-    IEnumerator SettingToListProducer()
-    {
-        yield return new WaitForSeconds(_effectTimer);
-        _gameStateIndex.ToStateListProducer();
+        _gameStateIndex.ToStateMenu();
         this.SwitchBackGroundImagesByStateFlag();
-        //yield return new WaitForSeconds(_readyTimer);
         this.SwitchGameStateByStateFlag();
 
-        //_exitFlage = false;
-        //_listProducerBackGroundImage.SetActive(true);
+        _inMenuButton[0].GetComponentInChildren<Text>().text = "進入設定並開始遊戲";
     }
 
     //按下製作人按鈕事件
     public void GameStateSettingToListProducerButtonClick()
     {
-        StartCoroutine(SettingToListProducer());
+        _gameStateIndex.ToStateListProducer();
+        this.SwitchBackGroundImagesByStateFlag();
+        this.SwitchGameStateByStateFlag();
     }
 
     //按下重新校正按鈕事件
@@ -149,27 +104,17 @@ public class ButtonEvent : MonoBehaviour
         transform.root.Find("/UICanvas/InfoView/view-KinectSetting").gameObject.SetActive(true);
     }
 
-    IEnumerator ListProducerToSetting()
-    {
-        yield return new WaitForSeconds(_effectTimer);
-        _gameStateIndex.ToStateSetting();
-        this.SwitchBackGroundImagesByStateFlag();
-        //yield return new WaitForSeconds(_readyTimer);
-        this.SwitchGameStateByStateFlag();
-
-        //_resetFlage = true;
-        //_exitFlage = true;
-    }
-
     //按下回設定事件(在按下製作人後出現的按鈕)
     public void GameStateListProducerToSettingButtonClick()
     {
-        StartCoroutine(ListProducerToSetting());
+        _gameStateIndex.ToStateSetting();
+        this.SwitchBackGroundImagesByStateFlag();
+        this.SwitchGameStateByStateFlag();
     }
 
     public void SwitchGameStateByStateFlag()
     {
-        switch (_gameStateIndex.GetCurrentGameStateIndex())
+        switch (_gameStateIndex.CurrentStateIndex)
         {
             case GameState.Menu:
                 {
@@ -324,7 +269,7 @@ public class ButtonEvent : MonoBehaviour
 
     public void SwitchBackGroundImagesByStateFlag()
     {
-        switch (_gameStateIndex.GetCurrentGameStateIndex())
+        switch (_gameStateIndex.CurrentStateIndex)
         {
             case GameState.Menu:
                 {

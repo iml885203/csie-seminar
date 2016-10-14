@@ -24,7 +24,7 @@ public class BackGroundEffect : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (_gameStateIndex.GetCurrentGameStateIndex() == GameState.Menu)
+        if (_gameStateIndex.CurrentStateIndex == GameState.Menu)
             this.MenuMoveEvent();
     }
 

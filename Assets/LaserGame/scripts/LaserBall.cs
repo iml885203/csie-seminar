@@ -7,6 +7,9 @@ public class LaserBall : MonoBehaviour {
     private int _reflectCount;
     private Vector3 _beforeReflectVelocity;
 
+    public GameStateIndex _stateIndex;
+    public LevelChangeEvent _levelChangeEvent;
+
     Vector3 _windForce;
 
     // Use this for initialization
@@ -24,6 +27,11 @@ public class LaserBall : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
+        if (_stateIndex.CurrentStateIndex != GameState.GameRun)
+            this.gameObject.SetActive(false);
+        else
+            this.gameObject.SetActive(true);
+
         foreach (Transform child in this.transform.parent)
         {
             if (child.tag == "LaserBall")
@@ -56,6 +64,26 @@ public class LaserBall : MonoBehaviour {
         //碰撞目標事件
         if (other.gameObject.tag == "TargetObject")
         {
+            Destroy(this.gameObject);
+
+            _levelChangeEvent.ChangeLevelEvent();
+            //到下一關的事件
+            //Debug.Log("gameObject.transform.root.Find(LevelIndex).gameObject.name = " + gameObject.transform.root.gameObject.name);
+            //GameObject levelIndex = gameObject.transform.root.Find("LevelIndex").gameObject;
+            //levelIndex.GetComponent<GameLevelIndex>().ToNextLevel();
+
+            //GameObject popUpWindows = gameObject.transform.root.Find("UICanvas").transform.FindChild("PopUpWindows").gameObject;
+            //popUpWindows.GetComponent<PopUpWindowControl>().EnterPopUpWindowMode();
+
+            //GameObject teachWindows = gameObject.transform.root.Find("UICanvas").transform.FindChild("PopUpWindows").transform.FindChild("TeachWindow").gameObject;
+            //teachWindows.GetComponent<ObjectMoveInEffect>().SmoothMoveInButtonEffect();
+
+            //GameObject teachContainWindows = gameObject.transform.root.Find("UICanvas").transform.FindChild("PopUpWindows").transform.FindChild("TeachWindow").transform.FindChild("WindowContain").gameObject;
+            //teachContainWindows.GetComponent<LevelTeachEvent>().ChangeLevelEvent();
+
+            //GameObject levelPreview = gameObject.transform.root.Find("GameLevelObjects").gameObject;
+            //levelPreview.GetComponent<LevelPreview>().ChangePreviewLevel();
+
             Debug.Log("撞到目標物");
         }
 

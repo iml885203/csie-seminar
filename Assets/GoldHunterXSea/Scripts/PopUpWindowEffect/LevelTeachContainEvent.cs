@@ -8,7 +8,6 @@ using System;
 public class LevelTeachContainEvent : MonoBehaviour
 {
     public PopUpWindowControl _popControl;
-    public ObjectMoveOutEffect _moveOutEffect;
 
     public LevelTeachState _teachState;
     public Button _nextButton;
@@ -28,7 +27,8 @@ public class LevelTeachContainEvent : MonoBehaviour
 
     void FixedUpdate()
     {
-
+        this.SetCurrentContainActiveOrNot();
+        this.SetCurrentButtonEnableOrNot();
     }
 
     public void ToNextTeachStateEvent()
@@ -37,16 +37,11 @@ public class LevelTeachContainEvent : MonoBehaviour
             this.ExitTeachMode();
         else if (_teachState.CurrentTeachState < _stateCount - 1)
             _teachState.ToNextState();
-
-        this.SetCurrentContainActiveOrNot();
-        this.SetCurrentButtonEnableOrNot();
     }
 
     public void ToPreviousTeachStateEvent()
     {
         _teachState.ToPreviousState();
-        this.SetCurrentContainActiveOrNot();
-        this.SetCurrentButtonEnableOrNot();
     }
 
     public void ToSkipTeachStateEvent()
@@ -58,7 +53,6 @@ public class LevelTeachContainEvent : MonoBehaviour
     {
         _teachState.ToSkipState();
         _popControl.ExitPopUpWindowMode();
-        _moveOutEffect.SmoothMoveOutButtonEffect();
     }
 
     public void SetCurrentContainActiveOrNot()
@@ -80,11 +74,11 @@ public class LevelTeachContainEvent : MonoBehaviour
 
     public void SetCurrentButtonEnableOrNot()
     {
-        _previousButton.interactable = true;
-        _nextButton.interactable = true;
-
         if (_teachState.CurrentTeachState == 0)
             _previousButton.interactable = false;
+        else
+            _previousButton.interactable = true;
+
         if (_teachState.CurrentTeachState == _stateCount - 1)
             _nextButton.transform.FindChild("Text").GetComponent<Text>().text = "開始遊戲";
         else
