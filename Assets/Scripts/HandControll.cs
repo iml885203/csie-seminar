@@ -96,8 +96,6 @@ public class HandControll : MonoBehaviour {
             }
             if (body.IsTracked)
             {
-                if (!_handImage.active)
-                    _handImage.SetActive(true);
                 var pos = body.Joints[TrackedJoint].Position;
                 //3D座標透過map轉換成2D座標
                 Vector2 colorPos = _drawBlockManager._map.CameraSpacePointToColorVector2(pos);
@@ -109,6 +107,8 @@ public class HandControll : MonoBehaviour {
                 }
                 else
                 {
+                    if (!_handImage.active)
+                        _handImage.SetActive(true);
                     myRect.anchoredPosition = Vector2.Lerp(myRect.anchoredPosition, _posTrans.TransToScreen2Pos(new Vector2(-pos_inDrawBlock.x, -pos_inDrawBlock.y)), _speed);
                     myRect.localPosition = new Vector3(myRect.localPosition.x, myRect.localPosition.y, 0);
                 }
