@@ -17,6 +17,7 @@ public class DynamicMakeGun : MonoBehaviour
     private int ObjectCount;
     private clickPositionTrans _posTrans;
     private GameStateIndex _gmaeStatusManager;
+    public int _CreateObjectId = -1;
 
     void Start()
     {
@@ -29,7 +30,6 @@ public class DynamicMakeGun : MonoBehaviour
         {
             return;
         }
-
         if (superGameObject.transform.childCount < _DataMatch._matchColorObjectList.Count && _drawBlock._ScreenSettingCompletionFlag)
         {
             //確認已開啟攝影機
@@ -40,8 +40,10 @@ public class DynamicMakeGun : MonoBehaviour
             _Width = _drawBlock.MatchWidth;
             _Height = _drawBlock.MatchHeight;
             MatchObject matchObject = _DataMatch._matchColorObjectList[superGameObject.transform.childCount];
-            CreateObject(matchObject);
-
+            if (_CreateObjectId == matchObject._id)
+            {
+                CreateObject(matchObject);
+            }
         }
         else if (superGameObject.transform.childCount > _DataMatch._matchColorObjectList.Count)
         {
@@ -52,7 +54,10 @@ public class DynamicMakeGun : MonoBehaviour
             for (int i = superGameObject.transform.childCount - 1; i >= 0; i--)
             {
                 MatchObject matchObject = _DataMatch._matchColorObjectList[i];
-                UpdatePos(superGameObject.transform.GetChild(i).gameObject, .05f, matchObject);
+                if( _CreateObjectId == matchObject._id)
+                {
+                    UpdatePos(superGameObject.transform.GetChild(i).gameObject, .05f, matchObject);
+                }
             }
         }
     }

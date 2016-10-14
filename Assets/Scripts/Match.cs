@@ -33,7 +33,7 @@ public class Match : MonoBehaviour {
 
     //物體資訊
     public List<BaseObject> SensingResults = new List<BaseObject>();
-    private int _clolrRange = 50;
+    private int _clolrRange = 15;
     //是否可以儲存感測到的物件
     private bool isSave = new bool();
 
@@ -412,6 +412,7 @@ public class Match : MonoBehaviour {
                 MatchObject matchObject = new MatchObject();
                 matchObject._pos = calculateCenter(nowPoint);
                 matchObject._scale = new Vector3(22, 22, 22);
+                matchObject._id = ID;
                 if (calculateCenter(nowPoint).x > resultMat.width() / 2)
                 {
                     matchObject._rotation = 0.5f;
