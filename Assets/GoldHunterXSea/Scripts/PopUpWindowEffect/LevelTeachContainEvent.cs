@@ -54,7 +54,7 @@ public class LevelTeachContainEvent : MonoBehaviour
     public void ExitTeachMode()
     {
         _teachState.ToSkipState();
-        _popControl.ExitPopUpWindowMode();
+        _popControl.ExitTeachWindow();
         _levelBeenTeach.BeenTeach = true;
     }
 

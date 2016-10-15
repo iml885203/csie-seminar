@@ -15,7 +15,7 @@ public class LevelTeachEvent : MonoBehaviour
     void Start()
     {
         _levelCount = _levelContain.Length;
-        this.ChangeLevelEvent();
+        this.ChangeActiveContainEvent();
     }
 
     void FixedUpdate()
@@ -38,7 +38,7 @@ public class LevelTeachEvent : MonoBehaviour
         _levelContain[_levelIndex.CurrentLevelIndex].GetComponent<LevelTeachContainEvent>().ToSkipTeachStateEvent();
     }
 
-    public void ChangeLevelEvent()
+    public void ChangeActiveContainEvent()
     {
         for(int index = 0;index < _levelCount; index++)
         {

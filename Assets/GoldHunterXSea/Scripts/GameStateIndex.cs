@@ -22,6 +22,7 @@ public class GameStateIndex : MonoBehaviour
             _gameStateIndex = value;
         }
     }
+
     // Use this for initialization
     public void Start()
     {
@@ -56,6 +57,11 @@ public class GameStateIndex : MonoBehaviour
     public void ToStateTeach()
     {
         _gameStateIndex = GameState.Teach;
+    }
+
+    public void ToStateCrossLevel()
+    {
+        _gameStateIndex = GameState.CrossLevel;
     }
 
     public int GetCurrentGameStateIndex()
