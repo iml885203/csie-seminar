@@ -2,6 +2,7 @@
 using System.Collections;
 using OpenCVForUnity;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class DynamicMakeGun : MonoBehaviour
 {
@@ -30,7 +31,18 @@ public class DynamicMakeGun : MonoBehaviour
         {
             return;
         }
-        if (superGameObject.transform.childCount < _DataMatch._matchColorObjectList.Count && _drawBlock._ScreenSettingCompletionFlag)
+        List<MatchObject> TempList = _DataMatch._matchColorObjectList;
+        int MatchObjectCount = 0;
+        List<MatchObject> NewLMatchObjectList = new List<MatchObject>();
+        for (int i = 0;i < TempList.Count; i++)
+        {
+            if(TempList[i]._id == _CreateObjectId)
+            {
+                MatchObjectCount++;
+                NewLMatchObjectList.Add(_DataMatch._matchColorObjectList[i]);
+            }
+        }
+        if (superGameObject.transform.childCount < MatchObjectCount && _drawBlock._ScreenSettingCompletionFlag)
         {
             //確認已開啟攝影機
             if (_drawBlock.MatchHeight == 0 && _drawBlock.MatchWidth == 0) return;
@@ -39,13 +51,13 @@ public class DynamicMakeGun : MonoBehaviour
             // ==========================
             _Width = _drawBlock.MatchWidth;
             _Height = _drawBlock.MatchHeight;
-            MatchObject matchObject = _DataMatch._matchColorObjectList[superGameObject.transform.childCount];
+            MatchObject matchObject = NewLMatchObjectList[superGameObject.transform.childCount];
             if (_CreateObjectId == matchObject._id)
             {
                 CreateObject(matchObject);
             }
         }
-        else if (superGameObject.transform.childCount > _DataMatch._matchColorObjectList.Count)
+        else if (superGameObject.transform.childCount > MatchObjectCount)
         {
             DeleteObject();
         }
@@ -53,7 +65,7 @@ public class DynamicMakeGun : MonoBehaviour
         {
             for (int i = superGameObject.transform.childCount - 1; i >= 0; i--)
             {
-                MatchObject matchObject = _DataMatch._matchColorObjectList[i];
+                MatchObject matchObject = NewLMatchObjectList[i];
                 if( _CreateObjectId == matchObject._id)
                 {
                     UpdatePos(superGameObject.transform.GetChild(i).gameObject, .05f, matchObject);

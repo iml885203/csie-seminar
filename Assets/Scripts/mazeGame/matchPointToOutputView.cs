@@ -49,7 +49,7 @@ public class matchPointToOutputView : MonoBehaviour {
         outputPoint.Clear();
         for (int i=0; i< results.Length; i++)
         {
-            Point[] block = results[i].ObjectBlock;
+            Point[] block = results[i]._objectBlock;
             var centerX = (block[0].x + block[1].x) / 2;
             var centerY = (block[0].y + block[1].y) / 2;
             //Debug.Log("#" + i + ": " + centerX + "," + centerY);
