@@ -33,7 +33,9 @@ public class Match : MonoBehaviour {
 
     //物體資訊
     public List<BaseObject> SensingResults = new List<BaseObject>();
-    private int _clolrRange = 15;
+    public int _clolrRange = 15;
+    public int _distanceRange = 2;
+    public int _colorDiffRange = 23;
     //物體資訊Text讀存檔
     public GameObject ColorSaveData;
     //是否可以儲存感測到的物件
@@ -404,6 +406,7 @@ public class Match : MonoBehaviour {
         for (int i = 0; i < ConsistP.Count; i += 4)
         {
             int ID = inRange(ConsistP[i], ConsistP[i + 1], clickRGB[i / 4]);
+
             if (ID != -1)
             {
                 List<Point> nowPoint = new List<Point>();
@@ -457,11 +460,6 @@ public class Match : MonoBehaviour {
         double[] _getrgb_Top = src.get((int)R.y + R.height / 4, (int)R.x + R.width / 2);
         double[] _getrgb_Bot = src.get((int)R.y + R.height / 4 * 3, (int)R.x + R.width / 2);
 
-        //Debug.Log("Mid = " + _getrgb_Mid[0] + "," + _getrgb_Mid[1] + "," +_getrgb_Mid[2]);
-        //Debug.Log("Lift = " + _getrgb_Lift[0] + "," + _getrgb_Lift[1] + "," + _getrgb_Lift[2] +
-        //          "Right = " + _getrgb_Right[0] + "," + _getrgb_Right[1] + "," + _getrgb_Right[2]);
-        //Debug.Log("Top = " + _getrgb_Top[0] + "," + _getrgb_Top[1] + "," + _getrgb_Top[2] + 
-        //          "Bot = " + _getrgb_Bot[0] + "," + _getrgb_Bot[1] + "," + _getrgb_Bot[2]);
 
         average_R = (_getrgb_Mid[0] + _getrgb_Lift[0] + _getrgb_Right[0] + _getrgb_Top[0] + _getrgb_Bot[0])/5;
         average_G = (_getrgb_Mid[1] + _getrgb_Lift[1] + _getrgb_Right[1] + _getrgb_Top[1] + _getrgb_Bot[1])/5;
@@ -473,21 +471,53 @@ public class Match : MonoBehaviour {
     public  int inRange(Point P1 , Point P2, Scalar src)
     {
         double[] _srcColor =src.val;
+        double[] _colorDiff = new double[3];
+        _colorDiff[0] = _srcColor[0] - _srcColor[1];
+        _colorDiff[1] = _srcColor[1] - _srcColor[2];
+        _colorDiff[2] = _srcColor[2] - _srcColor[0];
         for (int i = 0; i < SensingResults.Count; i++)
         {
-            double[] _getrgb = SensingResults[i].getColor().val;
-           if (_srcColor[0] < _getrgb[0] + _clolrRange &&
-               _srcColor[0] > _getrgb[0] - _clolrRange &&
-               _srcColor[1] < _getrgb[1] + _clolrRange &&
-               _srcColor[1] > _getrgb[1] - _clolrRange &&
-               _srcColor[2] < _getrgb[2] + _clolrRange &&
-               _srcColor[2] > _getrgb[2] - _clolrRange)
+            double[] getrgb = SensingResults[i].getColor().val;
+            Point ResultsP1 = SensingResults[i]._objectBlock[0];
+            Point ResultsP2 = SensingResults[i]._objectBlock[1];
+            double[] _resultsDiffColor = SensingResults[i].getColorDiff();
+
+            //Debug.Log("ID" + i + "Color = GB" + (clickRGB[i / 4].val[1] - clickRGB[i / 4].val[2]));
+            //Debug.Log("ID" + i + "Color = BR" + (clickRGB[i / 4].val[2] - clickRGB[i / 4].val[0]));
+            //Debug.Log("RG" + _colorDiff[0] + ">" + (_resultsDiffColor[0] + _colorDiffRange));
+            //Debug.Log("RG" + _colorDiff[0] + "<" + (_resultsDiffColor[0] - _colorDiffRange));
+            //Debug.Log("GB" + _colorDiff[1] + ">" + (_resultsDiffColor[1] + _colorDiffRange));
+            //Debug.Log("GB" + _colorDiff[1] + "<" + (_resultsDiffColor[1] - _colorDiffRange));
+            //Debug.Log("BR" + _colorDiff[2] + ">" + (_resultsDiffColor[2] + _colorDiffRange));
+            //Debug.Log("BR" + _colorDiff[2] + "<" + (_resultsDiffColor[2] - _colorDiffRange));
+
+            if (_srcColor[0] < (getrgb[0] + _clolrRange) &&
+               _srcColor[0] > (getrgb[0] - _clolrRange) &&
+               _srcColor[1] < (getrgb[1] + _clolrRange) &&
+               _srcColor[1] > (getrgb[1] - _clolrRange) &&
+               _srcColor[2] < (getrgb[2] + _clolrRange) &&
+               _srcColor[2] > (getrgb[2] - _clolrRange) && false)
            {
-                //SensingResults[i].SetPoint(P1, P2);
-               return i;
+                SensingResults[i].SetPoint(P1, P2);
+                return i;
            }
+           else if (
+                _colorDiff[0] < (_resultsDiffColor[0] + _colorDiffRange) &&
+                _colorDiff[0] > (_resultsDiffColor[0] - _colorDiffRange) &&
+                _colorDiff[1] < (_resultsDiffColor[1] + _colorDiffRange) &&
+                _colorDiff[1] > (_resultsDiffColor[1] - _colorDiffRange) &&
+                _colorDiff[2] < (_resultsDiffColor[2] + _colorDiffRange) &&
+                _colorDiff[2] > (_resultsDiffColor[2] - _colorDiffRange))
+           {
+                SensingResults[i].SetPoint(P1, P2);
+                return i;
+           }
+            else if (pointDistanceToFar(P1, P2, ResultsP1, ResultsP2))
+            {
+                return i;
+            }
         }
-       //判斷使否開啟特徵存檔
+        //判斷使否開啟特徵存檔
         if (isSave)
         {
             Debug.Log("Create" + SensingResults.Count);
@@ -511,7 +541,17 @@ public class Match : MonoBehaviour {
             }
         }
     }
-
+    private bool pointDistanceToFar(Point P1,Point P2,Point oP1,Point oP2)
+    {
+        if (Math.Abs(P1.x - oP1.x) < _distanceRange &&
+            Math.Abs(P1.y - oP1.y) < _distanceRange &&
+            Math.Abs(P2.x - oP2.x) < _distanceRange &&
+            Math.Abs(P2.y - oP2.y) < _distanceRange)
+        {
+            return true;
+        }
+        return false;
+    }
 //============================================================
 //=================以下為沒有再使用的函式=====================
 //============================================================
