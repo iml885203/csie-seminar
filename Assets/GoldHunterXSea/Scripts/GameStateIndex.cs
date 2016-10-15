@@ -8,7 +8,7 @@ using System;
 public class GameStateIndex : MonoBehaviour
 {
     public int _gameStateIndex;
-
+    //0未設定1單人模式2雙人模式
     private int _gameRunModeIndex;
 
     public int CurrentStateIndex
