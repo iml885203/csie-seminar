@@ -66,25 +66,10 @@ public class LaserBall : MonoBehaviour {
         {
             Destroy(this.gameObject);
 
-            _levelChangeEvent.ChangeLevelEvent();
             //到下一關的事件
-            //Debug.Log("gameObject.transform.root.Find(LevelIndex).gameObject.name = " + gameObject.transform.root.gameObject.name);
-            //GameObject levelIndex = gameObject.transform.root.Find("LevelIndex").gameObject;
-            //levelIndex.GetComponent<GameLevelIndex>().ToNextLevel();
+            _levelChangeEvent.ChangeLevelEvent();
 
-            //GameObject popUpWindows = gameObject.transform.root.Find("UICanvas").transform.FindChild("PopUpWindows").gameObject;
-            //popUpWindows.GetComponent<PopUpWindowControl>().EnterPopUpWindowMode();
-
-            //GameObject teachWindows = gameObject.transform.root.Find("UICanvas").transform.FindChild("PopUpWindows").transform.FindChild("TeachWindow").gameObject;
-            //teachWindows.GetComponent<ObjectMoveInEffect>().SmoothMoveInButtonEffect();
-
-            //GameObject teachContainWindows = gameObject.transform.root.Find("UICanvas").transform.FindChild("PopUpWindows").transform.FindChild("TeachWindow").transform.FindChild("WindowContain").gameObject;
-            //teachContainWindows.GetComponent<LevelTeachEvent>().ChangeLevelEvent();
-
-            //GameObject levelPreview = gameObject.transform.root.Find("GameLevelObjects").gameObject;
-            //levelPreview.GetComponent<LevelPreview>().ChangePreviewLevel();
-
-            Debug.Log("撞到目標物");
+            //Debug.Log("撞到目標物");
         }
 
         //碰撞黑洞事件
