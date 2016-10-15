@@ -16,6 +16,8 @@ public class LevelTeachContainEvent : MonoBehaviour
     public GameObject[] _image;
     public GameObject[] _description;
 
+    public LevelBeenTeachFlag _levelBeenTeach;
+
     private int _stateCount;
 
     void Start()
@@ -53,6 +55,7 @@ public class LevelTeachContainEvent : MonoBehaviour
     {
         _teachState.ToSkipState();
         _popControl.ExitPopUpWindowMode();
+        _levelBeenTeach.BeenTeach = true;
     }
 
     public void SetCurrentContainActiveOrNot()

@@ -8,7 +8,6 @@ using System;
 public class LevelChangeEvent : MonoBehaviour
 {
     public GameLevelIndex _levelIndex;
-    public ObjectMoveInEffect _moveInEvent;
 
     public LevelPreview _levelPreview;
     public LevelTeachEvent _levelTeachEvent;
@@ -33,7 +32,6 @@ public class LevelChangeEvent : MonoBehaviour
         _levelTeachEvent.ChangeLevelEvent();
 
         _popControl.EnterPopUpWindowMode();
-        _moveInEvent.SmoothMoveInButtonEffect();
     }
 }
 
