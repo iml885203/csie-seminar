@@ -17,6 +17,7 @@ public class CrossLevelWindowEvent : MonoBehaviour
 
     public LevelPreview _levelPreview;
     public LevelTeachEvent _levelTeachEvent;
+    public CountdownTimer _countDownTimer;
 
     // Use this for initialization
     void Start ()
@@ -68,6 +69,7 @@ public class CrossLevelWindowEvent : MonoBehaviour
     {
         _levelPreview.ChangePreviewLevel();
         _levelTeachEvent.ChangeActiveContainEvent();
+        _countDownTimer.ResetCountDownTimer();
 
         _popWindowControl.EnterTeachWindow();
     }
@@ -77,6 +79,7 @@ public class CrossLevelWindowEvent : MonoBehaviour
         _levelIndex.ToPreviousLevel();
         _levelPreview.ChangePreviewLevel();
         _levelTeachEvent.ChangeActiveContainEvent();
+        _countDownTimer.ResetCountDownTimer();
 
         _popWindowControl.EnterTeachWindow();
     }
@@ -86,6 +89,7 @@ public class CrossLevelWindowEvent : MonoBehaviour
         _levelIndex.ToNextLevel();
         _levelPreview.ChangePreviewLevel();
         _levelTeachEvent.ChangeActiveContainEvent();
+        _countDownTimer.ResetCountDownTimer();
 
         _popWindowControl.EnterTeachWindow();
     }

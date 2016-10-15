@@ -66,6 +66,9 @@ public class LaserBall : MonoBehaviour {
         {
             Destroy(this.gameObject);
 
+            other.transform.FindChild("Eff_Burst_2_oneShot").gameObject.SetActive(true);
+            //Destroy(this.gameObject);
+
             //到下一關的事件
             _popWindowControl.EnterCrossWindow();
 

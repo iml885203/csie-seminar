@@ -7,8 +7,6 @@ using System;
 
 public class TeachWindowEvent : MonoBehaviour
 {
-    public GameLevelIndex _levelIndex;
-
     public LevelBeenTeachFlag[] _levelBeenTeachFlag;
 
     void Start()

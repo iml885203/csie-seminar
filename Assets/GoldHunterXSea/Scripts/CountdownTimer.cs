@@ -25,6 +25,8 @@ public class CountdownTimer : MonoBehaviour
 
     private float _warningTime = 30f;
 
+    public GameStateIndex _stateIndex;
+
     public int GetRestTime
     {
         get
@@ -41,24 +43,27 @@ public class CountdownTimer : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (_countDownTimer <= _warningTime)
-            this.GetComponent<Text>().color = Color.red;
-        else
-            this.GetComponent<Text>().color = Color.black;
+        if(_stateIndex.CurrentStateIndex == GameState.GameRun)
+        {
+            if (_countDownTimer <= _warningTime)
+                this.GetComponent<Text>().color = Color.red;
+            else
+                this.GetComponent<Text>().color = Color.black;
 
-        if (_countDownTimer > 0)
-        {
-            if (_isCountDown)
+            if (_countDownTimer > 0)
             {
-                _countDownTimer -= Time.deltaTime;
-                _viewMinute = (int)_countDownTimer / MinuteInt;
-                _viewSecond = (int)_countDownTimer % MinuteInt;
-                _outputTime.text = _viewMinute.ToString("00") + ":" + _viewSecond.ToString("00");
+                if (_isCountDown)
+                {
+                    _countDownTimer -= Time.deltaTime;
+                    _viewMinute = (int)_countDownTimer / MinuteInt;
+                    _viewSecond = (int)_countDownTimer % MinuteInt;
+                    _outputTime.text = _viewMinute.ToString("00") + ":" + _viewSecond.ToString("00");
+                }
             }
-        }
-        else
-        {
-            _isCountDown = false;
+            else
+            {
+                _isCountDown = false;
+            }
         }
     }
 
