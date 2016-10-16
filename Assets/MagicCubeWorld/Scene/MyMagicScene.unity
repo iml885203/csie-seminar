@@ -74922,7 +74922,7 @@ MonoBehaviour:
   _gameStateIndex: {fileID: 1800272295}
   _gameObject: {fileID: 2089221281}
   _effectTimer: 10.55
-  _ButtonEvent: {fileID: 0}
+  _ButtonEvent: {fileID: 1688610109}
   _afterEventButton: {fileID: 701131635}
 --- !u!114 &2089221284
 MonoBehaviour:
