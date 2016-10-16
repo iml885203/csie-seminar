@@ -9,11 +9,6 @@ public class PopUpWindowControl : MonoBehaviour
 {
     private bool _isPopUpWinsowsMode;
 
-    //public ObjectMoveOutEffect _moveOutEffect;
-    //public ObjectMoveInEffect _moveInEffect;
-
-    //public LevelBeenTeachFlag[] _levelBeenTeachFlag;
-
     public GameStateIndex _stateIndex;
     public GameLevelIndex _levelIndex;
     public GameObject _backGroundPanel;
@@ -74,28 +69,6 @@ public class PopUpWindowControl : MonoBehaviour
         _stateIndex.CurrentStateIndex = _originStateIndex;
         _isPopUpWinsowsMode = false;
     }
-
-    
-
-    //原本
-    //public void EnterPopUpWindowMode()
-    //{
-    //    //如果已經進過教學了
-    //    if (!_levelBeenTeachFlag[_levelIndex.CurrentLevelIndex].BeenTeach)
-    //    {
-    //        _moveInEffect.SmoothMoveInButtonEffect();
-    //        _originStateIndex = _stateIndex.CurrentStateIndex;
-    //        _stateIndex.ToStateTeach();
-    //        _isPopUpWinsowsMode = true;
-    //        _backGroundPanel.SetActive(true);
-    //    }
-    //}
-    //public void ExitPopUpWindowMode()
-    //{
-    //    _moveOutEffect.SmoothMoveOutButtonEffect();
-    //    _stateIndex.CurrentStateIndex = _originStateIndex;
-    //    _isPopUpWinsowsMode = false;
-    //}
 }
 
 

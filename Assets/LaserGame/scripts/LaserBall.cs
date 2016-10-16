@@ -8,7 +8,7 @@ public class LaserBall : MonoBehaviour {
     private Vector3 _beforeReflectVelocity;
 
     public GameStateIndex _stateIndex;
-    public PopUpWindowControl _popWindowControl;
+    public CrossWindowWinLoseEvent _winLoseEvent;
 
     Vector3 _windForce;
 
@@ -70,7 +70,7 @@ public class LaserBall : MonoBehaviour {
             //Destroy(this.gameObject);
 
             //到下一關的事件
-            _popWindowControl.EnterCrossWindow();
+            _winLoseEvent.WinEvent();
 
             //Debug.Log("撞到目標物");
         }

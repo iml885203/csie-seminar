@@ -7,6 +7,7 @@ using System;
 
 public class CrossLevelWindowEvent : MonoBehaviour
 {
+    public SuccessOrFailureFlag _isWinFlag;
     public GameLevelIndex _levelIndex;
     public PopUpWindowControl _popWindowControl;
 
@@ -18,6 +19,9 @@ public class CrossLevelWindowEvent : MonoBehaviour
     public LevelPreview _levelPreview;
     public LevelTeachEvent _levelTeachEvent;
     public CountdownTimer _countDownTimer;
+
+    public Button _settingButton;
+    public ButtonEvent _buttonEvent;
 
     // Use this for initialization
     void Start ()
@@ -52,7 +56,8 @@ public class CrossLevelWindowEvent : MonoBehaviour
 
     public void ClickToSettingButtonEvent()
     {
-
+        _popWindowControl.ExitCrossLevelWindow();
+        this.ToSettingEvent();
     }
 
     public void EnterCrossLevelModeEvent()
@@ -69,6 +74,7 @@ public class CrossLevelWindowEvent : MonoBehaviour
     {
         _levelPreview.ChangePreviewLevel();
         _levelTeachEvent.ChangeActiveContainEvent();
+        _isWinFlag.ResetLevel();
         _countDownTimer.ResetCountDownTimer();
 
         _popWindowControl.EnterTeachWindow();
@@ -79,6 +85,7 @@ public class CrossLevelWindowEvent : MonoBehaviour
         _levelIndex.ToPreviousLevel();
         _levelPreview.ChangePreviewLevel();
         _levelTeachEvent.ChangeActiveContainEvent();
+        _isWinFlag.ResetLevel();
         _countDownTimer.ResetCountDownTimer();
 
         _popWindowControl.EnterTeachWindow();
@@ -89,9 +96,20 @@ public class CrossLevelWindowEvent : MonoBehaviour
         _levelIndex.ToNextLevel();
         _levelPreview.ChangePreviewLevel();
         _levelTeachEvent.ChangeActiveContainEvent();
+        _isWinFlag.ResetLevel();
         _countDownTimer.ResetCountDownTimer();
 
         _popWindowControl.EnterTeachWindow();
+    }
+
+    public void ToSettingEvent()
+    {
+        _settingButton.GetComponent<ObjectMoveInEffect>().SmoothMoveInButtonEffect();
+        _settingButton.GetComponent<ObjectMoveOutEffect>().SmoothMoveOutButtonEffect();
+        _buttonEvent.GameStateGameRunToSettingButtonClick();
+
+        _levelPreview.ChangePreviewLevel();
+        _levelTeachEvent.ChangeActiveContainEvent();
     }
 
     public void SetLevelButtonInterativeOrNot()
@@ -101,7 +119,9 @@ public class CrossLevelWindowEvent : MonoBehaviour
         else
             _previousButton.interactable = true;
 
-        if (_levelIndex.CurrentLevelIndex == GameLevelIndex.LEVEL_3)
+        if (_levelIndex.CurrentLevelIndex == GameLevelIndex.LEVEL_3)//當在最後一關的時候
+            _nextLevelButton.interactable = false;
+        else if (_isWinFlag.CurrentWinOrLoseFlag == SuccessOrFailureFlag.LEVEL_LOSE)//當輸的時候
             _nextLevelButton.interactable = false;
         else
             _nextLevelButton.interactable = true;

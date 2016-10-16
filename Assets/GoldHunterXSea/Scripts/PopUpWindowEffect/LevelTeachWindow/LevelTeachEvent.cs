@@ -18,9 +18,9 @@ public class LevelTeachEvent : MonoBehaviour
         this.ChangeActiveContainEvent();
     }
 
-    void FixedUpdate()
+    void Update()
     {
-
+        this.ChangeActiveContainEvent();
     }
 
     public void ClickNextButtonEvent()

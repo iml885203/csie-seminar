@@ -26,6 +26,7 @@ public class CountdownTimer : MonoBehaviour
     private float _warningTime = 30f;
 
     public GameStateIndex _stateIndex;
+    public CrossWindowWinLoseEvent _winLoseEvent;
 
     public int GetRestTime
     {
@@ -43,6 +44,11 @@ public class CountdownTimer : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if(_stateIndex.CurrentStateIndex == GameState.GameRun && _countDownTimer < 0)
+        {
+            _winLoseEvent.LoseEvent();
+        }
+
         if(_stateIndex.CurrentStateIndex == GameState.GameRun)
         {
             if (_countDownTimer <= _warningTime)
