@@ -24,6 +24,9 @@ public class ButtonEvent : MonoBehaviour
     public Slider[] _inSettingSoundSlider;
     public Text[] _inSettingText;
 
+    //背景音樂
+    public BackGroundSound _backGroundSound;
+
     public GameLevelIndex _levelIndex;
 
     void Start()
@@ -54,6 +57,7 @@ public class ButtonEvent : MonoBehaviour
     public void GameStateMenuToSettingButtonClick()
     {
         _gameStateIndex.ToStateSetting();
+        _backGroundSound.ChangeGameState();
         this.SwitchBackGroundImagesByStateFlag();
         this.SwitchGameStateByStateFlag();
 
@@ -64,6 +68,7 @@ public class ButtonEvent : MonoBehaviour
     public void GameStateSettingToGameRunButtonClick()
     {
         _gameStateIndex.ToStateGameRun();
+        _backGroundSound.ChangeGameState();
         this.SwitchBackGroundImagesByStateFlag();
         this.SwitchGameStateByStateFlag();
 
@@ -74,6 +79,7 @@ public class ButtonEvent : MonoBehaviour
     public void GameStateGameRunToSettingButtonClick()
     {
         _gameStateIndex.ToStateSetting();
+        _backGroundSound.ChangeGameState();
         this.SwitchBackGroundImagesByStateFlag();
         this.SwitchGameStateByStateFlag();
 
@@ -84,6 +90,7 @@ public class ButtonEvent : MonoBehaviour
     public void GameStateSettingToMenuButtonClick()
     {
         _gameStateIndex.ToStateMenu();
+        _backGroundSound.ChangeGameState();
         this.SwitchBackGroundImagesByStateFlag();
         this.SwitchGameStateByStateFlag();
 
@@ -94,6 +101,7 @@ public class ButtonEvent : MonoBehaviour
     public void GameStateSettingToListProducerButtonClick()
     {
         _gameStateIndex.ToStateListProducer();
+        _backGroundSound.ChangeGameState();
         this.SwitchBackGroundImagesByStateFlag();
         this.SwitchGameStateByStateFlag();
     }
@@ -108,6 +116,7 @@ public class ButtonEvent : MonoBehaviour
     public void GameStateListProducerToSettingButtonClick()
     {
         _gameStateIndex.ToStateSetting();
+        _backGroundSound.ChangeGameState();
         this.SwitchBackGroundImagesByStateFlag();
         this.SwitchGameStateByStateFlag();
     }

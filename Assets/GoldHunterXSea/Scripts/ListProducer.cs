@@ -44,9 +44,7 @@ public class ListProducer : MonoBehaviour
                 _afterEventButton.GetComponent<ObjectMoveOutEffect>().SmoothMoveOutButtonEffect();
 
                 //轉GameState 背景
-                _gameStateIndex.ToStateSetting();
-                _ButtonEvent.SwitchBackGroundImagesByStateFlag();
-                _ButtonEvent.SwitchGameStateByStateFlag();
+                _ButtonEvent.GameStateListProducerToSettingButtonClick();
             }
         }
 

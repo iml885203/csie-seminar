@@ -10,6 +10,8 @@ public class LaserBall : MonoBehaviour {
     public GameStateIndex _stateIndex;
     public CrossWindowWinLoseEvent _winLoseEvent;
 
+    public EffectSound _effectSound;
+
     Vector3 _windForce;
 
     // Use this for initialization
@@ -65,6 +67,8 @@ public class LaserBall : MonoBehaviour {
         if (other.gameObject.tag == "TargetObject")
         {
             Destroy(this.gameObject);
+
+            _effectSound.PlayEffectSound(EffectSound.BOOM);
 
             other.transform.FindChild("Eff_Burst_2_oneShot").gameObject.SetActive(true);
             //Destroy(this.gameObject);
@@ -161,6 +165,7 @@ public class LaserBall : MonoBehaviour {
         else if (other.gameObject.tag == "TargetObjectFight")
         {
             //Debug.Log("Win");
+            _effectSound.PlayEffectSound(EffectSound.LIFE_REDUCTION);
             Destroy(this.gameObject);
             other.gameObject.GetComponent<playerCube>().IsHit(1);
         }
