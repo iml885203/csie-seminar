@@ -27,6 +27,8 @@ public class ButtonEvent : MonoBehaviour
     //背景音樂
     public BackGroundSound _backGroundSound;
 
+    public PopUpWindowControl _popWindow;
+    public TeachWindowEvent _teachWindowEvent;
     public GameLevelIndex _levelIndex;
 
     void Start()
@@ -119,6 +121,13 @@ public class ButtonEvent : MonoBehaviour
         _backGroundSound.ChangeGameState();
         this.SwitchBackGroundImagesByStateFlag();
         this.SwitchGameStateByStateFlag();
+    }
+
+    //按下關卡教學按鈕
+    public void GameStateGameRunToTeachButtonClick()
+    {
+        _teachWindowEvent.EnableBeenTeachByIndex(_levelIndex.CurrentLevelIndex);
+        _popWindow.EnterTeachWindow();
     }
 
     public void SwitchGameStateByStateFlag()

@@ -19,6 +19,11 @@ public class TeachWindowEvent : MonoBehaviour
 
     }
 
+    public void EnableBeenTeachByIndex(int index)
+    {
+        _levelBeenTeachFlag[index]._isBeenTeach = false;
+    }
+
     public bool IsBeenTeach(int index)
     {
         return _levelBeenTeachFlag[index]._isBeenTeach;
