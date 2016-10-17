@@ -165,9 +165,9 @@ public class LaserBall : MonoBehaviour {
         else if (other.gameObject.tag == "TargetObjectFight")
         {
             //Debug.Log("Win");
-            _effectSound.PlayEffectSound(EffectSound.LIFE_REDUCTION);
             Destroy(this.gameObject);
             other.gameObject.GetComponent<playerCube>().IsHit(1);
+            _effectSound.PlayEffectSound(EffectSound.LIFE_REDUCTION);
         }
     }
 

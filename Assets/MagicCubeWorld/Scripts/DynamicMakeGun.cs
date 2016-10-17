@@ -19,6 +19,7 @@ public class DynamicMakeGun : MonoBehaviour
     private clickPositionTrans _posTrans;
     private GameStateIndex _gmaeStatusManager;
     public int _CreateObjectId = -1;
+    public float _speed = 1f;
 
     void Start()
     {
@@ -68,7 +69,7 @@ public class DynamicMakeGun : MonoBehaviour
                 MatchObject matchObject = NewLMatchObjectList[i];
                 if( _CreateObjectId == matchObject._id)
                 {
-                    UpdatePos(superGameObject.transform.GetChild(i).gameObject, .05f, matchObject);
+                    UpdatePos(superGameObject.transform.GetChild(i).gameObject, _speed, matchObject);
                 }
             }
         }

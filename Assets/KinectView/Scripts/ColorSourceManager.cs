@@ -23,8 +23,6 @@ public class ColorSourceManager : MonoBehaviour
     {
         return _colorMat;
     }
-    
-
     void Start()
     {
         _Sensor = KinectSensor.GetDefault();
@@ -35,7 +33,6 @@ public class ColorSourceManager : MonoBehaviour
             
             var frameDesc = _Sensor.ColorFrameSource.CreateFrameDescription(ColorImageFormat.Rgba);
 
-            
             ColorWidth = frameDesc.Width;
             ColorHeight = frameDesc.Height;
             
@@ -45,8 +42,6 @@ public class ColorSourceManager : MonoBehaviour
 
             _Texture = new Texture2D(frameDesc.Width, frameDesc.Height, TextureFormat.RGBA32, false);
             _Data = new byte[frameDesc.BytesPerPixel * frameDesc.LengthInPixels];
-            
-            
             if (!_Sensor.IsOpen)
             {
                 _Sensor.Open();
@@ -74,13 +69,6 @@ public class ColorSourceManager : MonoBehaviour
                 frame = null;
             }
         }
-        //if (Input.GetMouseButtonUp(0))
-        //{
-        //    Point p = new Point(Input.mousePosition.x, Input.mousePosition.y);
-        //    roiPointList.Add(p);
-        //    Debug.Log("::" + p.x + ":" + p.y);
-        //}
-
     }
     void OnApplicationQuit()
     {
@@ -96,11 +84,7 @@ public class ColorSourceManager : MonoBehaviour
             {
                 _Sensor.Close();
             }
-            
             _Sensor = null;
         }
     }
-    
-    
-    
 }

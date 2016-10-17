@@ -142,6 +142,7 @@ public class DrawBlock : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        
         //讓選框狀態時暫停影像
         if (Input.GetKeyUp(KeyCode.Z))
         {

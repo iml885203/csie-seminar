@@ -394,7 +394,6 @@ public class Match : MonoBehaviour {
                     //Debug.Log("ID = " +  index + " Color = " + clickcolor(ColorMat, R0));
                 }
             }
-            _matchColorObjectList.Clear();
             _matchColorObjectList = setColorMatchObject(ConsistP, clickRGB, resultMat);
         }
         return resultMat;
@@ -431,6 +430,7 @@ public class Match : MonoBehaviour {
                 matchObjectList.Add(matchObject);
             }
         }
+        _matchColorObjectList.Clear();
         return matchObjectList;
     }
 
@@ -475,21 +475,24 @@ public class Match : MonoBehaviour {
         _colorDiff[0] = _srcColor[0] - _srcColor[1];
         _colorDiff[1] = _srcColor[1] - _srcColor[2];
         _colorDiff[2] = _srcColor[2] - _srcColor[0];
+        Debug.Log("Count = "  + _matchColorObjectList.Count);
+        for (int i = 0; i < _matchColorObjectList.Count; i++)
+        {
+            Point ResultsP1 = new Point(_matchColorObjectList[i]._pos.x, _matchColorObjectList[i]._pos.y);
+            Point ResultsP2 = new Point(_matchColorObjectList[i]._pos.x + _matchColorObjectList[i]._scale.x,
+                                        _matchColorObjectList[i]._pos.y + _matchColorObjectList[i]._scale.y);
+            if (pointDistanceToFar(P1, P2, ResultsP1, ResultsP2))
+            {
+                Debug.Log(_matchColorObjectList[i]._id + "Use Depth");
+                return _matchColorObjectList[i]._id;
+            }
+        }
         for (int i = 0; i < SensingResults.Count; i++)
         {
             double[] getrgb = SensingResults[i].getColor().val;
             Point ResultsP1 = SensingResults[i]._objectBlock[0];
             Point ResultsP2 = SensingResults[i]._objectBlock[1];
             double[] _resultsDiffColor = SensingResults[i].getColorDiff();
-
-            //Debug.Log("ID" + i + "Color = GB" + (clickRGB[i / 4].val[1] - clickRGB[i / 4].val[2]));
-            //Debug.Log("ID" + i + "Color = BR" + (clickRGB[i / 4].val[2] - clickRGB[i / 4].val[0]));
-            //Debug.Log("RG" + _colorDiff[0] + ">" + (_resultsDiffColor[0] + _colorDiffRange));
-            //Debug.Log("RG" + _colorDiff[0] + "<" + (_resultsDiffColor[0] - _colorDiffRange));
-            //Debug.Log("GB" + _colorDiff[1] + ">" + (_resultsDiffColor[1] + _colorDiffRange));
-            //Debug.Log("GB" + _colorDiff[1] + "<" + (_resultsDiffColor[1] - _colorDiffRange));
-            //Debug.Log("BR" + _colorDiff[2] + ">" + (_resultsDiffColor[2] + _colorDiffRange));
-            //Debug.Log("BR" + _colorDiff[2] + "<" + (_resultsDiffColor[2] - _colorDiffRange));
 
             if (_srcColor[0] < (getrgb[0] + _clolrRange) &&
                _srcColor[0] > (getrgb[0] - _clolrRange) &&
@@ -498,6 +501,7 @@ public class Match : MonoBehaviour {
                _srcColor[2] < (getrgb[2] + _clolrRange) &&
                _srcColor[2] > (getrgb[2] - _clolrRange) && false)
            {
+                Debug.Log(i + "Use Color");
                 SensingResults[i].SetPoint(P1, P2);
                 return i;
            }
@@ -509,13 +513,11 @@ public class Match : MonoBehaviour {
                 _colorDiff[2] < (_resultsDiffColor[2] + _colorDiffRange) &&
                 _colorDiff[2] > (_resultsDiffColor[2] - _colorDiffRange))
            {
+                Debug.Log(i +"Use Diff Color");
                 SensingResults[i].SetPoint(P1, P2);
                 return i;
            }
-            else if (pointDistanceToFar(P1, P2, ResultsP1, ResultsP2))
-            {
-                return i;
-            }
+
         }
         //判斷使否開啟特徵存檔
         if (isSave)

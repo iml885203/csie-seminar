@@ -70,20 +70,20 @@ public class HandControll : MonoBehaviour {
         //遊戲狀態關閉手的圖案，保留手勢功能
         var gameStatus = _gmaeStatusManager.CurrentStateIndex;
         Color imageColor = _handImage.GetComponent<Image>().color;
-        //if (gameStatus == GameState.GameRun && !_isTriggerButton)
-        //{
-        //    if(imageColor.a == 1f)
-        //        _handImage.GetComponent<Image>().color = new Color(imageColor.r, imageColor.g, imageColor.b, .1f);
-        //    //if(_handImage.active)
-        //    //    _handImage.SetActive(false);
-        //}
-        //else
-        //{
-        //    if (imageColor.a == .1f)
-        //        _handImage.GetComponent<Image>().color = new Color(imageColor.r, imageColor.g, imageColor.b, 1f);
-        //    //if(!_handImage.active)
-        //    //    _handImage.SetActive(true);
-        //}
+        if (gameStatus == GameState.GameRun && !_isTriggerButton)
+        {
+            if (imageColor.a == 1f)
+                _handImage.GetComponent<Image>().color = new Color(imageColor.r, imageColor.g, imageColor.b, .1f);
+            //if(_handImage.active)
+            //    _handImage.SetActive(false);
+        }
+        else
+        {
+            if (imageColor.a == .1f)
+                _handImage.GetComponent<Image>().color = new Color(imageColor.r, imageColor.g, imageColor.b, 1f);
+            //if(!_handImage.active)
+            //    _handImage.SetActive(true);
+        }
         foreach (var body in bodies)
         {
             RectTransform myRect = this.transform as RectTransform;
