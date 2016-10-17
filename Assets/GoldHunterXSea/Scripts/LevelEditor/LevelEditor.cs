@@ -14,38 +14,52 @@ public class LevelEditor : MonoBehaviour
 
     public GameObject _fileName;
 
+    public GameObject[] _originObject;
+
     public GameObject _laserGeneratorObject;
     public GameObject _reflectObject;
     public GameObject _destoryObject;
-    public GameObject _targetObject;
     public GameObject _blackHoleObject;
     public GameObject _whiteHoleObject;
     public GameObject _separateObject;
     public GameObject _transmissionObject;
+    public GameObject _targetObject;
+    public GameObject _targetFightObject;
 
     //public GameObject _selectorBlock;
     public GameObject _selectorObject;
     public GameObject _saveCanvasPanel;
 
     private Vector3 _mouseClickPosition;
+    private Vector3 _test;
     public GameObject _camera;
 
     private LevelObjectBase _LevelObjectBase;
     //private string _selectObjectKind;
 
     private bool _isRotateClockWise;
-    private bool _isRotateInverseClock; 
+    private bool _isRotateInverseClock;
+
+    private List<Vector3> _originPositionList;
 
     void Start()
     {
         _isRotateClockWise = false;
         _isRotateInverseClock = false;
         _selectorObject = _laserGeneratorObject;
+
+        _originPositionList = new List<Vector3>();
+        //暫存每個物件的原始位置
+        for (int index = 0; index < _originObject.Length; index++)
+        {
+            _originPositionList.Add(_originObject[index].transform.position);
+        }
     }
 
     //用fixedUpdate會有按一下跑三次Input.GetMouseButtonUp(0)的問題
     void Update()
     {
+
         if (Input.GetMouseButtonUp(1))
         {
             //_selectorObject = new GameObject();
@@ -60,6 +74,14 @@ public class LevelEditor : MonoBehaviour
                 this.SetNewObjectBySelectedObject();
             }
         }
+
+        if(_selectorObject.gameObject != null)
+        {
+            _test = _camera.GetComponent<Camera>().ScreenToWorldPoint(Input.mousePosition);
+            _test = new Vector3(_test.x, _test.y, 0);
+            _selectorObject.transform.position = _test;
+        }
+            
 
         if (_isRotateClockWise)
             this.RotateSelectObjectClockWise();
@@ -235,45 +257,119 @@ public class LevelEditor : MonoBehaviour
 
     public void LaserGeneratorButtonClick()
     {
-        _selectorObject = _laserGeneratorObject;
+        foreach(GameObject gameObject in _originObject)
+        {
+            if(gameObject.name == "LaserGenerator")
+            {
+                _selectorObject = gameObject;
+            }
+        }
+        this.ResetObjectPosition();
     }
 
     public void ReflectButtonClick()
     {
-        _selectorObject = _reflectObject;
+        foreach (GameObject gameObject in _originObject)
+        {
+            if (gameObject.name == "ReflectionObject")
+            {
+                _selectorObject = gameObject;
+            }
+        }
+        this.ResetObjectPosition();
     }
 
     public void DestoryButtonClick()
     {
-        _selectorObject = _destoryObject;
+        foreach (GameObject gameObject in _originObject)
+        {
+            if (gameObject.name == "DestoryObject")
+            {
+                _selectorObject = gameObject;
+            }
+        }
+        this.ResetObjectPosition();
     }
 
     public void TargetButtonClick()
     {
-        _selectorObject = _targetObject;
+        foreach (GameObject gameObject in _originObject)
+        {
+            if (gameObject.name == "TargetObject")
+            {
+                _selectorObject = gameObject;
+            }
+        }
+        this.ResetObjectPosition();
+    }
+
+    public void TargetFightButtonClick()
+    {
+        foreach (GameObject gameObject in _originObject)
+        {
+            if (gameObject.name == "TargetFightObject")
+            {
+                _selectorObject = gameObject;
+            }
+        }
+        this.ResetObjectPosition();
     }
 
     public void BlackHoleButtonClick()
     {
-        _selectorObject = _blackHoleObject;
+        foreach (GameObject gameObject in _originObject)
+        {
+            if (gameObject.name == "BlackHoleObject")
+            {
+                _selectorObject = gameObject;
+            }
+        }
+        this.ResetObjectPosition();
     }
 
     public void WhiteHoleButtonClick()
     {
-        _selectorObject = _whiteHoleObject;
+        foreach (GameObject gameObject in _originObject)
+        {
+            if (gameObject.name == "WhiteHoleObject")
+            {
+                _selectorObject = gameObject;
+            }
+        }
+        this.ResetObjectPosition();
     }
 
     public void SeparateButtonClick()
     {
-        _selectorObject = _separateObject;
+        foreach (GameObject gameObject in _originObject)
+        {
+            if (gameObject.name == "SeparateObject")
+            {
+                _selectorObject = gameObject;
+            }
+        }
+        this.ResetObjectPosition();
     }
 
     public void TransmissionButtonClick()
     {
-        _selectorObject = _transmissionObject;
+        foreach (GameObject gameObject in _originObject)
+        {
+            if (gameObject.name == "TransmissionObject")
+            {
+                _selectorObject = gameObject;
+            }
+        }
+        this.ResetObjectPosition();
     }
 
-
+    public void ResetObjectPosition()
+    {
+        for(int index = 0; index < _originObject.Length; index++)
+        {
+            _originObject[index].transform.position = _originPositionList[index];
+        }
+    }
 
     public string TransGameObjectNameToKindName(string gameObjectName)
     {
@@ -286,31 +382,35 @@ public class LevelEditor : MonoBehaviour
                 }
             case "ReflectionObject(Clone)":
                 {
-                    return "牆壁";
+                    return "反彈牆";
                 }
             case "DestoryObject(Clone)":
                 {
                     return "障礙牆";
                 }
-            case "TargetObject(Clone)":
-                {
-                    return "目標";
-                }
             case "BlackHoleObject(Clone)":
                 {
-                    return "引力裝置";
+                    return "蟲洞";
                 }
             case "WhiteHoleObject(Clone)":
                 {
-                    return "斥力裝置";
+                    return "白洞";
                 }
             case "SeparateObject(Clone)":
                 {
-                    return "分離裝置";
+                    return "分離器";
                 }
             case "TransmissionObject(Clone)":
                 {
                     return "傳送門";
+                }
+            case "TargetObject(Clone)":
+                {
+                    return "接收器";
+                }
+            case "TargetFightObjects(Clone)":
+                {
+                    return "生命裝置";
                 }
             default:
                 return "";
