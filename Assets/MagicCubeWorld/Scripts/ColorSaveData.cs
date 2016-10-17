@@ -34,16 +34,24 @@ public class ColorSaveData : MonoBehaviour {
     {
         List<BaseObject> baseObjectList = new List<BaseObject>();
         string readLineBuffer;
-        Debug.Log("Load Color Data");
         //讀檔設立物件
         System.IO.StreamReader fileData = new System.IO.StreamReader("ObjectColor.txt", System.Text.Encoding.Default);
         while ((readLineBuffer = fileData.ReadLine()) != null)
         {
-            int id = int.Parse(readLineBuffer);
-            Scalar color = new Scalar(
-                double.Parse(fileData.ReadLine()),
-                double.Parse(fileData.ReadLine()),
-                double.Parse(fileData.ReadLine()));
+            int id = 0;
+            Scalar color = new Scalar(0, 0, 0);
+            try
+            {
+                id = int.Parse(readLineBuffer);
+                color = new Scalar(
+                    double.Parse(fileData.ReadLine()),
+                    double.Parse(fileData.ReadLine()),
+                    double.Parse(fileData.ReadLine()));
+            }
+            catch
+            {
+                Debug.Log("ColorText.txt沒有顏色資料");
+            }
             baseObjectList.Add(new BaseObject(id,color));
             Debug.Log("Id = " + id);
             Debug.Log("Color = " + color);
