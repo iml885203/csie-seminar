@@ -251,6 +251,11 @@ public class LevelObjectBase : MonoBehaviour
                     TEXT_FILE_NAME = GameLevelFile.LEVEL_FIGHT;
                     break;
                 }
+            case 4:
+                {
+                    TEXT_FILE_NAME = GameLevelFile.LEVEL_EDITOR;
+                    break;
+                }
             default:
                 break;
         }
@@ -307,7 +312,10 @@ public class LevelObjectBase : MonoBehaviour
                     break;
                 }
             default:
-                break;
+                {
+                    productGameObject = _laserGenerator;
+                    break;
+                }
         }
     }
 }

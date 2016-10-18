@@ -19,11 +19,12 @@ public class LevelPreview : LevelObjectBase
     // Update is called once per frame
     new void Update()
     {
-        this.SwitchLevelFile();
+        base.SwitchLevelFile();
         if (_isChangePreviewLevel)
         {
             this.DestoryLevelObjects();
-            this.SetLevelObjectsByTextFile();
+            this.SetLevelObjectsByTextFileRealPosition();
+            //this.SetLevelObjectsByTextFile();
             _isChangePreviewLevel = false;
         }
 
@@ -107,13 +108,14 @@ public class LevelPreview : LevelObjectBase
     }
 
     //設置關卡物件
-    public void SetLevelObjectsByTextFileTest()
+    public void SetLevelObjectsByTextFileRealPosition()
     {
         string readLineBuffer;
         float halfRate = (float).5;
 
         //讀檔設立物件
-        System.IO.StreamReader fileData = new System.IO.StreamReader("預設名稱.txt", System.Text.Encoding.Default);
+        System.IO.StreamReader fileData = new System.IO.StreamReader(TEXT_FILE_NAME, System.Text.Encoding.Default);
+        //System.IO.StreamReader fileData = new System.IO.StreamReader("預設名稱.txt", System.Text.Encoding.Default);
 
         //直到沒讀到資訊
         while ((readLineBuffer = fileData.ReadLine()) != null)

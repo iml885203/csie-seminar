@@ -16,16 +16,6 @@ public class LevelEditor : MonoBehaviour
 
     public GameObject[] _originObject;
 
-    public GameObject _laserGeneratorObject;
-    public GameObject _reflectObject;
-    public GameObject _destoryObject;
-    public GameObject _blackHoleObject;
-    public GameObject _whiteHoleObject;
-    public GameObject _separateObject;
-    public GameObject _transmissionObject;
-    public GameObject _targetObject;
-    public GameObject _targetFightObject;
-
     //public GameObject _selectorBlock;
     public GameObject _selectorObject;
     public GameObject _saveCanvasPanel;
@@ -46,7 +36,7 @@ public class LevelEditor : MonoBehaviour
     {
         _isRotateClockWise = false;
         _isRotateInverseClock = false;
-        _selectorObject = _laserGeneratorObject;
+        _selectorObject = _originObject[0];
 
         _originPositionList = new List<Vector3>();
         //暫存每個物件的原始位置
@@ -307,7 +297,7 @@ public class LevelEditor : MonoBehaviour
     {
         foreach (GameObject gameObject in _originObject)
         {
-            if (gameObject.name == "TargetFightObject")
+            if (gameObject.name == "TargetFightObjects")
             {
                 _selectorObject = gameObject;
             }
@@ -355,7 +345,7 @@ public class LevelEditor : MonoBehaviour
     {
         foreach (GameObject gameObject in _originObject)
         {
-            if (gameObject.name == "TransmissionObject")
+            if (gameObject.name == "TransmissionObjects")
             {
                 _selectorObject = gameObject;
             }
@@ -400,7 +390,7 @@ public class LevelEditor : MonoBehaviour
                 {
                     return "分離器";
                 }
-            case "TransmissionObject(Clone)":
+            case "TransmissionObjects(Clone)":
                 {
                     return "傳送門";
                 }
