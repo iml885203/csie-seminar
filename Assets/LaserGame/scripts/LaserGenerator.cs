@@ -12,7 +12,7 @@ public class LaserGenerator : MonoBehaviour {
     public GameStateIndex _gameStateIndex;
     // Use this for initialization
     void Start () {
-
+        LaserBall.GetComponent<ParticleSystem>().Stop();
     }
 
     // Update is called once per frame
@@ -33,6 +33,7 @@ public class LaserGenerator : MonoBehaviour {
                 GameObject clone = (GameObject)Instantiate(LaserBall, this.transform.position, this.transform.rotation);
                 clone.transform.SetParent(this.transform);
                 clone.transform.localScale = LaserBall.transform.localScale; //給複製的球跟LaserBall一樣大
+                clone.GetComponent<ParticleSystem>().Play();
                 foreach (Transform child in transform)
                 {
                     if (child.tag == "LaserBall")

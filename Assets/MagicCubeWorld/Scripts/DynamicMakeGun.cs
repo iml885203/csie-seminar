@@ -79,6 +79,17 @@ public class DynamicMakeGun : MonoBehaviour
         RectTransform childGameObjectRect = Object.GetComponent<RectTransform>();
         //轉換對應座標並更新值
         Point transPos = _posTrans.TransToScreen2Pos(new Point(matchObject._pos.x, matchObject._pos.y));
+        int posX = (int)childGameObjectRect.anchoredPosition.x, posY = (int)childGameObjectRect.anchoredPosition.y;
+        int moveRangeWidth = (int)(_Width * 0.1), moveRangeHeight = (int)(_Height * 0.1);
+
+        if ((posX + moveRangeWidth < (int)transPos.x) && (posX - moveRangeWidth > (int)transPos.x) ||
+            (posY + moveRangeHeight < (int)transPos.y) && (posY - moveRangeHeight > (int)transPos.y))
+        {
+            if (Object.transform.Find("Gun").Find("LaserBall(Clone)") != null)
+            {
+                Destroy(Object.transform.Find("Gun").FindChild("LaserBall(Clone)").gameObject);
+            }
+        }
         childGameObjectRect.anchoredPosition = Vector3.Lerp(childGameObjectRect.anchoredPosition, new Vector2((float)transPos.x, (float)transPos.y), speed);
         childGameObjectRect.localPosition = new Vector3(childGameObjectRect.localPosition.x, childGameObjectRect.localPosition.y, 0);
         //轉換對應大小並更新值

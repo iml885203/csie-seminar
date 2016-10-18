@@ -207,13 +207,6 @@ public class Match : MonoBehaviour {
                     //Debug.Log("setMatchObject fail");
                 }
             }
-            //else if(hullInt.toList().Count == 3)
-            //{
-            //    if (!setMatchObject(index, pointMatList, contours, hullPoints, result, matchObject))
-            //    {
-            //        //Debug.Log("setMatchObject fail");
-            //    }
-            //}
             //清空記憶體
             defects.Dispose();
             hullPointList.Clear();
@@ -475,18 +468,7 @@ public class Match : MonoBehaviour {
         _colorDiff[0] = _srcColor[0] - _srcColor[1];
         _colorDiff[1] = _srcColor[1] - _srcColor[2];
         _colorDiff[2] = _srcColor[2] - _srcColor[0];
-        Debug.Log("Count = "  + _matchColorObjectList.Count);
-        for (int i = 0; i < _matchColorObjectList.Count; i++)
-        {
-            Point ResultsP1 = new Point(_matchColorObjectList[i]._pos.x, _matchColorObjectList[i]._pos.y);
-            Point ResultsP2 = new Point(_matchColorObjectList[i]._pos.x + _matchColorObjectList[i]._scale.x,
-                                        _matchColorObjectList[i]._pos.y + _matchColorObjectList[i]._scale.y);
-            if (pointDistanceToFar(P1, P2, ResultsP1, ResultsP2))
-            {
-                Debug.Log(_matchColorObjectList[i]._id + "Use Depth");
-                return _matchColorObjectList[i]._id;
-            }
-        }
+
         for (int i = 0; i < SensingResults.Count; i++)
         {
             double[] getrgb = SensingResults[i].getColor().val;
@@ -513,11 +495,21 @@ public class Match : MonoBehaviour {
                 _colorDiff[2] < (_resultsDiffColor[2] + _colorDiffRange) &&
                 _colorDiff[2] > (_resultsDiffColor[2] - _colorDiffRange))
            {
-                Debug.Log(i +"Use Diff Color");
+                //Debug.Log(i +"Use Diff Color");
                 SensingResults[i].SetPoint(P1, P2);
                 return i;
            }
-
+        }
+        //Debug.Log("Count = " + _matchColorObjectList.Count);
+        for (int i = 0; i < _matchColorObjectList.Count; i++)
+        {
+            Point ResultsCenter = new Point(_matchColorObjectList[i]._pos.x, _matchColorObjectList[i]._pos.y);
+            //Debug.Log("i = " + i + "Match ResultsCenter = " + ResultsCenter + "P1 P2" + P1 + P2);
+            if (pointDistanceToFar(P1, P2, ResultsCenter))
+            {
+                //Debug.Log(_matchColorObjectList[i]._id + "Use Depth");
+                return _matchColorObjectList[i]._id;
+            }
         }
         //判斷使否開啟特徵存檔
         if (isSave)
@@ -530,6 +522,8 @@ public class Match : MonoBehaviour {
         }
         else return -1;
     }
+
+    //比對深度位置是否相同
     //設定是否開啟儲存特徵物體的bool(預設快捷鍵為U)
     public void SetIsSave()
     {
@@ -543,12 +537,13 @@ public class Match : MonoBehaviour {
             }
         }
     }
-    private bool pointDistanceToFar(Point P1,Point P2,Point oP1,Point oP2)
+    private bool pointDistanceToFar(Point P1,Point P2,Point center)
     {
-        if (Math.Abs(P1.x - oP1.x) < _distanceRange &&
-            Math.Abs(P1.y - oP1.y) < _distanceRange &&
-            Math.Abs(P2.x - oP2.x) < _distanceRange &&
-            Math.Abs(P2.y - oP2.y) < _distanceRange)
+
+        if ((P1.x + P2.x) / 2 < center.x + _distanceRange &&
+            (P1.x + P2.x) / 2 > center.x - _distanceRange &&
+            (P1.y + P2.y) / 2 < center.y + _distanceRange &&
+            (P1.y + P2.y) / 2 > center.y - _distanceRange)
         {
             return true;
         }

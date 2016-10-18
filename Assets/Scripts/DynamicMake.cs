@@ -52,8 +52,12 @@ public class DynamicMake : MonoBehaviour
             for (int i = superGameObject.transform.childCount-1; i >=0 ; i--)
             {
                 MatchObject matchObject = _DataMatch._matchObjectList[i];
-                UpdatePos(superGameObject.transform.GetChild(i).gameObject, .05f, matchObject);
+                UpdatePos(superGameObject.transform.GetChild(i).gameObject, _speed, matchObject);
             }
+        }
+        if (Input.GetKeyUp(KeyCode.R))
+        {
+            copyGameObject.GetComponent<MeshRenderer>().enabled = !copyGameObject.GetComponent<MeshRenderer>().enabled;
         }
     }
     public void UpdatePos(GameObject Object,float speed, MatchObject matchObject)
@@ -65,7 +69,7 @@ public class DynamicMake : MonoBehaviour
         childGameObjectRect.localPosition = new Vector3(childGameObjectRect.localPosition.x, childGameObjectRect.localPosition.y, 0);
         //轉換對應大小並更新值
         Point transScale = _posTrans.TransToScreen2Pos(new Point(matchObject._scale.x, matchObject._scale.y));
-        childGameObject.transform.localScale = Vector3.Lerp(childGameObject.transform.localScale, new Vector3((float)transScale.x, (float)transScale.y, 50), speed);
+        Object.transform.localScale = Vector3.Lerp(Object.transform.localScale, new Vector3((float)transScale.x, (float)transScale.y, 50), speed);
         //更新旋轉角度
         Object.transform.eulerAngles = new Vector3(0, 0, (float)((matchObject._rotation + .5f) * 180));
         return;
