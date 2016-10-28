@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: cf594403c00909246bef4b3006892e2c
+guid: db646c6bafbaf8b4da8a3f51511f3622
 timeCreated: 1477647446
 licenseType: Pro
 TextureImporter:
@@ -8,7 +8,7 @@ TextureImporter:
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
-    linearTexture: 1
+    linearTexture: 0
     correctGamma: 0
     fadeOut: 0
     borderMipMap: 0
@@ -33,7 +33,7 @@ TextureImporter:
     aniso: -1
     mipBias: -1
     wrapMode: -1
-  nPOTScale: 1
+  nPOTScale: 0
   lightmap: 0
   rGBM: 0
   compressionQuality: 50
