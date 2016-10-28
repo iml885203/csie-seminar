@@ -361,6 +361,7 @@ public class Match : MonoBehaviour {
         Mat hierarchy = new Mat();
         List<Point> ConsistP = new List<Point>();
         List<MatOfPoint> contours = new List<MatOfPoint>();
+        List<List<Point>> trianglePointList = new List<List<Point>>();
 
         Imgproc.findContours(DepthMat, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
         
@@ -382,22 +383,60 @@ public class Match : MonoBehaviour {
 
                 if (R0.area() > minAreaSize)
                 {
-                    ConsistP.Add(new Point(R0.x, R0.y));
-                    ConsistP.Add(new Point(R0.x + R0.width, R0.y + R0.height));
-                    ConsistP.Add(new Point(R0.x + R0.width, R0.y));
-                    ConsistP.Add(new Point(R0.x, R0.y + R0.height));
-                    clickRGB.Add(clickcolor(ColorMat, R0));
+                    //宣告放置點資料
+                    MatOfInt hullInt = new MatOfInt();
+                    List<Point> hullPointList = new List<Point>();
+                    MatOfPoint hullPointMat = new MatOfPoint();
+                    List<MatOfPoint> hullPoints = new List<MatOfPoint>();
+                    MatOfInt4 defects = new MatOfInt4();
+                    //篩選點資料
+                    MatOfPoint2f Temp2f = new MatOfPoint2f();
+                    //Convert contours(i) from MatOfPoint to MatOfPoint2f
+                    contours[index].convertTo(Temp2f, CvType.CV_32FC2);
+                    //Processing on mMOP2f1 which is in type MatOfPoint2f
+                    Imgproc.approxPolyDP(Temp2f, Temp2f, 30, true);
+                    //Convert back to MatOfPoint and put the new values back into the contours list
+                    Temp2f.convertTo(contours[index], CvType.CV_32S);
+
+                    //计算轮廓围绕的凸形壳
+                    Imgproc.convexHull(contours[index], hullInt);
+                    List<Point> pointMatList = contours[index].toList();
+                    List<int> hullIntList = hullInt.toList();
+                    Debug.Log(hullInt.toList().Count);
+                    for (int j = 0; j < hullInt.toList().Count; j++)
+                    {
+                        hullPointList.Add(pointMatList[hullIntList[j]]);
+                        hullPointMat.fromList(hullPointList);
+                        hullPoints.Add(hullPointMat);
+                    }
+                    if (hullInt.toList().Count == 3)
+                    {
+                        ConsistP.Add(new Point(R0.x, R0.y));
+                        ConsistP.Add(new Point(R0.x + R0.width, R0.y + R0.height));
+                        ConsistP.Add(new Point(R0.x + R0.width, R0.y));
+                        ConsistP.Add(new Point(R0.x, R0.y + R0.height));
+                        clickRGB.Add(clickcolor(ColorMat, R0));
+                        trianglePointList.Add(pointMatList);
+                    }
+                    //清空記憶體
+                    defects.Dispose();
+                    hullPointList.Clear();
+                    hullPointMat.Dispose();
+                    hullInt.Dispose();
+                    hullPoints.Clear();
+
+                    
                     //Debug.Log("ID = " +  index + " Color = " + clickcolor(ColorMat, R0));
                 }
             }
             //使用顏色找尋物體
-            _matchColorObjectList = setColorMatchObject(ConsistP, clickRGB, resultMat);
+            _matchColorObjectList = setColorMatchObject(ConsistP, trianglePointList, clickRGB, resultMat);
             setKeyPointMatchObject(ColorMat, ConsistP, _matchColorObjectList);
         }
         return resultMat;
     }
     //設定偵測物體參數
-    private List<MatchObject> setColorMatchObject(List<Point> ConsistP, List<Scalar> clickRGB,Mat resultMat)
+    private List<MatchObject> setColorMatchObject(List<Point> ConsistP, List<List<Point>> trianglePointList, List<Scalar> clickRGB,Mat resultMat)
     {
         List<MatchObject> matchObjectList = new List<MatchObject>();
         for (int i = 0; i < ConsistP.Count; i += 4)
@@ -425,11 +464,39 @@ public class Match : MonoBehaviour {
                 {
                     matchObject._rotation = -0.5f;
                 }
+                getTriangleRotate(trianglePointList[i/4], new Point(matchObject._pos.x, matchObject._pos.y));
                 matchObjectList.Add(matchObject);
             }
         }
         _matchColorObjectList.Clear();
         return matchObjectList;
+    }
+
+    //取得三角形旋轉角度(角度最小)
+    private void getTriangleRotate(List<Point> trianglePoints, Point centerPoint)
+    {
+        double lengthA = getLengthByTwoPoint(trianglePoints[0], trianglePoints[1]);
+        double lengthB = getLengthByTwoPoint(trianglePoints[1], trianglePoints[2]);
+        double lengthC = getLengthByTwoPoint(trianglePoints[2], trianglePoints[0]);
+        Debug.Log(trianglePoints[0]);
+        Debug.Log(trianglePoints[1]);
+        Debug.Log(trianglePoints[2]);
+        Debug.Log(centerPoint);
+        double CosA = (lengthC * lengthC + lengthB * lengthB - lengthA * lengthA) / (2 * lengthB * lengthC);
+        double CosB = (lengthC * lengthC + lengthA * lengthA - lengthB * lengthB) / (2 * lengthA * lengthC);
+        double CosC = (lengthA * lengthA + lengthB * lengthB - lengthC * lengthC) / (2 * lengthB * lengthA);
+        double angleA = Math.Acos(CosA) * (180 / Math.PI);
+        double angleB = Math.Acos(CosB) * (180 / Math.PI);
+        double angleC = Math.Acos(CosC) * (180 / Math.PI);
+        Debug.Log(angleA + angleB + angleC);
+    }
+
+    //兩點求邊函式
+    private double getLengthByTwoPoint(Point a, Point b)
+    {
+        double disX = Math.Abs(a.x - b.x);
+        double disY = Math.Abs(a.y - b.y);
+        return Math.Sqrt((disX * disX) + (disY * disY));
     }
 
     //侵蝕膨脹消除雜訊
