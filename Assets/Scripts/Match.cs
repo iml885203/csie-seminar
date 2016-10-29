@@ -473,7 +473,7 @@ public class Match : MonoBehaviour {
     }
 
     //取得三角形旋轉角度(角度最小)
-    private void getTriangleRotate(List<Point> trianglePoints, Point centerPoint)
+    private double getTriangleRotate(List<Point> trianglePoints, Point centerPoint)
     {
         trianglePoints = sortTrianglePoints(trianglePoints);
         double lengthA = getLengthByTwoPoint(trianglePoints[0], trianglePoints[1]);
@@ -483,13 +483,53 @@ public class Match : MonoBehaviour {
         //Debug.Log(trianglePoints[1]);
         //Debug.Log(trianglePoints[2]);
         Debug.Log(centerPoint);
-        double CosA = (lengthC * lengthC + lengthB * lengthB - lengthA * lengthA) / (2 * lengthB * lengthC);
-        double CosB = (lengthC * lengthC + lengthA * lengthA - lengthB * lengthB) / (2 * lengthA * lengthC);
-        double CosC = (lengthA * lengthA + lengthB * lengthB - lengthC * lengthC) / (2 * lengthB * lengthA);
-        double angleA = Math.Acos(CosA) * (180 / Math.PI);
-        double angleB = Math.Acos(CosB) * (180 / Math.PI);
-        double angleC = Math.Acos(CosC) * (180 / Math.PI);
-        Debug.Log(angleA +", "+ angleB+", " + angleC);
+        List<double> CosABC = new List<double>();
+        CosABC.Add((lengthC * lengthC + lengthB * lengthB - lengthA * lengthA) / (2 * lengthB * lengthC));
+        CosABC.Add((lengthC * lengthC + lengthA * lengthA - lengthB * lengthB) / (2 * lengthA * lengthC));
+        CosABC.Add((lengthA * lengthA + lengthB * lengthB - lengthC * lengthC) / (2 * lengthB * lengthA));
+        List<double> angles = new List<double>();
+        foreach(double cos in CosABC)
+        {
+            angles.Add(Math.Acos(cos) * (180 / Math.PI));
+        }
+
+        //抓出最小角度
+        int minIndex = 0;
+        for(int i = 0; i<angles.Count; i++)
+        {
+            if(angles[minIndex] > angles[i])
+            {
+                minIndex = i;
+            }
+        }
+        Debug.Log("minAngle: [" + minIndex + "]" + angles[minIndex] + " Point: " + trianglePoints[minIndex]);
+        double triangleRotate = getTriangleRotateByCoordinate(centerPoint, trianglePoints[minIndex]);
+        return triangleRotate;
+    }
+
+    private double getTriangleRotateByCoordinate(Point centerPoint, Point point)
+    {
+        double lengthX = Math.Abs(point.x - centerPoint.x);
+        double lengthY = Math.Abs(point.y - centerPoint.y);
+        double returnAngle = 0.0;
+        if(point.x > centerPoint.x && point.y > centerPoint.y)//第一象限
+        {
+            returnAngle = Math.Atan2(lengthX, lengthY);
+        }
+        else if (point.x < centerPoint.x && point.y > centerPoint.y)//第二象限
+        {
+            returnAngle = 0.5 - Math.Atan2(lengthX, lengthY);
+        }
+        else if (point.x < centerPoint.x && point.y < centerPoint.y)//第三象限
+        {
+            returnAngle = 0.5 + Math.Atan2(lengthX, lengthY);
+        }
+        else if (point.x > centerPoint.x && point.y < centerPoint.y)//第四象限
+        {
+            returnAngle = -Math.Atan2(lengthX, lengthY);
+        }
+        Debug.Log("returnAngle: " + returnAngle);
+        return returnAngle;
     }
 
     //以X軸由小到大排序
