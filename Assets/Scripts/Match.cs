@@ -475,12 +475,13 @@ public class Match : MonoBehaviour {
     //取得三角形旋轉角度(角度最小)
     private void getTriangleRotate(List<Point> trianglePoints, Point centerPoint)
     {
+        trianglePoints = sortTrianglePoints(trianglePoints);
         double lengthA = getLengthByTwoPoint(trianglePoints[0], trianglePoints[1]);
         double lengthB = getLengthByTwoPoint(trianglePoints[1], trianglePoints[2]);
         double lengthC = getLengthByTwoPoint(trianglePoints[2], trianglePoints[0]);
-        Debug.Log(trianglePoints[0]);
-        Debug.Log(trianglePoints[1]);
-        Debug.Log(trianglePoints[2]);
+        Debug.Log(trianglePoints[0]+ ", " + trianglePoints[1]+ ", " + trianglePoints[2]);
+        //Debug.Log(trianglePoints[1]);
+        //Debug.Log(trianglePoints[2]);
         Debug.Log(centerPoint);
         double CosA = (lengthC * lengthC + lengthB * lengthB - lengthA * lengthA) / (2 * lengthB * lengthC);
         double CosB = (lengthC * lengthC + lengthA * lengthA - lengthB * lengthB) / (2 * lengthA * lengthC);
@@ -488,7 +489,25 @@ public class Match : MonoBehaviour {
         double angleA = Math.Acos(CosA) * (180 / Math.PI);
         double angleB = Math.Acos(CosB) * (180 / Math.PI);
         double angleC = Math.Acos(CosC) * (180 / Math.PI);
-        Debug.Log(angleA + angleB + angleC);
+        Debug.Log(angleA +", "+ angleB+", " + angleC);
+    }
+
+    //以X軸由小到大排序
+    private List<Point> sortTrianglePoints(List<Point> trianglePoints)
+    {
+        for(int i=0; i <trianglePoints.Count; i++)
+        {
+            for (int j = i + 1; j < trianglePoints.Count; j++)
+            {
+                if(trianglePoints[i].x > trianglePoints[j].x)
+                {
+                    Point storePoint = trianglePoints[i];
+                    trianglePoints[i] = trianglePoints[j];
+                    trianglePoints[j] = storePoint;
+                }
+            }
+        }
+        return trianglePoints;
     }
 
     //兩點求邊函式
