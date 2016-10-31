@@ -99,9 +99,9 @@ public class Match : MonoBehaviour {
         Mat BlackMat = new Mat();
         Mat BlackDepthMat = new Mat();
 
+        //descriptorsORB_New(_ClolrMat, BlackMat, "MilkTeaTest");
         getContours(_ClolrMat, _DepthMat).copyTo(BlackMat);
         getDepthContours(_DepthMat, BlackDepthMat);
-        //descriptorsORB_New(_ClolrMat, BlackMat, "MilkTeaTest");
 
 
         //getContours(_DepthMat, BlackMat);
@@ -373,7 +373,6 @@ public class Match : MonoBehaviour {
         }
         double[] GetRGB = new double[10];
         float minAreaSize = _minDepthObjectSizePer * _drawBlock.MatchHeight * _drawBlock.MatchWidth;
-
         if (numObjects > 0)
         {
             for (int index = 0; index < numObjects; index++)
@@ -430,7 +429,6 @@ public class Match : MonoBehaviour {
             }
             //使用顏色找尋物體
             _matchColorObjectList = setColorMatchObject(ConsistP, trianglePointList, clickRGB, resultMat);
-            setKeyPointMatchObject(ColorMat, ConsistP, _matchColorObjectList);
         }
         return resultMat;
     }
@@ -668,9 +666,140 @@ public class Match : MonoBehaviour {
         }
         return false;
     }
+//============================================================
+//=================以下為沒有再使用的函式=====================
+//============================================================
 
-    //ORB特徵影像辨識方法
-    public bool descriptorsORB_New(Mat RGB, Mat cameraFeed, string targetName)
+    //找出特徵的顏色方法三(ORB特徵點比對)
+    public bool descriptorsORB(Mat RGB, Mat cameraFeed,string targetName)
+    {
+        if (RGB == null)
+        {
+            Debug.Log("RGB Mat is Null");
+            return false;
+        }
+        //將傳入的RGB存入Src
+        Mat SrcMat = new Mat();
+        RGB.copyTo(SrcMat);
+        //比對樣本載入
+        Texture2D imgTexture = Resources.Load(targetName) as Texture2D;
+        
+        //Texture2D轉Mat
+        Mat targetMat = new Mat(imgTexture.height, imgTexture.width, CvType.CV_8UC3);
+        Utils.texture2DToMat(imgTexture, targetMat);
+
+        //創建 ORB的特徵點裝置
+        FeatureDetector detector = FeatureDetector.create(FeatureDetector.ORB);
+        DescriptorExtractor extractor = DescriptorExtractor.create(DescriptorExtractor.ORB);
+
+        //產生存放特徵點Mat
+        MatOfKeyPoint keypointsTarget = new MatOfKeyPoint();
+        Mat descriptorsTarget = new Mat();
+        MatOfKeyPoint keypointsSrc = new MatOfKeyPoint();
+        Mat descriptorsSrc = new Mat();
+
+        //找特徵點圖Target
+        detector.detect(targetMat, keypointsTarget);
+        extractor.compute(targetMat, keypointsTarget, descriptorsTarget);
+
+        //找特徵點圖Src
+        detector.detect(SrcMat, keypointsSrc);
+        extractor.compute(SrcMat, keypointsSrc, descriptorsSrc);
+
+        //創建特徵點比對物件
+        DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMING);
+        MatOfDMatch matches = new MatOfDMatch();
+        //丟入兩影像的特徵點
+        matcher.match(descriptorsTarget, descriptorsSrc, matches);
+        Debug.Log("Target"  + keypointsTarget.rows());
+        Debug.Log("Src" + keypointsSrc.rows());
+        DMatch[] arrayDmatch = matches.toArray();
+
+        //做篩選
+        double max_dist = 0;
+        double min_dist = 100;
+        //-- Quick calculation of max and min distances between keypoints
+        double dist = new double();
+        for (int i = 0; i < matches.rows(); i++)
+        {
+            dist = arrayDmatch[i].distance;
+            if (dist < min_dist) min_dist = dist;
+            if (dist > max_dist) max_dist = dist;
+        }
+        Debug.Log("Max dist :" + max_dist);
+        Debug.Log("Min dist :" + min_dist);
+
+        List<DMatch> matchesGoodList = new List<DMatch>();
+        
+        MatOfDMatch matchesGood = new MatOfDMatch();
+        matchesGood.fromList(matchesGoodList);
+        
+        //Draw Keypoints
+        Features2d.drawKeypoints(SrcMat, keypointsSrc, SrcMat);
+
+        List<Point> pTarget = new List<Point>();
+        List<Point> pSrc = new List<Point>();
+
+        Debug.Log("MatchCount"+matchesGoodList.Count);
+        for (int i = 0; i < matchesGoodList.Count; i++)
+        {
+            pTarget.Add(new Point(keypointsTarget.toArray()[matchesGoodList[i].queryIdx].pt.x, keypointsTarget.toArray()[matchesGoodList[i].queryIdx].pt.y));
+            pSrc.Add(new Point(keypointsSrc.toArray()[matchesGoodList[i].trainIdx].pt.x, keypointsSrc.toArray()[matchesGoodList[i].trainIdx].pt.y));
+        }
+
+        MatOfPoint2f p2fTarget = new MatOfPoint2f(pTarget.ToArray());
+        MatOfPoint2f p2fSrc = new MatOfPoint2f(pSrc.ToArray());
+        if(p2fTarget.size().area() < 3 || p2fSrc.size().area() < 3)
+        {
+            Debug.Log("area too smell");
+            return false;
+        }
+        Mat matrixH = Calib3d.findHomography(p2fTarget, p2fSrc, Calib3d.RANSAC, 3);
+
+        List<Point> srcPointCorners = new List<Point>();
+        srcPointCorners.Add(new Point(0, 0));
+        srcPointCorners.Add(new Point(targetMat.width(), 0));
+        srcPointCorners.Add(new Point(targetMat.width(), targetMat.height()));
+        srcPointCorners.Add(new Point(0, targetMat.height()));
+        Mat originalRect = Converters.vector_Point2f_to_Mat(srcPointCorners);
+
+        List<Point> srcPointCornersEnd = new List<Point>();
+        srcPointCornersEnd.Add(new Point(0, targetMat.height()));
+        srcPointCornersEnd.Add(new Point(0, 0));
+        srcPointCornersEnd.Add(new Point(targetMat.width(), 0));
+        srcPointCornersEnd.Add(new Point(targetMat.width(), targetMat.height()));
+        Mat changeRect = Converters.vector_Point2f_to_Mat(srcPointCornersEnd);
+
+        Core.perspectiveTransform(originalRect, changeRect, matrixH);
+        List<Point> srcPointCornersSave = new List<Point>();
+
+        Converters.Mat_to_vector_Point(changeRect, srcPointCornersSave);
+
+        if ((srcPointCornersSave[2].x - srcPointCornersSave[0].x) < 5 || (srcPointCornersSave[2].y - srcPointCornersSave[0].y) < 5)
+        {
+            Debug.Log("Match Out Put image is to small");
+            SrcMat.copyTo(cameraFeed);
+            SrcMat.release();
+            Imgproc.putText(cameraFeed,targetName, srcPointCornersSave[0], 0, 1, new Scalar(255, 255, 255), 2);
+            return false;
+        }
+        //畫出框框
+        Imgproc.line(SrcMat, srcPointCornersSave[0], srcPointCornersSave[1], new Scalar(255, 0, 0), 3);
+        Imgproc.line(SrcMat, srcPointCornersSave[1], srcPointCornersSave[2], new Scalar(255, 0, 0), 3);
+        Imgproc.line(SrcMat, srcPointCornersSave[2], srcPointCornersSave[3], new Scalar(255, 0, 0), 3);
+        Imgproc.line(SrcMat, srcPointCornersSave[3], srcPointCornersSave[0], new Scalar(255, 0, 0), 3);
+        //畫中心
+        Point middlePoint = new Point((srcPointCornersSave[0].x + srcPointCornersSave[2].x) / 2, (srcPointCornersSave[0].y + srcPointCornersSave[2].y) / 2);
+        Imgproc.line(SrcMat,  middlePoint, middlePoint, new Scalar(0, 0, 255), 10);
+
+
+        SrcMat.copyTo(cameraFeed);
+        keypointsTarget.release();
+        targetMat.release();
+        SrcMat.release();
+        return true;
+    }
+    public bool descriptorsORB_New(Mat RGB, Mat cameraFeed, string targetName)//最新影像辨識方法
     {
         if (RGB == null)
         {
@@ -717,14 +846,44 @@ public class Match : MonoBehaviour {
         Features2d.drawKeypoints(SrcMat, keypointsSrc, SrcMat);
 
         //做輸出的轉換予宣告
-        Mat changeRect = TransissionHomography(matchesGoodList, keypointsTarget, keypointsSrc, imgMatTaget.height(), imgMatTaget.width());
 
+        List<Point> P1 = new List<Point>();
+        List<Point> pSrc = new List<Point>();
+        //顯示特徵點數量
+        //Debug.Log("MatchCount" + matchesGoodList.Count);
+        for (int i = 0; i < matchesGoodList.Count; i++)
+        {
+            P1.Add(new Point(keypointsTarget.toArray()[matchesGoodList[i].queryIdx].pt.x, keypointsTarget.toArray()[matchesGoodList[i].queryIdx].pt.y));
+            pSrc.Add(new Point(keypointsSrc.toArray()[matchesGoodList[i].trainIdx].pt.x, keypointsSrc.toArray()[matchesGoodList[i].trainIdx].pt.y));
+        }
+
+        MatOfPoint2f p2fTarget = new MatOfPoint2f(P1.ToArray());
+        MatOfPoint2f p2fSrc = new MatOfPoint2f(pSrc.ToArray());
+
+        Mat matrixH = Calib3d.findHomography(p2fTarget, p2fSrc, Calib3d.RANSAC, 3);
+        List<Point> srcPointCorners = new List<Point>();
+        srcPointCorners.Add(new Point(0, 0));
+        srcPointCorners.Add(new Point(imgMatTaget.width(), 0));
+        srcPointCorners.Add(new Point(imgMatTaget.width(), imgMatTaget.height()));
+        srcPointCorners.Add(new Point(0, imgMatTaget.height()));
+
+        Mat originalRect = Converters.vector_Point2f_to_Mat(srcPointCorners);
+        List<Point> srcPointCornersEnd = new List<Point>();
+        srcPointCornersEnd.Add(new Point(0, imgMatTaget.height()));
+        srcPointCornersEnd.Add(new Point(0, 0));
+        srcPointCornersEnd.Add(new Point(imgMatTaget.width(), 0));
+        srcPointCornersEnd.Add(new Point(imgMatTaget.width(), imgMatTaget.height()));
+
+        Mat changeRect = Converters.vector_Point2f_to_Mat(srcPointCornersEnd);
+
+        Core.perspectiveTransform(originalRect, changeRect, matrixH);
         List<Point> srcPointCornersSave = new List<Point>();
 
         Converters.Mat_to_vector_Point(changeRect, srcPointCornersSave);
 
         SrcMat.copyTo(cameraFeed);
 
+        //    Features2d.drawMatches(img1Mat, keypoints1, SrcMat, keypointsSrc, matchesGood, resultImg);
         Imgproc.line(cameraFeed, srcPointCornersSave[0], srcPointCornersSave[1], new Scalar(255, 0, 0), 3);
         Imgproc.line(cameraFeed, srcPointCornersSave[1], srcPointCornersSave[2], new Scalar(255, 0, 0), 3);
         Imgproc.line(cameraFeed, srcPointCornersSave[2], srcPointCornersSave[3], new Scalar(255, 0, 0), 3);
@@ -735,7 +894,7 @@ public class Match : MonoBehaviour {
         SrcMat.release();
         descriptorsTarget.release();
         descriptorsSrc.release();
-        changeRect.release();
+        matrixH.release();
         return true;
     }
 
@@ -757,8 +916,8 @@ public class Match : MonoBehaviour {
             if (dist < min_dist) min_dist = dist;
             if (dist > max_dist) max_dist = dist;
         }
-        //Debug.Log("Max dist :" + max_dist);
-        //Debug.Log("Min dist :" + min_dist);
+        Debug.Log("Max dist :" + max_dist);
+        Debug.Log("Min dist :" + min_dist);
 
         //只畫好的點
 
@@ -772,89 +931,5 @@ public class Match : MonoBehaviour {
             }
         }
         return matchesGoodList;
-    }
-
-    //做Homography轉換
-    public Mat TransissionHomography(List<DMatch> matchesGoodList, MatOfKeyPoint keypointsTarget, MatOfKeyPoint keypointsSrc,int height,int width)
-    {
-        List<Point> P1 = new List<Point>();
-        List<Point> pSrc = new List<Point>();
-
-        for (int i = 0; i < matchesGoodList.Count; i++)
-        {
-            P1.Add(new Point(keypointsTarget.toArray()[matchesGoodList[i].queryIdx].pt.x, keypointsTarget.toArray()[matchesGoodList[i].queryIdx].pt.y));
-            pSrc.Add(new Point(keypointsSrc.toArray()[matchesGoodList[i].trainIdx].pt.x, keypointsSrc.toArray()[matchesGoodList[i].trainIdx].pt.y));
-        }
-
-        MatOfPoint2f p2fTarget = new MatOfPoint2f(P1.ToArray());
-        MatOfPoint2f p2fSrc = new MatOfPoint2f(pSrc.ToArray());
-
-        Mat matrixH = Calib3d.findHomography(p2fTarget, p2fSrc, Calib3d.RANSAC, 3);
-        List<Point> srcPointCorners = new List<Point>();
-        srcPointCorners.Add(new Point(0, 0));
-        srcPointCorners.Add(new Point(width, 0));
-        srcPointCorners.Add(new Point(width, height));
-        srcPointCorners.Add(new Point(0, height));
-
-        Mat originalRect = Converters.vector_Point2f_to_Mat(srcPointCorners);
-        List<Point> srcPointCornersEnd = new List<Point>();
-        srcPointCornersEnd.Add(new Point(0, height));
-        srcPointCornersEnd.Add(new Point(0, 0));
-        srcPointCornersEnd.Add(new Point(width, 0));
-        srcPointCornersEnd.Add(new Point(width, height));
-
-        Mat changeRect = Converters.vector_Point2f_to_Mat(srcPointCornersEnd);
-
-        Core.perspectiveTransform(originalRect, changeRect, matrixH);
-        matrixH.release();
-        return changeRect;
-    }
-
-    //設定特徵物件
-    public void setKeyPointMatchObject(Mat src, List<Point> ConsistP, List<MatchObject> _matchColorObjectList)
-    {
-        Mat resultMat = new Mat();
-        for (int i = 0; i < ConsistP.Count; i += 4)
-        {
-            int ID = -1;
-            OpenCVForUnity.Rect R0 = new OpenCVForUnity.Rect(ConsistP[i], ConsistP[i + 1]);
-            if(descriptorsORB_New(src.submat(R0), resultMat, "MilkTeaTest"))
-            {
-                ID = 0;
-            }
-            for (int j = 0; j < _matchColorObjectList.Count; j++)
-            {
-                Point ResultsCenter = new Point(_matchColorObjectList[j]._pos.x, _matchColorObjectList[j]._pos.y);
-                //Debug.Log("i = " + i + "Match ResultsCenter = " + ResultsCenter + "P1 P2" + P1 + P2);
-                if (pointDistanceToFar(ConsistP[j], ConsistP[j+1], ResultsCenter))
-                {
-                    //Debug.Log(_matchColorObjectList[i]._id + "Use Depth");
-                    ID =  _matchColorObjectList[j]._id;
-                }
-            }
-            if (ID != -1)
-            {
-                List<Point> nowPoint = new List<Point>();
-                nowPoint.Add(ConsistP[i]);
-                nowPoint.Add(ConsistP[i + 1]);
-                nowPoint.Add(ConsistP[i + 2]);
-                nowPoint.Add(ConsistP[i + 3]);
-                Imgproc.rectangle(resultMat, ConsistP[i], ConsistP[i + 1], new Scalar(255, 0, 255), 1);
-                Imgproc.putText(resultMat, "ID=" + ID.ToString(), ConsistP[i], 1, 1, new Scalar(255, 0, 255), 1);
-                MatchObject matchObject = new MatchObject();
-                matchObject._pos = calculateCenter(nowPoint);
-                matchObject._scale = new Vector3(22, 22, 22);
-                matchObject._id = ID;
-                if (calculateCenter(nowPoint).x > resultMat.width() / 2)
-                {
-                    matchObject._rotation = 0.5f;
-                }
-                else
-                {
-                    matchObject._rotation = -0.5f;
-                }
-                _matchColorObjectList.Add(matchObject);
-            }
-        }
     }
 }
