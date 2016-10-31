@@ -101,7 +101,7 @@ public class Match : MonoBehaviour {
 
         getContours(_ClolrMat, _DepthMat).copyTo(BlackMat);
         getDepthContours(_DepthMat, BlackDepthMat);
-        descriptorsORB_New(_ClolrMat, BlackMat, "MilkTeaTest");
+        //descriptorsORB_New(_ClolrMat, BlackMat, "MilkTeaTest");
 
 
         //getContours(_DepthMat, BlackMat);
@@ -391,19 +391,19 @@ public class Match : MonoBehaviour {
                 }
             }
             //使用顏色找尋物體
-            _matchColorObjectList = setColorMatchObject(ColorMat, ConsistP, clickRGB, resultMat);
-            //setKeyPointMatchObject(ColorMat, ConsistP, _matchColorObjectList).copyTo(resultMat);
+            _matchColorObjectList = setColorMatchObject(ConsistP, clickRGB, resultMat);
+            setKeyPointMatchObject(ColorMat, ConsistP, _matchColorObjectList);
         }
         return resultMat;
     }
     //設定偵測物體參數
-    private List<MatchObject> setColorMatchObject(Mat src, List<Point> ConsistP, List<Scalar> clickRGB,Mat resultMat)
+    private List<MatchObject> setColorMatchObject(List<Point> ConsistP, List<Scalar> clickRGB,Mat resultMat)
     {
         List<MatchObject> matchObjectList = new List<MatchObject>();
         for (int i = 0; i < ConsistP.Count; i += 4)
         {
             int ID = inRange(ConsistP[i], ConsistP[i + 1], clickRGB[i / 4]);
-            OpenCVForUnity.Rect R0 = new OpenCVForUnity.Rect(ConsistP[i], ConsistP[i + 1]);
+
             if (ID != -1)
             {
                 List<Point> nowPoint = new List<Point>();
@@ -411,8 +411,8 @@ public class Match : MonoBehaviour {
                 nowPoint.Add(ConsistP[i + 1]);
                 nowPoint.Add(ConsistP[i + 2]);
                 nowPoint.Add(ConsistP[i + 3]);
-                //Imgproc.rectangle(resultMat, ConsistP[i], ConsistP[i + 1], new Scalar(255, 0, 255), 1);
-                //Imgproc.putText(resultMat, "ID=" + ID.ToString(), ConsistP[i], 1, 1, new Scalar(255, 0, 255), 1);
+                Imgproc.rectangle(resultMat, ConsistP[i], ConsistP[i + 1], new Scalar(255, 0, 255), 1);
+                Imgproc.putText(resultMat, "ID=" + ID.ToString(), ConsistP[i], 1, 1, new Scalar(255, 0, 255), 1);
                 MatchObject matchObject = new MatchObject();
                 matchObject._pos = calculateCenter(nowPoint);
                 matchObject._scale = new Vector3(22, 22, 22);
@@ -488,7 +488,7 @@ public class Match : MonoBehaviour {
                _srcColor[2] < (getrgb[2] + _clolrRange) &&
                _srcColor[2] > (getrgb[2] - _clolrRange) && false)
            {
-                //Debug.Log(i + "Use Color");
+                Debug.Log(i + "Use Color");
                 SensingResults[i].SetPoint(P1, P2);
                 return i;
            }
@@ -591,11 +591,6 @@ public class Match : MonoBehaviour {
 
         List<DMatch> matchesGoodList = GetGoodMatchList(descriptorsTarget, descriptorsSrc);
 
-
-            MatOfDMatch matches = new MatOfDMatch();
-            DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMINGLUT);
-            matcher.match(descriptorsTarget, descriptorsSrc, matches);
-            Features2d.drawMatches(SrcMat, keypointsSrc, imgMatTaget, keypointsTarget, matches, cameraFeed);
         if (matchesGoodList.Count < 1)
         {
             Debug.Log("No Match Good");
@@ -614,7 +609,7 @@ public class Match : MonoBehaviour {
 
         Converters.Mat_to_vector_Point(changeRect, srcPointCornersSave);
 
-        //SrcMat.copyTo(cameraFeed);
+        SrcMat.copyTo(cameraFeed);
 
         Imgproc.line(cameraFeed, srcPointCornersSave[0], srcPointCornersSave[1], new Scalar(255, 0, 0), 3);
         Imgproc.line(cameraFeed, srcPointCornersSave[1], srcPointCornersSave[2], new Scalar(255, 0, 0), 3);
@@ -657,7 +652,7 @@ public class Match : MonoBehaviour {
 
         for (int i = 0; i < matches.rows(); i++)
         {
-            if (arrayDmatch[i].distance <  (max_dist * 0.6))
+            if (arrayDmatch[i].distance < 1 * (min_dist + max_dist) / 2)
             {
                 matchesGoodList.Add(arrayDmatch[i]);
             }
@@ -702,7 +697,7 @@ public class Match : MonoBehaviour {
     }
 
     //設定特徵物件
-    public Mat setKeyPointMatchObject(Mat src, List<Point> ConsistP, List<MatchObject> _matchColorObjectList)
+    public void setKeyPointMatchObject(Mat src, List<Point> ConsistP, List<MatchObject> _matchColorObjectList)
     {
         Mat resultMat = new Mat();
         for (int i = 0; i < ConsistP.Count; i += 4)
@@ -713,17 +708,14 @@ public class Match : MonoBehaviour {
             {
                 ID = 0;
             }
-            else
+            for (int j = 0; j < _matchColorObjectList.Count; j++)
             {
-                for (int j = 0; j < _matchColorObjectList.Count; j++)
+                Point ResultsCenter = new Point(_matchColorObjectList[j]._pos.x, _matchColorObjectList[j]._pos.y);
+                //Debug.Log("i = " + i + "Match ResultsCenter = " + ResultsCenter + "P1 P2" + P1 + P2);
+                if (pointDistanceToFar(ConsistP[j], ConsistP[j+1], ResultsCenter))
                 {
-                    Point ResultsCenter = new Point(_matchColorObjectList[j]._pos.x, _matchColorObjectList[j]._pos.y);
-                    //Debug.Log("i = " + i + "Match ResultsCenter = " + ResultsCenter + "P1 P2" + P1 + P2);
-                    if (pointDistanceToFar(ConsistP[j], ConsistP[j + 1], ResultsCenter))
-                    {
-                        //Debug.Log(_matchColorObjectList[i]._id + "Use Depth");
-                        ID = _matchColorObjectList[j]._id;
-                    }
+                    //Debug.Log(_matchColorObjectList[i]._id + "Use Depth");
+                    ID =  _matchColorObjectList[j]._id;
                 }
             }
             if (ID != -1)
@@ -750,6 +742,5 @@ public class Match : MonoBehaviour {
                 _matchColorObjectList.Add(matchObject);
             }
         }
-        return resultMat;
     }
 }
