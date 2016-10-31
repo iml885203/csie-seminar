@@ -402,7 +402,6 @@ public class Match : MonoBehaviour {
                     Imgproc.convexHull(contours[index], hullInt);
                     List<Point> pointMatList = contours[index].toList();
                     List<int> hullIntList = hullInt.toList();
-                    Debug.Log(hullInt.toList().Count);
                     for (int j = 0; j < hullInt.toList().Count; j++)
                     {
                         hullPointList.Add(pointMatList[hullIntList[j]]);
@@ -456,15 +455,7 @@ public class Match : MonoBehaviour {
                 matchObject._pos = calculateCenter(nowPoint);
                 matchObject._scale = new Vector3(22, 22, 22);
                 matchObject._id = ID;
-                if (calculateCenter(nowPoint).x > resultMat.width() / 2)
-                {
-                    matchObject._rotation = 0.5f;
-                }
-                else
-                {
-                    matchObject._rotation = -0.5f;
-                }
-                getTriangleRotate(trianglePointList[i/4], new Point(matchObject._pos.x, matchObject._pos.y));
+                matchObject._rotation = (float)(getTriangleRotate(trianglePointList[i / 4], new Point(matchObject._pos.x, matchObject._pos.y)) * 180 / Math.PI);
                 matchObjectList.Add(matchObject);
             }
         }
@@ -475,25 +466,23 @@ public class Match : MonoBehaviour {
     //取得三角形旋轉角度(角度最小)
     private double getTriangleRotate(List<Point> trianglePoints, Point centerPoint)
     {
+        //排序三點
         trianglePoints = sortTrianglePoints(trianglePoints);
+        //取得三邊長度
         double lengthA = getLengthByTwoPoint(trianglePoints[0], trianglePoints[1]);
         double lengthB = getLengthByTwoPoint(trianglePoints[1], trianglePoints[2]);
         double lengthC = getLengthByTwoPoint(trianglePoints[2], trianglePoints[0]);
-        Debug.Log(trianglePoints[0]+ ", " + trianglePoints[1]+ ", " + trianglePoints[2]);
-        //Debug.Log(trianglePoints[1]);
-        //Debug.Log(trianglePoints[2]);
-        Debug.Log(centerPoint);
+        //計算三點角度
         List<double> CosABC = new List<double>();
-        CosABC.Add((lengthC * lengthC + lengthB * lengthB - lengthA * lengthA) / (2 * lengthB * lengthC));
         CosABC.Add((lengthC * lengthC + lengthA * lengthA - lengthB * lengthB) / (2 * lengthA * lengthC));
         CosABC.Add((lengthA * lengthA + lengthB * lengthB - lengthC * lengthC) / (2 * lengthB * lengthA));
+        CosABC.Add((lengthC * lengthC + lengthB * lengthB - lengthA * lengthA) / (2 * lengthB * lengthC));
         List<double> angles = new List<double>();
         foreach(double cos in CosABC)
         {
             angles.Add(Math.Acos(cos) * (180 / Math.PI));
         }
-
-        //抓出最小角度
+        //抓出最小角度的點
         int minIndex = 0;
         for(int i = 0; i<angles.Count; i++)
         {
@@ -502,11 +491,11 @@ public class Match : MonoBehaviour {
                 minIndex = i;
             }
         }
-        Debug.Log("minAngle: [" + minIndex + "]" + angles[minIndex] + " Point: " + trianglePoints[minIndex]);
-        double triangleRotate = getTriangleRotateByCoordinate(centerPoint, trianglePoints[minIndex]);
-        return triangleRotate;
+        //透過象限分別計算角度
+        return getTriangleRotateByCoordinate(centerPoint, trianglePoints[minIndex]);
     }
 
+    //透過象限分別計算角度
     private double getTriangleRotateByCoordinate(Point centerPoint, Point point)
     {
         double lengthX = Math.Abs(point.x - centerPoint.x);
@@ -514,21 +503,20 @@ public class Match : MonoBehaviour {
         double returnAngle = 0.0;
         if(point.x > centerPoint.x && point.y > centerPoint.y)//第一象限
         {
-            returnAngle = Math.Atan2(lengthX, lengthY);
+            returnAngle = Math.Atan2(lengthY, lengthX);
         }
         else if (point.x < centerPoint.x && point.y > centerPoint.y)//第二象限
         {
-            returnAngle = 0.5 - Math.Atan2(lengthX, lengthY);
+            returnAngle = Math.PI - Math.Atan2(lengthY, lengthX);
         }
         else if (point.x < centerPoint.x && point.y < centerPoint.y)//第三象限
         {
-            returnAngle = 0.5 + Math.Atan2(lengthX, lengthY);
+            returnAngle = Math.PI + Math.Atan2(lengthY, lengthX);
         }
         else if (point.x > centerPoint.x && point.y < centerPoint.y)//第四象限
         {
-            returnAngle = -Math.Atan2(lengthX, lengthY);
+            returnAngle = 2 * Math.PI - Math.Atan2(lengthY, lengthX);
         }
-        Debug.Log("returnAngle: " + returnAngle);
         return returnAngle;
     }
 

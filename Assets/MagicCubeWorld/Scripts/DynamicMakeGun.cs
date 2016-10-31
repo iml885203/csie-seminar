@@ -95,7 +95,7 @@ public class DynamicMakeGun : MonoBehaviour
         //轉換對應大小並更新值
         childGameObject.transform.localScale = Vector3.Lerp(childGameObject.transform.localScale, new Vector3(matchObject._scale.x, matchObject._scale.y, 22), speed);
         //更新旋轉角度
-        Object.transform.eulerAngles = new Vector3(0, 0, (float)((matchObject._rotation + .5f) * 180));
+        Object.transform.eulerAngles = new Vector3(0, 0, (float)matchObject._rotation);
         return;
     }
     public void CreateObject(MatchObject matchObject)
