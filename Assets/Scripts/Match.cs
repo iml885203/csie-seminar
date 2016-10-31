@@ -46,6 +46,7 @@ public class Match : MonoBehaviour {
 
     private GameStateIndex _gmaeStatusManager;
 
+
     //偵測到的Object
     public List<MatchObject> _matchObjectList { get; set; } 
     public List<MatchObject> _matchColorObjectList { get; set; }
@@ -255,7 +256,7 @@ public class Match : MonoBehaviour {
     //求物體中心點
     public Vector3 calculateCenter(List<Point> point)
     {
-        Vector3 totalPos = new Vector3(0,0,0); ;
+        Vector3 totalPos = new Vector3(0,0,0);
         for(int i = 0; i < 4; i++)
         {
             totalPos.x += (float)point[i].x;
@@ -449,6 +450,8 @@ public class Match : MonoBehaviour {
                 Imgproc.putText(resultMat, "ID=" + ID.ToString(), ConsistP[i], 1, 1, new Scalar(255, 0, 255), 1);
                 MatchObject matchObject = new MatchObject();
                 matchObject._pos = calculateCenter(nowPoint);
+                //matchObject._pos = getTriangleCenter(trianglePointList[i / 4]);
+                //Debug.Log("center: "+ matchObject._pos);
                 matchObject._scale = new Vector3(22, 22, 22);
                 matchObject._id = ID;
                 matchObject._rotation = (float)(getTriangleRotate(trianglePointList[i / 4], new Point(matchObject._pos.x, matchObject._pos.y)) * 180 / Math.PI);
@@ -457,6 +460,22 @@ public class Match : MonoBehaviour {
         }
         _matchColorObjectList.Clear();
         return matchObjectList;
+    }
+
+    private Vector3 getTriangleCenter(List<Point> trianglePoints)
+    {
+        //排序三點
+        trianglePoints = sortTrianglePoints(trianglePoints);
+        //取得三邊長度
+        double lengthA = getLengthByTwoPoint(trianglePoints[0], trianglePoints[1]);
+        double lengthB = getLengthByTwoPoint(trianglePoints[1], trianglePoints[2]);
+        double lengthC = getLengthByTwoPoint(trianglePoints[2], trianglePoints[0]);
+        float centerX = (float)((lengthB * trianglePoints[0].x + lengthC * trianglePoints[1].x + lengthA * trianglePoints[2].x) / (lengthA + lengthB + lengthC));
+        float centerY = (float)((lengthB * trianglePoints[0].y + lengthC * trianglePoints[1].y + lengthA * trianglePoints[2].y) / (lengthA + lengthB + lengthC));
+        Debug.Log(trianglePoints[0] + ", " + trianglePoints[1] + ", " + trianglePoints[2]);
+        Debug.Log(lengthA + ", " + lengthB + ", " + lengthC);
+        Debug.Log(centerX + ", " + centerY);
+        return new Vector3(centerX, centerY, -30);
     }
 
     //取得三角形旋轉角度(角度最小)
@@ -648,7 +667,9 @@ public class Match : MonoBehaviour {
             Debug.Log((isSave) ? "isSave Set True" : "isSave Set false");
             if (isSave)
             {
+                
                 SensingResults.Clear();
+                _matchColorObjectList.Clear();
             }
         }
     }
