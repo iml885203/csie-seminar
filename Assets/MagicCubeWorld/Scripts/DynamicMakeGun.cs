@@ -77,6 +77,18 @@ public class DynamicMakeGun : MonoBehaviour
     public void UpdatePos(GameObject Object, float speed, MatchObject matchObject)
     {
         RectTransform childGameObjectRect = Object.GetComponent<RectTransform>();
+        //判斷哪一方的炮台
+        if (matchObject._pos.x > _drawBlock.MatchWidth / 2)
+        {
+            Debug.Log("gun right");
+            childGameObjectRect.FindChild("Gun").FindChild("LaserBall").GetComponent<LaserBall>().setWhichPlayerBall("right");
+        }
+        else
+        {
+            Debug.Log("gun left");
+            childGameObjectRect.FindChild("Gun").FindChild("LaserBall").GetComponent<LaserBall>().setWhichPlayerBall("left");
+        }
+
         //轉換對應座標並更新值
         Point transPos = _posTrans.TransToScreen2Pos(new Point(matchObject._pos.x, matchObject._pos.y));
         int posX = (int)childGameObjectRect.anchoredPosition.x, posY = (int)childGameObjectRect.anchoredPosition.y;

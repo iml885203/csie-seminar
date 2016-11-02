@@ -14,6 +14,8 @@ public class LaserBall : MonoBehaviour {
 
     Vector3 _windForce;
 
+    private string _whichPlayerBall = "";
+
     // Use this for initialization
     void Start ()
     {
@@ -139,6 +141,52 @@ public class LaserBall : MonoBehaviour {
             if(other.GetComponent<TransmissionObject>().CanMoveToAnotherSidePortal())
                 this.transform.position = other.GetComponent<TransmissionObject>().ReturnAnotherSidePortalPosition();
         }
+
+        //吃到nuff道具
+        if(other.gameObject.tag == "buffObject")
+        {
+            Debug.Log("上buff");
+            Transform TargetFightObjects = transform.root.Find("/GameLevelObjects/InLevelObjects/TargetFightObjects(Clone)");
+            if (_whichPlayerBall == "right")
+            {
+                playerCube targetObjectRight = TargetFightObjects.FindChild("targetObjectRight").transform.GetComponent<playerCube>();
+                if(targetObjectRight.PlayerBuffNerf == 0)
+                {
+                    targetObjectRight.setPlayerBuff();
+                }
+            }
+            else if (_whichPlayerBall == "left")
+            {
+                playerCube targetObjectLeft = TargetFightObjects.FindChild("targetObjectLeft").transform.GetComponent<playerCube>();
+                if (targetObjectLeft.PlayerBuffNerf == 0)
+                {
+                    targetObjectLeft.setPlayerBuff();
+                }
+            }
+        }
+
+        //吃到nerf道具
+        if (other.gameObject.tag == "nerfObject")
+        {
+            Debug.Log("上nerf");
+            Transform TargetFightObjects = transform.root.Find("/GameLevelObjects/InLevelObjects/TargetFightObjects(Clone)");
+            if (_whichPlayerBall == "right")
+            {
+                playerCube targetObjectRight = TargetFightObjects.FindChild("targetObjectRight").transform.GetComponent<playerCube>();
+                if (targetObjectRight.PlayerBuffNerf == 0)
+                {
+                    targetObjectRight.setPlayerNerf();
+                }
+            }
+            else if (_whichPlayerBall == "left")
+            {
+                playerCube targetObjectLeft = TargetFightObjects.FindChild("targetObjectLeft").transform.GetComponent<playerCube>();
+                if (targetObjectLeft.PlayerBuffNerf == 0)
+                {
+                    targetObjectLeft.setPlayerNerf();
+                }
+            }
+        }
     }
 
     void OnCollisionEnter(Collision other)
@@ -154,7 +202,7 @@ public class LaserBall : MonoBehaviour {
         }
         else if(other.gameObject.tag == "ReflectionObject") //碰撞反射物體
         {
-            _reflectCount++;
+            //_reflectCount++;
             //Debug.Log("_reflectCount = " + _reflectCount + ", nowPosition = " + nowPosition + "."); 
         }
         else if(other.gameObject.tag == "DestoryObject")
@@ -190,5 +238,10 @@ public class LaserBall : MonoBehaviour {
     {
         verticalVector1 = new Vector3(0f - originVector.y, originVector.x, originVector.z);
         verticalVector2 = new Vector3(originVector.y, 0f - originVector.x, originVector.z);
+    }
+
+    public void setWhichPlayerBall(string whichPlayer)
+    {
+        _whichPlayerBall = whichPlayer;
     }
 }

@@ -14,10 +14,17 @@ public class playerCube : MonoBehaviour {
     public int Life { get; set; }
 
     public EffectSound _effectSound;
+    //玩家nuff nerf狀態 0=沒狀態 1=buff -1=nerf
+    public int PlayerBuffNerf { get; set; }
+    private float _timer = 0f;
+    private const int _buffNerfTime = 30;
+    private Vector3 _oldScale;
 
     // Use this for initialization
     void Start () {
         Life = LIFE_MAX;
+        PlayerBuffNerf = 0;
+        setPlayerBuff();
     }
 	void Awake()
     {
@@ -29,7 +36,17 @@ public class playerCube : MonoBehaviour {
         {
             ReSetPlayer();
         }
-
+        //玩家有狀態開始計時
+        if(PlayerBuffNerf != 0)
+        {
+            _timer += Time.deltaTime;
+            if(_timer >= _buffNerfTime)
+            {
+                _timer = 0f;
+                PlayerBuffNerf = 0;
+                transform.localScale = _oldScale;
+            }
+        }
     }
     public void IsHit(int damage)
     {
@@ -78,5 +95,21 @@ public class playerCube : MonoBehaviour {
             _WinLoseImage.GetComponent<Image>().sprite = spr;
             IsWinLoseImageDown = false;
         }
+    }
+
+    //上buff狀態
+    public void setPlayerBuff()
+    {
+        _oldScale = transform.localScale;
+        transform.localScale = new Vector3(transform.localScale.x * 2, transform.localScale.y * 2, transform.localScale.z);
+        PlayerBuffNerf = 1;
+    }
+
+    //上nerf狀態
+    public void setPlayerNerf()
+    {
+        _oldScale = transform.localScale;
+        transform.localScale = new Vector3(transform.localScale.x * .75f, transform.localScale.y * .75f, transform.localScale.z);
+        PlayerBuffNerf = -1;
     }
 }
