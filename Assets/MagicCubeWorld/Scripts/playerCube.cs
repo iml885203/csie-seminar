@@ -100,7 +100,7 @@ public class playerCube : MonoBehaviour {
     public void setPlayerBuff()
     {
         _oldScale = transform.localScale;
-        transform.localScale = new Vector3(transform.localScale.x * 2, transform.localScale.y * 2, transform.localScale.z);
+        transform.localScale = new Vector3(transform.localScale.x * .5f, transform.localScale.y * .5f, transform.localScale.z);
         _timer = 0f;
         PlayerBuffNerf = 1;
     }
@@ -109,7 +109,7 @@ public class playerCube : MonoBehaviour {
     public void setPlayerNerf()
     {
         _oldScale = transform.localScale;
-        transform.localScale = new Vector3(transform.localScale.x * .5f, transform.localScale.y * .5f, transform.localScale.z);
+        transform.localScale = new Vector3(transform.localScale.x * 2f, transform.localScale.y * 2f, transform.localScale.z);
         _timer = 0f;
         PlayerBuffNerf = -1;
     }
