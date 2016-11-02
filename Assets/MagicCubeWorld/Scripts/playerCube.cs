@@ -17,14 +17,13 @@ public class playerCube : MonoBehaviour {
     //玩家nuff nerf狀態 0=沒狀態 1=buff -1=nerf
     public int PlayerBuffNerf { get; set; }
     private float _timer = 0f;
-    private const int _buffNerfTime = 30;
+    private const int _buffNerfTime = 5;
     private Vector3 _oldScale;
 
     // Use this for initialization
     void Start () {
         Life = LIFE_MAX;
         PlayerBuffNerf = 0;
-        setPlayerBuff();
     }
 	void Awake()
     {
@@ -102,6 +101,7 @@ public class playerCube : MonoBehaviour {
     {
         _oldScale = transform.localScale;
         transform.localScale = new Vector3(transform.localScale.x * 2, transform.localScale.y * 2, transform.localScale.z);
+        _timer = 0f;
         PlayerBuffNerf = 1;
     }
 
@@ -110,6 +110,14 @@ public class playerCube : MonoBehaviour {
     {
         _oldScale = transform.localScale;
         transform.localScale = new Vector3(transform.localScale.x * .75f, transform.localScale.y * .75f, transform.localScale.z);
+        _timer = 0f;
         PlayerBuffNerf = -1;
+    }
+    
+    //清除狀態
+    public void clearPlaterBuffNerf()
+    {
+        transform.localScale = _oldScale;
+        PlayerBuffNerf = 0;
     }
 }

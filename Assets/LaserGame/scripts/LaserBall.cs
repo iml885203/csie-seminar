@@ -14,7 +14,7 @@ public class LaserBall : MonoBehaviour {
 
     Vector3 _windForce;
 
-    private string _whichPlayerBall = "";
+    public string _whichPlayerBall = "";
 
     // Use this for initialization
     void Start ()
@@ -145,34 +145,47 @@ public class LaserBall : MonoBehaviour {
         //吃到nuff道具
         if(other.gameObject.tag == "buffObject")
         {
-            Debug.Log("上buff");
             Transform TargetFightObjects = transform.root.Find("/GameLevelObjects/InLevelObjects/TargetFightObjects(Clone)");
             if (_whichPlayerBall == "right")
             {
-                playerCube targetObjectRight = TargetFightObjects.FindChild("targetObjectRight").transform.GetComponent<playerCube>();
-                if(targetObjectRight.PlayerBuffNerf == 0)
+                playerCube targetObjectRight = TargetFightObjects.FindChild("targetObjectLeft").transform.GetComponent<playerCube>();
+                Debug.Log(targetObjectRight);
+                if (targetObjectRight.PlayerBuffNerf == -1)//有nerf則清除再蓋過去
+                {
+                    targetObjectRight.clearPlaterBuffNerf();
+                }
+                if (targetObjectRight.PlayerBuffNerf == 0)
                 {
                     targetObjectRight.setPlayerBuff();
                 }
             }
             else if (_whichPlayerBall == "left")
             {
-                playerCube targetObjectLeft = TargetFightObjects.FindChild("targetObjectLeft").transform.GetComponent<playerCube>();
+                playerCube targetObjectLeft = TargetFightObjects.FindChild("targetObjectRight").transform.GetComponent<playerCube>();
+                if (targetObjectLeft.PlayerBuffNerf == -1)//有nerf則清除再蓋過去
+                {
+                    targetObjectLeft.clearPlaterBuffNerf();
+                }
                 if (targetObjectLeft.PlayerBuffNerf == 0)
                 {
                     targetObjectLeft.setPlayerBuff();
                 }
             }
+            Destroy(other.gameObject);
         }
 
         //吃到nerf道具
         if (other.gameObject.tag == "nerfObject")
         {
-            Debug.Log("上nerf");
             Transform TargetFightObjects = transform.root.Find("/GameLevelObjects/InLevelObjects/TargetFightObjects(Clone)");
             if (_whichPlayerBall == "right")
             {
-                playerCube targetObjectRight = TargetFightObjects.FindChild("targetObjectRight").transform.GetComponent<playerCube>();
+                playerCube targetObjectRight = TargetFightObjects.FindChild("targetObjectLeft").transform.GetComponent<playerCube>();
+                
+                if (targetObjectRight.PlayerBuffNerf == 1)//有buff則清除再蓋過去
+                {
+                    targetObjectRight.clearPlaterBuffNerf();
+                }
                 if (targetObjectRight.PlayerBuffNerf == 0)
                 {
                     targetObjectRight.setPlayerNerf();
@@ -180,12 +193,17 @@ public class LaserBall : MonoBehaviour {
             }
             else if (_whichPlayerBall == "left")
             {
-                playerCube targetObjectLeft = TargetFightObjects.FindChild("targetObjectLeft").transform.GetComponent<playerCube>();
+                playerCube targetObjectLeft = TargetFightObjects.FindChild("targetObjectRight").transform.GetComponent<playerCube>();
+                if (targetObjectLeft.PlayerBuffNerf == 1)//有buff則清除再蓋過去
+                {
+                    targetObjectLeft.clearPlaterBuffNerf();
+                }
                 if (targetObjectLeft.PlayerBuffNerf == 0)
                 {
                     targetObjectLeft.setPlayerNerf();
                 }
             }
+            Destroy(other.gameObject);
         }
     }
 

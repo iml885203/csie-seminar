@@ -22,6 +22,10 @@ TagManager:
   - laserBall
   - targetObject
   - TargetObjectFight
+  - wall
+  - reflectionObject
+  - buffObject
+  - nerfObject
   layers:
   - Default
   - TransparentFX

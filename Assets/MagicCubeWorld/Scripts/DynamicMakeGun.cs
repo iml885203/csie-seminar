@@ -43,6 +43,7 @@ public class DynamicMakeGun : MonoBehaviour
                 NewLMatchObjectList.Add(_DataMatch._matchColorObjectList[i]);
             }
         }
+        Debug.Log(MatchObjectCount);
         if (superGameObject.transform.childCount < MatchObjectCount && _drawBlock._ScreenSettingCompletionFlag)
         {
             //確認已開啟攝影機
@@ -78,15 +79,20 @@ public class DynamicMakeGun : MonoBehaviour
     {
         RectTransform childGameObjectRect = Object.GetComponent<RectTransform>();
         //判斷哪一方的炮台
+        Transform laserBall = childGameObjectRect.Find("Gun/LaserBall");
         if (matchObject._pos.x > _drawBlock.MatchWidth / 2)
         {
-            Debug.Log("gun right");
-            childGameObjectRect.FindChild("Gun").FindChild("LaserBall").GetComponent<LaserBall>().setWhichPlayerBall("right");
+            if(laserBall != null)
+            {
+                laserBall.GetComponent<LaserBall>().setWhichPlayerBall("right");
+            }
         }
         else
         {
-            Debug.Log("gun left");
-            childGameObjectRect.FindChild("Gun").FindChild("LaserBall").GetComponent<LaserBall>().setWhichPlayerBall("left");
+            if (laserBall != null)
+            {
+                laserBall.GetComponent<LaserBall>().setWhichPlayerBall("left");
+            }
         }
 
         //轉換對應座標並更新值
@@ -94,12 +100,13 @@ public class DynamicMakeGun : MonoBehaviour
         int posX = (int)childGameObjectRect.anchoredPosition.x, posY = (int)childGameObjectRect.anchoredPosition.y;
         int moveRangeWidth = (int)(_Width * 0.1), moveRangeHeight = (int)(_Height * 0.1);
 
-        if ((posX + moveRangeWidth < (int)transPos.x) && (posX - moveRangeWidth > (int)transPos.x) ||
-            (posY + moveRangeHeight < (int)transPos.y) && (posY - moveRangeHeight > (int)transPos.y))
+        if (((posX + moveRangeWidth < (int)transPos.x) && (posX - moveRangeWidth > (int)transPos.x) ||
+            (posY + moveRangeHeight < (int)transPos.y) && (posY - moveRangeHeight > (int)transPos.y)) ||
+            ((Object.transform.eulerAngles.z + 5 < matchObject._rotation) && (Object.transform.eulerAngles.z - 5 < matchObject._rotation)))
         {
-            if (Object.transform.Find("Gun").Find("LaserBall(Clone)") != null)
+            if (Object.transform.Find("Gun/LaserBall(Clone)") != null)
             {
-                Destroy(Object.transform.Find("Gun").FindChild("LaserBall(Clone)").gameObject);
+                Destroy(Object.transform.Find("Gun/LaserBall(Clone)").gameObject);
             }
         }
         childGameObjectRect.anchoredPosition = Vector3.Lerp(childGameObjectRect.anchoredPosition, new Vector2((float)transPos.x, (float)transPos.y), speed);
@@ -107,7 +114,7 @@ public class DynamicMakeGun : MonoBehaviour
         //轉換對應大小並更新值
         childGameObject.transform.localScale = Vector3.Lerp(childGameObject.transform.localScale, new Vector3(matchObject._scale.x, matchObject._scale.y, 22), speed);
         //更新旋轉角度
-        Object.transform.eulerAngles = new Vector3(0, 0, (float)matchObject._rotation);
+        Object.transform.eulerAngles = new Vector3(0, 0, matchObject._rotation);
         return;
     }
     public void CreateObject(MatchObject matchObject)
