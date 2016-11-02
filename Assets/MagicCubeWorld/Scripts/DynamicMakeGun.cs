@@ -44,7 +44,6 @@ public class DynamicMakeGun : MonoBehaviour
                 NewLMatchObjectList.Add(_DataMatch._matchColorObjectList[i]);
             }
         }
-        Debug.Log(MatchObjectCount);
         if (superGameObject.transform.childCount < MatchObjectCount && _drawBlock._ScreenSettingCompletionFlag)
         {
             //確認已開啟攝影機

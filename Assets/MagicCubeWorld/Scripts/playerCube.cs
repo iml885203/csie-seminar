@@ -17,7 +17,7 @@ public class playerCube : MonoBehaviour {
     //玩家nuff nerf狀態 0=沒狀態 1=buff -1=nerf
     public int PlayerBuffNerf { get; set; }
     private float _timer = 0f;
-    private const int _buffNerfTime = 5;
+    private const int _buffNerfTime = 10;
     private Vector3 _oldScale;
 
     // Use this for initialization
@@ -109,7 +109,7 @@ public class playerCube : MonoBehaviour {
     public void setPlayerNerf()
     {
         _oldScale = transform.localScale;
-        transform.localScale = new Vector3(transform.localScale.x * .75f, transform.localScale.y * .75f, transform.localScale.z);
+        transform.localScale = new Vector3(transform.localScale.x * .5f, transform.localScale.y * .5f, transform.localScale.z);
         _timer = 0f;
         PlayerBuffNerf = -1;
     }

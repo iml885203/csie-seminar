@@ -64,4 +64,9 @@ public class BuffNerfGenerator : MonoBehaviour {
             CreateBuffNerfObject(--repeatTime);
         }
     }
+
+    internal void ClearTimer()
+    {
+        _timer = 0f;
+    }
 }

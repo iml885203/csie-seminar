@@ -171,6 +171,7 @@ public class LaserBall : MonoBehaviour {
                     targetObjectLeft.setPlayerBuff();
                 }
             }
+            other.gameObject.transform.parent.GetComponent<BuffNerfGenerator>().ClearTimer();
             Destroy(other.gameObject);
         }
 
@@ -203,6 +204,7 @@ public class LaserBall : MonoBehaviour {
                     targetObjectLeft.setPlayerNerf();
                 }
             }
+            other.gameObject.transform.parent.GetComponent<BuffNerfGenerator>().ClearTimer();
             Destroy(other.gameObject);
         }
     }
