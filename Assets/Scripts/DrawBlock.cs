@@ -138,6 +138,24 @@ public class DrawBlock : MonoBehaviour {
         _minX = 0; _maxX = 0; _minY = 0; _maxY = 0;
         //設定影像改變旗標
         _DepthImageChangeFlag = true;
+        
+        //try
+        //{
+        //    System.IO.StreamReader fileData = new System.IO.StreamReader("DrawBlockData.txt", System.Text.Encoding.Default);
+        //    _pointOne.x = double.Parse(fileData.ReadLine());
+        //    _pointOne.y = double.Parse(fileData.ReadLine());
+        //    _pointTwo.x = double.Parse(fileData.ReadLine());
+        //    _pointTwo.y = double.Parse(fileData.ReadLine());
+        //    fileData.Close();
+        //    //_ScreenSettingCompletionFlag = false;
+        //    isInput = !isInput;
+        //    pointUp();
+        //}
+        //catch 
+        //{
+        //    Debug.Log("Drawblock File error");
+        //}
+        
     }
 	
 	// Update is called once per frame
@@ -237,6 +255,9 @@ public class DrawBlock : MonoBehaviour {
         _revertMaxY = (_sourceMatDepth.height() - _minY);
         MatchWidth = _maxX - _minX;
         MatchHeight = _maxY - _minY;
+        //儲存圈選範圍
+        string saveDataString = _pointOne.x + "\r\n" + _pointOne.y + "\r\n" + _pointTwo.x + "\r\n" + _pointTwo.y;
+        System.IO.File.WriteAllText("DrawBlockData.txt", saveDataString, System.Text.Encoding.Unicode);
         //關閉input畫面
         _inoutImg.gameObject.SetActive(false);
         isInput = !isInput;
