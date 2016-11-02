@@ -481,7 +481,7 @@ public class DrawBlock : MonoBehaviour {
             if (_depthDataSub[i] > MaxDepth) MaxDepth = _depthDataSub[i];
         }
         _maxDepthDistance = MaxDepth;
-        _minDepthDistance = MaxDepth - 200;
+        _minDepthDistance = MaxDepth - 100;
     }
 
     //初始化背景深度Mat

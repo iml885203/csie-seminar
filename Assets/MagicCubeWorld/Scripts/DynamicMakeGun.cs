@@ -28,8 +28,9 @@ public class DynamicMakeGun : MonoBehaviour
 
     void Update()
     {
-        if (_gmaeStatusManager.CurrentStateIndex != GameState.GameRun)
+        if (_gmaeStatusManager.CurrentStateIndex != GameState.GameRun && _gmaeStatusManager.CurrentStateIndex != GameState.Menu)
         {
+            DeleteObject();
             return;
         }
         List<MatchObject> TempList = _DataMatch._matchColorObjectList;

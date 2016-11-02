@@ -76,8 +76,9 @@ public class Match : MonoBehaviour {
     }
     // Update is called once per frame
     void Update () {
-        if (_gmaeStatusManager.CurrentStateIndex != GameState.GameRun)
+        if (_gmaeStatusManager.CurrentStateIndex != GameState.GameRun && _gmaeStatusManager.CurrentStateIndex != GameState.Menu)
         {
+            _matchColorObjectList.Clear();
             return;
         }
         //確認已開啟攝影機
@@ -370,6 +371,7 @@ public class Match : MonoBehaviour {
         int numObjects = contours.Count;
         List<Scalar> clickRGB = new List<Scalar>();
         List<Scalar> clickHSV = new List<Scalar>();
+        List<int> HullCountList = new List<int>();
         for (int i = 0; i < numObjects; i++)
         {
             Imgproc.drawContours(resultMat, contours, i, new Scalar(255),1);
@@ -410,16 +412,14 @@ public class Match : MonoBehaviour {
                         hullPointMat.fromList(hullPointList);
                         hullPoints.Add(hullPointMat);
                     }
-                    if (hullInt.toList().Count == 3)
-                    {
-                        ConsistP.Add(new Point(R0.x, R0.y));
-                        ConsistP.Add(new Point(R0.x + R0.width, R0.y + R0.height));
-                        ConsistP.Add(new Point(R0.x + R0.width, R0.y));
-                        ConsistP.Add(new Point(R0.x, R0.y + R0.height));
-                        clickRGB.Add(clickcolor(ColorMat, R0));
-                        clickHSV.Add(clickcolor(HsvMat, R0));
-                        trianglePointList.Add(pointMatList);
-                    }
+                    ConsistP.Add(new Point(R0.x, R0.y));
+                    ConsistP.Add(new Point(R0.x + R0.width, R0.y + R0.height));
+                    ConsistP.Add(new Point(R0.x + R0.width, R0.y));
+                    ConsistP.Add(new Point(R0.x, R0.y + R0.height));
+                    clickRGB.Add(clickcolor(ColorMat, R0));
+                    clickHSV.Add(clickcolor(HsvMat, R0));
+                    HullCountList.Add(hullIntList.Count);
+                    trianglePointList.Add(pointMatList);
                     //清空記憶體
                     defects.Dispose();
                     hullPointList.Clear();
@@ -432,18 +432,21 @@ public class Match : MonoBehaviour {
                 }
             }
             //使用顏色找尋物體
-            _matchColorObjectList = setColorMatchObject(ConsistP, trianglePointList, clickRGB, clickHSV, resultMat);
+            _matchColorObjectList = setColorMatchObject(ConsistP, trianglePointList, clickRGB, clickHSV, resultMat, HullCountList);
         }
         return resultMat;
     }
     //設定偵測物體參數
-    private List<MatchObject> setColorMatchObject(List<Point> ConsistP, List<List<Point>> trianglePointList, List<Scalar> clickRGB, List<Scalar> clickHsv, Mat resultMat)
+    private List<MatchObject> setColorMatchObject(List<Point> ConsistP, List<List<Point>> trianglePointList, List<Scalar> clickRGB, List<Scalar> clickHsv, Mat resultMat, List<int> HullCountList)
     {
         List<MatchObject> matchObjectList = new List<MatchObject>();
         for (int i = 0; i < ConsistP.Count; i += 4)
         {
             int ID = inRange(ConsistP[i], ConsistP[i + 1], clickRGB[i / 4], clickHsv[i / 4]);
-
+            if ((ID == 0 || ID == 1) && HullCountList[i/4] != 3)
+            {
+                continue;
+            }
             if (ID != -1)
             {
                 List<Point> nowPoint = new List<Point>();
@@ -459,7 +462,14 @@ public class Match : MonoBehaviour {
                 //Debug.Log("center: "+ matchObject._pos);
                 matchObject._scale = new Vector3(22, 22, 22);
                 matchObject._id = ID;
-                matchObject._rotation = (float)(getTriangleRotate(trianglePointList[i / 4], new Point(matchObject._pos.x, matchObject._pos.y)) * 180 / Math.PI);
+                if (ID == 2)
+                {
+                    matchObject._rotation = 0;
+                }
+                else
+                {
+                    matchObject._rotation = (float)(getTriangleRotate(trianglePointList[i / 4], new Point(matchObject._pos.x, matchObject._pos.y)) * 180 / Math.PI);
+                }
                 matchObjectList.Add(matchObject);
             }
         }
