@@ -14,6 +14,7 @@ public class ColorSaveData : MonoBehaviour {
         for (int index = 0; index < matchDataBaseObjectList.Count; index++)
         {
             double[] scalar = new double[3];
+            double[] scalarHsv = new double[3];
             //取得ID
             saveDataString += matchDataBaseObjectList[index].getId();
             saveDataString += ENTER;
@@ -25,6 +26,15 @@ public class ColorSaveData : MonoBehaviour {
             saveDataString += scalar[1].ToString();
             saveDataString += ENTER;
             saveDataString += scalar[2].ToString();
+            saveDataString += ENTER;
+            //取得HSV
+            scalarHsv = matchDataBaseObjectList[index].getColorHsv().val;
+            //存入HSV
+            saveDataString += scalarHsv[0].ToString();
+            saveDataString += ENTER;
+            saveDataString += scalarHsv[1].ToString();
+            saveDataString += ENTER;
+            saveDataString += scalarHsv[2].ToString();
             saveDataString += ENTER;
         }
         System.IO.File.WriteAllText("ObjectColor.txt", saveDataString, Encoding.Unicode);
@@ -40,10 +50,15 @@ public class ColorSaveData : MonoBehaviour {
         {
             int id = 0;
             Scalar color = new Scalar(0, 0, 0);
+            Scalar colorHsv = new Scalar(0, 0, 0);
             try
             {
                 id = int.Parse(readLineBuffer);
                 color = new Scalar(
+                    double.Parse(fileData.ReadLine()),
+                    double.Parse(fileData.ReadLine()),
+                    double.Parse(fileData.ReadLine()));
+                colorHsv = new Scalar(
                     double.Parse(fileData.ReadLine()),
                     double.Parse(fileData.ReadLine()),
                     double.Parse(fileData.ReadLine()));
@@ -52,9 +67,10 @@ public class ColorSaveData : MonoBehaviour {
             {
                 Debug.Log("ColorText.txt沒有顏色資料");
             }
-            baseObjectList.Add(new BaseObject(id,color));
+            baseObjectList.Add(new BaseObject(id, color, colorHsv));
             Debug.Log("Id = " + id);
             Debug.Log("Color = " + color);
+            Debug.Log("ColorHSV = " + colorHsv);
         }
         return baseObjectList;
     }

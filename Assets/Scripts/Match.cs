@@ -34,6 +34,7 @@ public class Match : MonoBehaviour {
     //物體資訊
     public List<BaseObject> SensingResults = new List<BaseObject>();
     public int _clolrRange = 15;
+    public int _colorHsvRamge = 10;
     public int _distanceRange = 2;
     public int _colorDiffRange = 23;
     //物體資訊Text讀存檔
@@ -352,8 +353,10 @@ public class Match : MonoBehaviour {
     {
         Mat ColorMat = new Mat();
         Mat DepthMat = new Mat();
+        Mat HsvMat = new Mat();
         srcColorMat.copyTo(ColorMat);
         srcDepthMat.copyTo(DepthMat);
+        Imgproc.cvtColor(ColorMat, HsvMat, Imgproc.COLOR_BGR2HSV);
 
         List<ColorObject> colorObjects = new List<ColorObject>();
         Mat resultMat = new Mat(DepthMat.height(), DepthMat.width(), CvType.CV_8UC1);
@@ -366,6 +369,7 @@ public class Match : MonoBehaviour {
         
         int numObjects = contours.Count;
         List<Scalar> clickRGB = new List<Scalar>();
+        List<Scalar> clickHSV = new List<Scalar>();
         for (int i = 0; i < numObjects; i++)
         {
             Imgproc.drawContours(resultMat, contours, i, new Scalar(255),1);
@@ -413,6 +417,7 @@ public class Match : MonoBehaviour {
                         ConsistP.Add(new Point(R0.x + R0.width, R0.y));
                         ConsistP.Add(new Point(R0.x, R0.y + R0.height));
                         clickRGB.Add(clickcolor(ColorMat, R0));
+                        clickHSV.Add(clickcolor(HsvMat, R0));
                         trianglePointList.Add(pointMatList);
                     }
                     //清空記憶體
@@ -427,17 +432,17 @@ public class Match : MonoBehaviour {
                 }
             }
             //使用顏色找尋物體
-            _matchColorObjectList = setColorMatchObject(ConsistP, trianglePointList, clickRGB, resultMat);
+            _matchColorObjectList = setColorMatchObject(ConsistP, trianglePointList, clickRGB, clickHSV, resultMat);
         }
         return resultMat;
     }
     //設定偵測物體參數
-    private List<MatchObject> setColorMatchObject(List<Point> ConsistP, List<List<Point>> trianglePointList, List<Scalar> clickRGB,Mat resultMat)
+    private List<MatchObject> setColorMatchObject(List<Point> ConsistP, List<List<Point>> trianglePointList, List<Scalar> clickRGB, List<Scalar> clickHsv, Mat resultMat)
     {
         List<MatchObject> matchObjectList = new List<MatchObject>();
         for (int i = 0; i < ConsistP.Count; i += 4)
         {
-            int ID = inRange(ConsistP[i], ConsistP[i + 1], clickRGB[i / 4]);
+            int ID = inRange(ConsistP[i], ConsistP[i + 1], clickRGB[i / 4], clickHsv[i / 4]);
 
             if (ID != -1)
             {
@@ -595,9 +600,10 @@ public class Match : MonoBehaviour {
         return new Scalar((int)average_R, (int)average_G, (int)average_B);
     }
     //當偵測到的物體平均色彩符合則比對成功
-    public  int inRange(Point P1 , Point P2, Scalar src)
+    public  int inRange(Point P1 , Point P2, Scalar src, Scalar srcHsv)
     {
         double[] _srcColor =src.val;
+        double[] _srcHsvColor = srcHsv.val;
         double[] _colorDiff = new double[3];
         _colorDiff[0] = _srcColor[0] - _srcColor[1];
         _colorDiff[1] = _srcColor[1] - _srcColor[2];
@@ -605,19 +611,15 @@ public class Match : MonoBehaviour {
 
         for (int i = 0; i < SensingResults.Count; i++)
         {
-            double[] getrgb = SensingResults[i].getColor().val;
+            double[] getHsv = SensingResults[i].getColorHsv().val;
             Point ResultsP1 = SensingResults[i]._objectBlock[0];
             Point ResultsP2 = SensingResults[i]._objectBlock[1];
             double[] _resultsDiffColor = SensingResults[i].getColorDiff();
 
-            if (_srcColor[0] < (getrgb[0] + _clolrRange) &&
-               _srcColor[0] > (getrgb[0] - _clolrRange) &&
-               _srcColor[1] < (getrgb[1] + _clolrRange) &&
-               _srcColor[1] > (getrgb[1] - _clolrRange) &&
-               _srcColor[2] < (getrgb[2] + _clolrRange) &&
-               _srcColor[2] > (getrgb[2] - _clolrRange) && false)
+            if (_srcHsvColor[0] < (getHsv[0] + _colorHsvRamge) % 180 &&
+               _srcHsvColor[0] > (getHsv[0] - _colorHsvRamge) % 180)
            {
-                Debug.Log(i + "Use Color");
+                //Debug.Log(i + "Use ColorHSV");
                 SensingResults[i].SetPoint(P1, P2);
                 return i;
            }
@@ -649,7 +651,7 @@ public class Match : MonoBehaviour {
         if (isSave)
         {
             Debug.Log("Create" + SensingResults.Count);
-            SensingResults.Add(new BaseObject(SensingResults.Count,P1, P2, src));
+            SensingResults.Add(new BaseObject(SensingResults.Count,P1, P2, src, srcHsv));
             Debug.Log("Color =" + src);
             ColorSaveData.GetComponent<ColorSaveData>().SaveColorData(SensingResults);
             return SensingResults.Count;
