@@ -8612,6 +8612,53 @@ CanvasRenderer:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 162374989}
+--- !u!1 &167164726
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 224: {fileID: 167164727}
+  - 114: {fileID: 167164728}
+  m_Layer: 0
+  m_Name: BuffGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &167164727
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 167164726}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 1133783744}
+  m_Father: {fileID: 1106879925}
+  m_RootOrder: 10
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &167164728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 167164726}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b89c318bd3cfc8448b86019ac4e73526, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CopyObject: {fileID: 1133783743}
+  GenetatorTime: 15
 --- !u!1 &167212907
 GameObject:
   m_ObjectHideFlags: 0
@@ -25179,6 +25226,53 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 529215623}
+--- !u!1 &550557072
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 224: {fileID: 550557073}
+  - 114: {fileID: 550557074}
+  m_Layer: 0
+  m_Name: NerfGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &550557073
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 550557072}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 1010102860}
+  m_Father: {fileID: 1106879925}
+  m_RootOrder: 11
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &550557074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 550557072}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b89c318bd3cfc8448b86019ac4e73526, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CopyObject: {fileID: 1010102859}
+  GenetatorTime: 15
 --- !u!1 &552764367
 GameObject:
   m_ObjectHideFlags: 0
@@ -49609,12 +49703,12 @@ GameObject:
   - 135: {fileID: 1010102862}
   - 23: {fileID: 1010102861}
   m_Layer: 0
-  m_Name: Sphere (1)
+  m_Name: NerfObject
   m_TagString: nerfObject
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1010102860
 Transform:
   m_ObjectHideFlags: 0
@@ -49625,8 +49719,8 @@ Transform:
   m_LocalPosition: {x: 0, y: -0.85, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 1106879925}
-  m_RootOrder: 11
+  m_Father: {fileID: 550557073}
+  m_RootOrder: 0
 --- !u!23 &1010102861
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -53020,8 +53114,8 @@ RectTransform:
   - {fileID: 2022483959}
   - {fileID: 1651913502}
   - {fileID: 2110380457}
-  - {fileID: 1133783744}
-  - {fileID: 1010102860}
+  - {fileID: 167164727}
+  - {fileID: 550557073}
   m_Father: {fileID: 0}
   m_RootOrder: 9
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -54963,12 +55057,12 @@ GameObject:
   - 135: {fileID: 1133783746}
   - 23: {fileID: 1133783745}
   m_Layer: 0
-  m_Name: Sphere
+  m_Name: BuffObject
   m_TagString: buffObject
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1133783744
 Transform:
   m_ObjectHideFlags: 0
@@ -54979,8 +55073,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 2.27, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 1106879925}
-  m_RootOrder: 10
+  m_Father: {fileID: 167164727}
+  m_RootOrder: 0
 --- !u!23 &1133783745
 MeshRenderer:
   m_ObjectHideFlags: 0
