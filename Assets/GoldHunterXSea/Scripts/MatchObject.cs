@@ -12,5 +12,6 @@ public class MatchObject
     public float _rotation { get; set; }
     public Scalar _objectColor { get; set; }
     public int _id { get; set; }
+    public Vector3 _centerPos { get; set; }
 }
 

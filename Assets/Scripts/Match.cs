@@ -457,8 +457,8 @@ public class Match : MonoBehaviour {
                 Imgproc.rectangle(resultMat, ConsistP[i], ConsistP[i + 1], new Scalar(255, 0, 255), 1);
                 Imgproc.putText(resultMat, "ID=" + ID.ToString(), ConsistP[i], 1, 1, new Scalar(255, 0, 255), 1);
                 MatchObject matchObject = new MatchObject();
-                matchObject._pos = calculateCenter(nowPoint);
-                //matchObject._pos = getTriangleCenter(trianglePointList[i / 4]);
+                matchObject._centerPos = calculateCenter(nowPoint);
+                matchObject._pos = getTriangleCenter(trianglePointList[i / 4]);
                 //Debug.Log("center: "+ matchObject._pos);
                 matchObject._scale = new Vector3(22, 22, 22);
                 matchObject._id = ID;
@@ -649,7 +649,7 @@ public class Match : MonoBehaviour {
         //Debug.Log("Count = " + _matchColorObjectList.Count);
         for (int i = 0; i < _matchColorObjectList.Count; i++)
         {
-            Point ResultsCenter = new Point(_matchColorObjectList[i]._pos.x, _matchColorObjectList[i]._pos.y);
+            Point ResultsCenter = new Point(_matchColorObjectList[i]._centerPos.x, _matchColorObjectList[i]._centerPos.y);
             //Debug.Log("i = " + i + "Match ResultsCenter = " + ResultsCenter + "P1 P2" + P1 + P2);
             if (pointDistanceToFar(P1, P2, ResultsCenter))
             {
