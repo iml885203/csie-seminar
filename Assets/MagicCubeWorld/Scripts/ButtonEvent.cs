@@ -331,4 +331,14 @@ public class ButtonEvent : MonoBehaviour
                 }
         }
     }
+
+    public void SetChoiceLevelFightTrue()
+    {
+        transform.root.Find("/UICanvas/Button/Setting/ChoiceLevelFight").gameObject.SetActive(true);
+    }
+
+    public void SetChoiceLevelFightFalse()
+    {
+        transform.root.Find("/UICanvas/Button/Setting/ChoiceLevelFight").gameObject.SetActive(false);
+    }
 }
