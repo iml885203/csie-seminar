@@ -458,7 +458,14 @@ public class Match : MonoBehaviour {
                 Imgproc.putText(resultMat, "ID=" + ID.ToString(), ConsistP[i], 1, 1, new Scalar(255, 0, 255), 1);
                 MatchObject matchObject = new MatchObject();
                 matchObject._centerPos = calculateCenter(nowPoint);
-                matchObject._pos = getTriangleCenter(trianglePointList[i / 4]);
+                if(ID == 0 || ID == 1)
+                {
+                    matchObject._pos = getTriangleCenter(trianglePointList[i / 4]);
+                }
+                else
+                {
+                    matchObject._pos = calculateCenter(nowPoint);
+                }
                 //Debug.Log("center: "+ matchObject._pos);
                 matchObject._scale = new Vector3(22, 22, 22);
                 matchObject._id = ID;

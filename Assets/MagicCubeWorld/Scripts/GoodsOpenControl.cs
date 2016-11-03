@@ -47,7 +47,7 @@ public class GoodsOpenControl : MonoBehaviour {
 
     void OnTriggerStay(Collider other)
     {
-        if (other.gameObject.tag == "UI_Test") //碰撞到牆壁
+        if (other.gameObject.tag == "GoodOpen") //碰撞到牆壁
         {
             _isTriggerButton = true;
             var button = other.transform.parent.GetComponent<Button>();
@@ -59,6 +59,7 @@ public class GoodsOpenControl : MonoBehaviour {
             if (_clickTimer > _clickTriggerTime)
             {
                 _processBar.setProcessPer(0);
+                other.transform.parent.GetComponent<processBar>().setProcessPer(0);
                 _idClicked = true;
                 //觸發點擊UI
                 button.onClick.Invoke();
@@ -69,16 +70,18 @@ public class GoodsOpenControl : MonoBehaviour {
                 //累積移動時間增加
                 _clickTimer += Time.deltaTime;
                 _processBar.setProcessPer(_clickTimer / _clickTriggerTime * 100);
+                other.transform.parent.GetComponent<processBar>().setProcessPer(_clickTimer / _clickTriggerTime * 100);
             }
         }
     }
 
     void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.tag == "UI_Test")
+        if (other.gameObject.tag == "GoodOpen")
         {
             _clickTimer = 0f;
             _processBar.setProcessPer(0f);
+            other.transform.parent.GetComponent<processBar>().setProcessPer(0);
             _idClicked = false;
             _isTriggerButton = false;
         }
