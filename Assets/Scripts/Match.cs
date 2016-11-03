@@ -494,9 +494,6 @@ public class Match : MonoBehaviour {
         double lengthC = getLengthByTwoPoint(trianglePoints[2], trianglePoints[0]);
         float centerX = (float)((lengthB * trianglePoints[0].x + lengthC * trianglePoints[1].x + lengthA * trianglePoints[2].x) / (lengthA + lengthB + lengthC));
         float centerY = (float)((lengthB * trianglePoints[0].y + lengthC * trianglePoints[1].y + lengthA * trianglePoints[2].y) / (lengthA + lengthB + lengthC));
-        Debug.Log(trianglePoints[0] + ", " + trianglePoints[1] + ", " + trianglePoints[2]);
-        Debug.Log(lengthA + ", " + lengthB + ", " + lengthC);
-        Debug.Log(centerX + ", " + centerY);
         return new Vector3(centerX, centerY, -30);
     }
 
