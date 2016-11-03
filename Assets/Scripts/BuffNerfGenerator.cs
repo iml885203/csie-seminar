@@ -25,15 +25,18 @@ public class BuffNerfGenerator : MonoBehaviour {
         }
         if(_gameState.CurrentStateIndex != GameState.GameRun || _gameLevel.CurrentLevelIndex != GameLevelIndex.LEVEL_FIGHT)
         {
+            if (transform.Find(CopyObject.name + "(Clone)") != null)
+            {
+                Destroy(transform.Find(CopyObject.name + "(Clone)").gameObject);
+            }
             return;
         }
         _timer += Time.deltaTime;
         if(_timer >= GenetatorTime)
         {
-            if(transform.Find(CopyObject.name + "(Clone)") == null)
+            if (transform.Find(CopyObject.name + "(Clone)") == null)
             {
                 CreateBuffNerfObject(repeatTime);
-
             }
             _timer = 0f;
         }
