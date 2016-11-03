@@ -90,6 +90,7 @@ public class DrawBlock : MonoBehaviour {
     //SmoothesImage參數
     private const float  _smoothesImagePer = .001f;
 
+
     public Mat GetBlockMat()
     {
         return _blockImage;
@@ -114,7 +115,7 @@ public class DrawBlock : MonoBehaviour {
         _currentWidth = Screen.width;
         _currentHeight = Screen.height;
         _positionTrans = new clickPositionTrans(_currentWidth, _currentHeight, _inputWidth, _inputHeight);
-        
+
         //創造mat儲存輸出影像
         _sourceMat = new Mat(_inputHeight, _inputWidth, CvType.CV_8UC3);
         _sourceMat_backup = new Mat(_inputHeight, _inputWidth, CvType.CV_8UC3);
@@ -160,7 +161,12 @@ public class DrawBlock : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        
+        if (_currentWidth != Screen.width || _currentHeight != Screen.height)
+        {
+            _currentWidth = Screen.width;
+            _currentHeight = Screen.height;
+            _positionTrans = new clickPositionTrans(_currentWidth, _currentHeight, _inputWidth, _inputHeight);
+        }
         //讓選框狀態時暫停影像
         if (Input.GetKeyUp(KeyCode.Z))
         {
