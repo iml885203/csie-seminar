@@ -46,6 +46,7 @@ public class Match : MonoBehaviour {
     private OpenCVForUnity.Rect _DepthRect;
 
     private GameStateIndex _gmaeStatusManager;
+    private bool _useRotateLaserGenerator;
 
 
     //偵測到的Object
@@ -73,6 +74,7 @@ public class Match : MonoBehaviour {
         _gmaeStatusManager = transform.root.Find("/GameState").GetComponent<GameStateIndex>();
         //讀取ObjectColor.txt
         SensingResults = ColorSaveData.GetComponent<ColorSaveData>().ReadColorData();
+        _useRotateLaserGenerator = true;
     }
     // Update is called once per frame
     void Update () {
@@ -90,6 +92,8 @@ public class Match : MonoBehaviour {
         Height = _drawBlock.MatchHeight;
         //設定是否儲存特徵物體
         SetIsSave();
+        //設定是否使用旋轉砲台
+        SetUseRotate();
         //宣告存放深度與色彩影像
         Mat _ClolrMat = new Mat();
         Mat _DepthMat = new Mat();
@@ -120,8 +124,17 @@ public class Match : MonoBehaviour {
         resizeMat.Dispose();
         BlackDepthMat.Dispose();
     }
+
+    private void SetUseRotate()
+    {
+        if (Input.GetKeyUp(KeyCode.X))
+        {
+            _useRotateLaserGenerator = (_useRotateLaserGenerator) ? false : true;
+        }
+    }
+
     //深度影像處理
-   public  bool getDepthContours(Mat _depthMat,Mat blackMat)
+    public  bool getDepthContours(Mat _depthMat,Mat blackMat)
     {
         if (_depthMat == null)
         {
@@ -475,7 +488,23 @@ public class Match : MonoBehaviour {
                 }
                 else
                 {
-                    matchObject._rotation = (float)(getTriangleRotate(trianglePointList[i / 4], new Point(matchObject._pos.x, matchObject._pos.y)) * 180 / Math.PI);
+                    if (_useRotateLaserGenerator)
+                    {
+                        matchObject._rotation = (float)(getTriangleRotate(trianglePointList[i / 4], new Point(matchObject._pos.x, matchObject._pos.y)) * 180 / Math.PI);
+                    }
+                    else
+                    {
+                        if (matchObject._pos.x > resultMat.width() / 2)
+                        {
+                            matchObject._rotation = 180f;
+                        }
+                        else
+                        {
+                            matchObject._rotation = 0f;
+                        }
+
+                    }
+
                 }
                 matchObjectList.Add(matchObject);
             }
