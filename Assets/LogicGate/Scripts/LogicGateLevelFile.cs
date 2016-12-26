@@ -5,7 +5,7 @@ using System.Text;
 
 static class LogicGateLevelFile
 {
-    public const string LEVEL_1 = "Level1.txt";
+    public const string LEVEL_1 = "LogicGateLevel/Level1.txt";
     public const string LEVEL_2 = "Level2.txt";
     public const string LEVEL_3 = "Level3.txt";
     public const string LEVEL_FIGHT = "LevelFight.txt";

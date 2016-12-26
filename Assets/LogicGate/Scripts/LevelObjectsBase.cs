@@ -26,18 +26,26 @@ public class LevelObjectsBase : MonoBehaviour
 
     public GameObject _canvas;
 
-    protected float _canvasWidth;
-    protected float _canvasHeight;
+    private List<OpenCVForUnity.Rect> _logicGatesArea = new List<OpenCVForUnity.Rect>();
+    private List<int> _inputSerialNumberList = new List<int>();
+    private List<bool> _inputTFList = new List<bool>();
 
-    protected float _blockWidth;
-    protected float _blockHeight;
-    protected const float HalfRate = (float).5;
+    private List<int> _outputSerialNumberList = new List<int>();
+    private List<OpenCVForUnity.Rect> _gateDetectAreaLisr = new List<OpenCVForUnity.Rect>();
+    private List<Gate> _gateDataList = new List<Gate>();
 
-    protected int _blockWidthCount;
-    protected int _blockHeightCount;
+    //protected float _canvasWidth;
+    //protected float _canvasHeight;
 
-    protected float _originPointX;
-    protected float _originPointY;
+    //protected float _blockWidth;
+    //protected float _blockHeight;
+    //protected const float HalfRate = (float).5;
+
+    //protected int _blockWidthCount;
+    //protected int _blockHeightCount;
+
+    //protected float _originPointX;
+    //protected float _originPointY;
 
     private bool _isChangePreviewLevel;
 
@@ -71,7 +79,8 @@ public class LevelObjectsBase : MonoBehaviour
         if (_isChangePreviewLevel)
         {
             this.DestoryLevelObjects();
-            this.SetLevelObjectsByTextFileRealPosition();
+            this.ReadLevelDataByTextFile();
+            //this.SetLevelObjectsByTextFileRealPosition();
             //this.SetLevelObjectsByTextFile();
             _isChangePreviewLevel = false;
         }
@@ -94,6 +103,72 @@ public class LevelObjectsBase : MonoBehaviour
         }
     }
 
+    public void ReadLevelDataByTextFile()
+    {
+        string readLineBuffer;
+
+        //讀檔設立物件
+        System.IO.StreamReader fileData = new System.IO.StreamReader(TEXT_FILE_NAME, System.Text.Encoding.Default);
+
+        //直到沒讀到資訊
+        while ((readLineBuffer = fileData.ReadLine()) != null)
+        {
+            //給定讀取類型
+            string readMode = readLineBuffer;
+
+            //讀取數量跑迴圈
+            int amount = Convert.ToInt16(fileData.ReadLine());
+            for(int numberIndex = 0; numberIndex < amount; numberIndex++)
+            {
+                string currentStr = fileData.ReadLine();
+                switch (readMode)
+                {
+                    case "input":
+                        {
+                            this.ReadInputData(currentStr);
+                            break;
+                        }
+                    case "output":
+                        {
+                            this.ReadOutputData(currentStr);
+                            break;
+                        }
+                    case "gate":
+                        {
+                            this.ReadGateData(currentStr);
+                            break;
+                        }
+                }
+            }
+        }
+        fileData.Close();
+    }
+
+    //讀取input資訊
+    private void ReadInputData(string currentStr)
+    {
+        string[] currentStrArray = currentStr.Split(',');
+        int inputPort = Convert.ToInt32(currentStrArray[0]);
+        bool inputTF = (currentStrArray[1] == "True") ? true : false;
+        Debug.Log("port = " + inputPort + ", inputTF = " + inputTF);
+    }
+
+    //讀取output資訊
+    private void ReadOutputData(string currentStr)
+    {
+        int outputPort = Convert.ToInt32(currentStr);
+        Debug.Log("outputport = " + outputPort);
+    }
+
+    //讀取邏輯閘資訊
+    private void ReadGateData(string currentStr)
+    {
+        string[] currentStrArray = currentStr.Split('|');
+        string[] currentGatePortArray = currentStr.Split(',');
+        string[] currentRectAreaArray = currentStr.Split(',');
+        Debug.Log("currentGatePortArray = " + currentGatePortArray + ", currentRectAreaArray = " + currentRectAreaArray);
+    }
+
     //設置關卡物件
     public void SetLevelObjectsByTextFileRealPosition()
     {
@@ -101,19 +176,19 @@ public class LevelObjectsBase : MonoBehaviour
 
         //讀檔設立物件
         System.IO.StreamReader fileData = new System.IO.StreamReader(TEXT_FILE_NAME, System.Text.Encoding.Default);
-        //System.IO.StreamReader fileData = new System.IO.StreamReader("預設名稱.txt", System.Text.Encoding.Default);
 
         //直到沒讀到資訊
         while ((readLineBuffer = fileData.ReadLine()) != null)
         {
-            //給定物件種類字串
-            string kind = readLineBuffer;
+            //給定讀取類型
+            string readMode = readLineBuffer;
 
             //將gameObject給定指定的物件
             //this.SwitchGameObject(kind, ref _productGameObject);
 
             //讀取數量跑迴圈
             int amount = Convert.ToInt16(fileData.ReadLine());
+
             for (int numberIndex = 0; numberIndex < amount; numberIndex++)
             {
                 //區間用的readLine
@@ -171,18 +246,18 @@ public class LevelObjectsBase : MonoBehaviour
     }
 
     //轉換框格點座標到畫布點座標
-    public Point TransBlockToCanvasPosition(Point position)
-    {
-        Point canvasPosition;
+    //public Point TransBlockToCanvasPosition(Point position)
+    //{
+    //    Point canvasPosition;
 
-        //將座標給到指定格數的左上角
-        canvasPosition = new Point((double)_originPointX + (position.x * _blockWidth), (double)_originPointY - (position.y * _blockHeight));
+    //    //將座標給到指定格數的左上角
+    //    canvasPosition = new Point((double)_originPointX + (position.x * _blockWidth), (double)_originPointY - (position.y * _blockHeight));
 
-        //將座標寬高各進行半個格子的位移，使物件在格子中心
-        canvasPosition = new Point(canvasPosition.x + (double)_blockWidth * HalfRate, canvasPosition.y - (double)_blockHeight * HalfRate);
+    //    //將座標寬高各進行半個格子的位移，使物件在格子中心
+    //    canvasPosition = new Point(canvasPosition.x + (double)_blockWidth * HalfRate, canvasPosition.y - (double)_blockHeight * HalfRate);
 
-        return canvasPosition;
-    }
+    //    return canvasPosition;
+    //}
 
     //依據選的關卡更變讀取的文件
     public void SwitchLevelFile()
