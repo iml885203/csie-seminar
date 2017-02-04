@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using OpenCVForUnity;
 
-public class MapManagement : MonoBehaviour {
+public class MapManager : MonoBehaviour {
 
     private byte[,] _mapCoordinateByte;
 
     //地圖方格數
-    private const int _blockWidth = 16;
-    private const int _blockHeight = 9;
+    public const int BlockWidth = 16;
+    public const int BlockHeight = 9;
     //角色可以移動的區塊
     private List<Point> _canMoveArea = new List<Point>();
     private List<Point> _playerPos = new List<Point>();
@@ -18,7 +18,7 @@ public class MapManagement : MonoBehaviour {
 
     private int[] dCol = { 0, 1, 0, -1 };
     private int[] dRow = { -1, 0, 1, 0 };
-    private int[,] used = new int[_blockHeight, _blockWidth];
+    private int[,] used = new int[BlockHeight, BlockWidth];
 
     //地圖方向defind
     private const byte UP = 7;                  //上可走0111
@@ -26,10 +26,10 @@ public class MapManagement : MonoBehaviour {
     private const byte DOWN = 13;               //下可走1101
     private const byte LEFT = 14;               //左可走1110
 
-    public MapManagement()
+    public MapManager()
     {
         //地圖預設資料
-        _mapCoordinateByte = new byte[_blockHeight, _blockWidth]{//Height,Width
+        _mapCoordinateByte = new byte[BlockHeight, BlockWidth]{//Height,Width
         {9,12,9,10,12,9,10,14,9,10,12,13,13,13,11,12},
         {5,1,2,12,3,6,9,10,0,12,3,6,5,3,12,5},
         {7,1,12,5,13,9,6,11,4,3,10,8,6,11,2,4},
@@ -47,19 +47,19 @@ public class MapManagement : MonoBehaviour {
     //創建隨機地圖
     public void CreateNewMap()
     {
-        for (int i = 0; i < _blockHeight; i++)
-            for (int j = 0; j < _blockWidth; j++)
+        for (int i = 0; i < BlockHeight; i++)
+            for (int j = 0; j < BlockWidth; j++)
                 used[i, j] = 0;
-        _mapCoordinateByte = new byte[_blockHeight, _blockWidth];
+        _mapCoordinateByte = new byte[BlockHeight, BlockWidth];
 
-        for (int i = 0; i < _blockHeight; i++)
-            for (int j = 0; j < _blockWidth; j++)
+        for (int i = 0; i < BlockHeight; i++)
+            for (int j = 0; j < BlockWidth; j++)
                 _mapCoordinateByte[i, j] = 15;
 
         dfs(0, 0, -1, -1);
 
-        for (int i = 0; i < _blockHeight; i++)
-            for (int j = 0; j < _blockWidth; j++)
+        for (int i = 0; i < BlockHeight; i++)
+            for (int j = 0; j < BlockWidth; j++)
                 Debug.Log(_mapCoordinateByte[i, j]);
         List<Point> _canMoveArea = new List<Point>();
         List<Point> _playerPos = new List<Point>();
@@ -69,19 +69,19 @@ public class MapManagement : MonoBehaviour {
     //深度
     private void dfs(int col, int row, int pcol, int prow)
     {
-        if ((col < 0 || row < 0) || (col >= _blockWidth || row >= _blockHeight))//col=16 row=9
+        if ((col < 0 || row < 0) || (col >= BlockWidth || row >= BlockHeight))//col=16 row=9
             return;
         if (used[row, col] == 1)
             return;
         used[row, col] = 1;
         int cnt = 0, dir = 0;
-        if (col == _blockWidth - 1 && row == _blockHeight - 1)
+        if (col == BlockWidth - 1 && row == BlockHeight - 1)
             return;
         while (cnt < 10)
         {
             dir = Random.Range(0, 4);//上dir=0 ->dCol=0,dRow=-1  右dir=1 ->dCol=1,dRow=0   下dir=2 ->dCol=0,dRow=1  左dir=3 ->dCol=-1,dRow=0
 
-            if ((col + dCol[dir]) < _blockWidth && (row + dRow[dir]) < _blockHeight && (col + dCol[dir] >= 0 && row + dRow[dir] >= 0) && used[row + dRow[dir], col + dCol[dir]] != 1)
+            if ((col + dCol[dir]) < BlockWidth && (row + dRow[dir]) < BlockHeight && (col + dCol[dir] >= 0 && row + dRow[dir] >= 0) && used[row + dRow[dir], col + dCol[dir]] != 1)
             {
                 dfs(col + dCol[dir], row + dRow[dir], col, row);
                 //Debug.Log("col = " + col + ",row=" + row);
@@ -154,7 +154,7 @@ public class MapManagement : MonoBehaviour {
     public void CanGo(int x, int y, int times)//原始座標x,y剩餘次數
     {
         //超出範圍
-        if (x < 0 || y < 0 || x > _blockWidth || y > _blockHeight) return;
+        if (x < 0 || y < 0 || x > BlockWidth || y > BlockHeight) return;
         //剩餘步數大於0
         if (times-- > 0)
         {
