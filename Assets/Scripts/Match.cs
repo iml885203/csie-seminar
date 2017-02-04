@@ -29,12 +29,10 @@ public class Match : MonoBehaviour {
     //變動區塊範圍
     public List<OpenCVForUnity.Rect> _changeRectList { get; set;}
 
-    DiceRecognition _dice = new DiceRecognition();
-
     //物體資訊
     public List<BaseObject> SensingResults = new List<BaseObject>();
     public int _clolrRange = 15;
-    public int _colorHsvRamge = 10;
+    public int _colorHsvRange = 10;
     public int _distanceRange = 2;
     public int _colorDiffRange = 23;
     //物體資訊Text讀存檔
@@ -659,8 +657,8 @@ public class Match : MonoBehaviour {
             Point ResultsP2 = SensingResults[i]._objectBlock[1];
             double[] _resultsDiffColor = SensingResults[i].getColorDiff();
 
-            if (_srcHsvColor[0] < (getHsv[0] + _colorHsvRamge) % 180 &&
-               _srcHsvColor[0] > (getHsv[0] - _colorHsvRamge) % 180)
+            if (_srcHsvColor[0] < (getHsv[0] + _colorHsvRange) % 180 &&
+               _srcHsvColor[0] > (getHsv[0] - _colorHsvRange) % 180)
            {
                 //Debug.Log(i + "Use ColorHSV");
                 SensingResults[i].SetPoint(P1, P2);
