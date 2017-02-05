@@ -5,7 +5,6 @@ using OpenCVForUnity;
 public class raytoPosition : MonoBehaviour
 {
     //  public mapCoordinate _mapCoordinate;
-    public mazeCoordinate mazeCoordinate;
     public double posX { get; private set; }
     public double posY { get; private set; }
     public Point posXY;
