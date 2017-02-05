@@ -26,6 +26,9 @@ public class MapManager : MonoBehaviour {
     private const byte DOWN = 13;               //下可走1101
     private const byte LEFT = 14;               //左可走1110
 
+    public int GetBlockWidth { get { return BlockWidth; } }
+    public int GetBlockHeight { get { return BlockHeight; } }
+
     public MapManager()
     {
         //地圖預設資料
