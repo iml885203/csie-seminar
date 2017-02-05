@@ -5,6 +5,7 @@ using OpenCVForUnity;
 using UnityEditor;
 using System;
 
+//存取玩家實際及格子座標(在game世界中)、轉換功能
 public class PlayerInfo : MonoBehaviour
 {
     //取得玩家人數
@@ -19,7 +20,7 @@ public class PlayerInfo : MonoBehaviour
 
     //玩家座標
     private List<Point> _playerBlockCoordinate = new List<Point>();
-    private List<Point> _playerRealCoordinate = new List<Point>();
+    public List<Point> _playerRealCoordinate = new List<Point>();
 
     //格子實際長寬
     private float _blockWidthSize;
@@ -40,6 +41,11 @@ public class PlayerInfo : MonoBehaviour
     // Use this for initialization
     void Start ()
     {
+        for (int playerIndex = 0; playerIndex < _gameRunStatus.PlayerCount; playerIndex++)
+        {
+            _playerBlockCoordinate.Add(new Point(0, 0));
+        }
+
         _playerMoveWholeGroundWidth = _playerMoveWholeGround.GetComponent<RectTransform>().rect.width;
         _playerMoveWholeGroundHeight = _playerMoveWholeGround.GetComponent<RectTransform>().rect.height;
 
@@ -54,12 +60,14 @@ public class PlayerInfo : MonoBehaviour
 	}
 
     //轉換實際座標到格子座標
-    private void CalculateRealCoordinateToBlock()
+    public void CalculateRealCoordinateToBlock()
     {
-        for(int playerIndex = 0; playerIndex < _gameRunStatus.PlayerCount; playerIndex++)
+        for (int playerIndex = 0; playerIndex < _gameRunStatus.PlayerCount; playerIndex++)
         {
-            _playerBlockCoordinate[playerIndex] = new Point(_playerMoveWholeGroundWidth / _blockWidthSize, _playerMoveWholeGroundHeight / _blockHeightSize) ;
-            
+            _playerBlockCoordinate[playerIndex] = new Point(
+                Convert.ToInt16(Math.Floor(_playerRealCoordinate[playerIndex].x / _blockWidthSize)), 
+                Convert.ToInt16(Math.Floor(_playerRealCoordinate[playerIndex].y / _blockHeightSize))
+                );
         }
     }
 }

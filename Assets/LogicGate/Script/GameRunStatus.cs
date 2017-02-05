@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEditor;
 
+//紀錄玩家在遊戲進行中輪流順序、回合、步數等及功能
 public class GameRunStatus : MonoBehaviour
 {
     //玩家數量
